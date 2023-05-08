@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
+using UniRx.Triggers;
 
 /// <summary>
 /// プレイヤーの移動処理を行うコンポーネント
@@ -24,6 +26,7 @@ public class PlayerMove : MonoBehaviour
     #region private
     private Rigidbody _rb;
     private Animator _anim;
+    private Vector3 _dir;
     private bool _isCanMove = false;
     #endregion
 
@@ -42,15 +45,36 @@ public class PlayerMove : MonoBehaviour
 
     private void Start()
     {
-        _isCanMove = true;
-    }
+        //移動可不可の処理を登録
+        PlayerController.Instance.IsOperable
+                        .Subscribe(SwitchIsCanMove)
+                        .AddTo(this);
 
-    private void Update()
-    {
-    }
+        this.UpdateAsObservable()
+            .Subscribe(_ =>
+            {
+                OnRotate();
+            });
 
-    private void FixedUpdate()
+        this.FixedUpdateAsObservable()
+            .Subscribe(_ =>
+            {
+                OnMoving();
+            })
+            .AddTo(this);
+    }
+    #endregion
+
+    #region public method
+    #endregion
+
+    #region private method
+    /// <summary>
+    /// 移動処理
+    /// </summary>
+    private void OnMoving()
     {
+        //操作不能の場合は処理を行わない
         if (!_isCanMove)
         {
             return;
@@ -61,27 +85,34 @@ public class PlayerMove : MonoBehaviour
         float h = Input.GetAxisRaw("Horizontal");
 
         // 入力方向のベクトルを組み立てる
-        Vector3 dir = Vector3.forward * v + Vector3.right * h;
+        _dir = Vector3.forward * v + Vector3.right * h;
 
-        if (dir == Vector3.zero)
+        if (_dir == Vector3.zero)
         {
             _rb.velocity = Vector3.zero;
         }
         else
         {
-            Quaternion targetRotation = Quaternion.LookRotation(dir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * _turnSpeed);
-
-            _rb.velocity = dir.normalized * _moveSpeed;
+            _rb.velocity = _dir.normalized * _moveSpeed;
         }
 
         _anim.SetFloat("Speed", _rb.velocity.magnitude);
     }
-    #endregion
-
-    #region public method
-    #endregion
-
-    #region private method
+    private void OnRotate()
+    {
+        if (_dir != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(_dir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * _turnSpeed);
+        }
+    }
+    /// <summary>
+    /// 操作できるかどうかを切り替える
+    /// </summary>
+    /// <param name="value"> ON/OFF </param>
+    private void SwitchIsCanMove(bool value)
+    {
+        _isCanMove = value;
+    }
     #endregion
 }
