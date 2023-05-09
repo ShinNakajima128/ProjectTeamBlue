@@ -47,11 +47,6 @@ public class PlayerController : MonoBehaviour, IDamagable
 
         _isOperable.OnNext(true);
     }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        
-    }
     #endregion
 
     #region public method
