@@ -8,7 +8,7 @@ public class Stage
 {
     #region property
     public string StageName => _stageName;
-    public StageType StageType => _stageType;
+    public GameStates StageType => _stageType;
     public int SubMissionNum => _subMissionNum;
     #endregion
 
@@ -19,7 +19,7 @@ public class Stage
     
     [Tooltip("ステージの種類")]
     [SerializeField]
-    private StageType _stageType;
+    private GameStates _stageType;
 
     [Tooltip("サブミッションの数")]
     [SerializeField]
@@ -70,11 +70,4 @@ public class Stage
 
     #region private method
     #endregion
-}
-
-public enum StageType
-{
-    Stage1,
-    Stage2,
-    Stage3
 }

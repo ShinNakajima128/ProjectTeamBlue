@@ -11,12 +11,15 @@ using UniRx.Triggers;
 public class GameManager : SingletonMonoBehaviour<GameManager>
 {
     #region property
+    public GameStates CurrentGameStates => _currentGameState;
     #endregion
 
     #region serialize
     #endregion
 
     #region private
+    /// <summary>現在プレイしているステージ</summary>
+    private GameStates _currentGameState;
     #endregion
 
     #region Constant
@@ -29,20 +32,29 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     #endregion
 
     #region unity methods
-    private void Start()
-    {
-
-    }
-
-    private void Update()
-    {
-
-    }
     #endregion
 
     #region public method
+    /// <summary>現在のゲームの状態を設定する</summary>
+    /// <param name="state">設定する状態</param>
+    public void SetCurrentGameStates(GameStates state)
+    {
+        _currentGameState = state;
+    }
     #endregion
 
     #region private method
     #endregion
+}
+
+/// <summary>
+/// ゲームの状態
+/// </summary>
+public enum GameStates
+{
+    Title,
+    StageSelectView,
+    Stage1,
+    Stage2,
+    Stage3
 }
