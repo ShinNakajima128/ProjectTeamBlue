@@ -13,18 +13,18 @@ MonoBehaviour:
   m_Name: StageData
   m_EditorClassIdentifier: 
   _stages:
-  - _stageName: 
+  - _stageName: "\u30B9\u30C6\u30FC\u30B8\uFF11"
     _stageType: 2
-    _subMissionNum: 0
+    _subMissionNum: 1
     _isClearedStage: 0
     _isClearedSubMissions: 
-  - _stageName: 
+  - _stageName: "\u30B9\u30C6\u30FC\u30B82"
     _stageType: 3
-    _subMissionNum: 0
+    _subMissionNum: 2
     _isClearedStage: 0
     _isClearedSubMissions: 
-  - _stageName: 
+  - _stageName: "\u30B9\u30C6\u30FC\u30B83"
     _stageType: 4
-    _subMissionNum: 0
+    _subMissionNum: 3
     _isClearedStage: 0
     _isClearedSubMissions: 
