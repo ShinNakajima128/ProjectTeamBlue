@@ -38,7 +38,7 @@ public class PlayerAttackCollider : MonoBehaviour
         {
             Debug.Log("敵がダメージを受けた");
 
-            if (TryGetComponent(out IDamagable target))
+            if (other.TryGetComponent(out IDamagable target))
             {
                 target.Damage(_playerAttack.AttackPower);
             }
