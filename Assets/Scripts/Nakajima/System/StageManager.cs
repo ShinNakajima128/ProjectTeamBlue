@@ -33,17 +33,7 @@ public class StageManager : SingletonMonoBehaviour<StageManager>
     #endregion
 
     #region unity methods
-    private void Awake()
-    {
-
-    }
-
     private void Start()
-    {
-
-    }
-
-    private void Update()
     {
 
     }
