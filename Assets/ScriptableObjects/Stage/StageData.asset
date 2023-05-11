@@ -14,14 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stages:
   - _stageName: 
-    _stageType: 0
-    _subMissionNum: 0
-    _isClearedStage: 0
-  - _stageName: 
-    _stageType: 1
-    _subMissionNum: 0
-    _isClearedStage: 0
-  - _stageName: 
     _stageType: 2
     _subMissionNum: 0
     _isClearedStage: 0
+    _isClearedSubMissions: 
+  - _stageName: 
+    _stageType: 3
+    _subMissionNum: 0
+    _isClearedStage: 0
+    _isClearedSubMissions: 
+  - _stageName: 
+    _stageType: 4
+    _subMissionNum: 0
+    _isClearedStage: 0
+    _isClearedSubMissions: 
