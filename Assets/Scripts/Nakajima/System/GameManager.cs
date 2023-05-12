@@ -17,7 +17,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     #region serialize
     [Tooltip("現在プレイしているステージ")]
     [SerializeField]
-    private GameStates _currentGameState = GameStates.Title;
+    private GameStates _currentGameState = GameStates.Lobby_Start;
     #endregion
 
     #region private
@@ -62,8 +62,8 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 /// </summary>
 public enum GameStates
 {
-    Title,
-    StageSelectView,
+    Lobby_Start,
+    Lobby_StageSelect,
     Stage1,
     Stage2,
     Stage3
