@@ -61,23 +61,20 @@ public class StageManager : SingletonMonoBehaviour<StageManager>
     #region public method
     public void LoadData()
     {
-        string json = "";
+        StageData data = default;
 
-        print(Application.persistentDataPath);
 
-        try
+        data = LocalData.Load<StageData>("SaveData/GameData.json");
+
+        if (data != null)
         {
-            json = File.ReadAllText(Path.Combine(Application.persistentDataPath, "SaveData.txt"));
+            _data = data;
         }
-        catch
+        else
         {
-            json = CreateNewData();
-            print(json);
+            LocalData.Save("SaveData/GameData.json", _data);
         }
-        print(json);
-        var data = JsonUtility.FromJson<StageData>(json);
 
-        _data.Setup(data.Stages);
     }
 
     public string CreateNewData()

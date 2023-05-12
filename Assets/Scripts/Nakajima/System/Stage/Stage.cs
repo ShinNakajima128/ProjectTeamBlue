@@ -46,7 +46,7 @@ public class Stage
     #region public method
     public void SetupData(Stage stage)
     {
-        _isClearedSubMissions = new bool[_subMissionNum];
+        _isClearedSubMissions = new bool[stage.SubMissionNum];
 
         //新しくゲームを始めた場合
         if (stage == null) 

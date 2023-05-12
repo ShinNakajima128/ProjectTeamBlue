@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "MyScriptable/StageData")]
 [Serializable]
-public class StageData : ScriptableObject
+public class StageData
 {
     #region property
     public Stage[] Stages => _stages;
