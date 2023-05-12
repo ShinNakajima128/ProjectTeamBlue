@@ -4,15 +4,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Ememy : MonoBehaviour
+public class Enemy : MonoBehaviour
 {
     #region property
     public float speed = 5f;
+    public float hp = 10;
+    public float maxHP = 10;
     public float stopFarWithPlayer = 2.3f;
     public float stopFarWithStartPoint = .3f;
     public float followTime = 1f;
     public float followCoolTime = 1f;
     public List<Tuple<bool,Vector3>> checkPointPositionList;
+    public HPBar hpBar;
     #endregion
 
     #region serialize
@@ -113,6 +116,8 @@ public class Ememy : MonoBehaviour
                 Debug.LogError("ENEMYACT_ERROR:" + enemyAct);
                 break;
         }
+
+        UpdateHPBar(10, 5);
     }
     #endregion
 
@@ -179,6 +184,12 @@ public class Ememy : MonoBehaviour
             enemyAgent.ResetPath();
             enemyAct = ENEMY_ACT.WAIT_AND_SEARCH;
         }
+    }
+
+    void UpdateHPBar(float maxHP, float hp)
+    {
+        hpBar.MaxHP = maxHP;
+        hpBar.HP = hp;
     }
 
     void DoAttack()
