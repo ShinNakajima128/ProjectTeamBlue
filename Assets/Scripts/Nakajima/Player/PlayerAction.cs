@@ -78,8 +78,9 @@ public class PlayerAction : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F))
         {
             _isInAction = true;
-            PlayerController.Instance.MoveInterval(3.0f);
-            StartCoroutine(OnActionCoroutine(3.0f));
+            PlayerController.Instance.MoveInterval(_actionTime);
+            StartCoroutine(OnActionCoroutine(_actionTime));
+            ActionGauge.StartAction(_actionTime);
         }
     }
     #endregion

@@ -15,11 +15,12 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     #endregion
 
     #region serialize
+    [Tooltip("現在プレイしているステージ")]
+    [SerializeField]
+    private GameStates _currentGameState = GameStates.Title;
     #endregion
 
     #region private
-    /// <summary>現在プレイしているステージ</summary>
-    private GameStates _currentGameState;
     #endregion
 
     #region Constant
@@ -32,6 +33,15 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     #endregion
 
     #region unity methods
+    private void Awake()
+    {
+        if (Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        DontDestroyOnLoad(this);
+    }
     #endregion
 
     #region public method

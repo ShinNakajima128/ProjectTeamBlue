@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "MyScriptable/StageData")]
+[Serializable]
 public class StageData : ScriptableObject
 {
     #region property
@@ -25,6 +27,13 @@ public class StageData : ScriptableObject
     #endregion
 
     #region public method
+    public void Setup(Stage[] stageDatas)
+    {
+        for (int i = 0; i < _stages.Length; i++)
+        {
+            _stages[i].SetupData(stageDatas[i]);
+        }
+    }
     #endregion
 
     #region private method
