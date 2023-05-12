@@ -198,7 +198,7 @@ GameObject:
   - component: {fileID: 45373599}
   - component: {fileID: 45373601}
   - component: {fileID: 45373600}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1780,7 +1780,7 @@ GameObject:
   - component: {fileID: 1314774724}
   - component: {fileID: 1314774723}
   - component: {fileID: 1314774726}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HPBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2050,14 +2050,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3a1906c1302c1645bdb7b778e1b7484, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PointList: []
+  gameStage: {fileID: 1246313279}
+  pointList: []
 --- !u!43 &1614419856
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh18810
+  m_Name: pb_Mesh36592
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2

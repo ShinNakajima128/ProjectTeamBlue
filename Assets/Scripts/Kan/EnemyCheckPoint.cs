@@ -6,12 +6,14 @@ using UnityEngine;
 //[ExecuteInEditMode]
 public class EnemyCheckPoint : MonoBehaviour
 {
-    public List<GameObject> PointList;
+    public GameObject gameStage;
+    [HideInInspector]
+    public List<GameObject> pointList;
     
     // Start is called before the first frame update
     void Start()
     {
-        PointList = new List<GameObject>();
+        pointList = new List<GameObject>();
     }
 
     // Update is called once per frame
@@ -22,10 +24,11 @@ public class EnemyCheckPoint : MonoBehaviour
 
     public void AddNewPoint()
     { 
-        GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        obj.transform.parent = transform;
-        obj.transform.localPosition = Vector3.zero;
-        PointList.Add(obj);
+        GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        obj.transform.parent = gameStage.transform;
+        obj.transform.localPosition = transform.localPosition;
+        pointList.Add(obj);
+        pointList[pointList.Count - 1].name = "MovePoint_"+transform.name + "_"+(pointList.Count - 1);
     }
 
     //public override void OnInspectorGUI()
