@@ -76,14 +76,6 @@ public class StageManager : SingletonMonoBehaviour<StageManager>
         }
 
     }
-
-    public string CreateNewData()
-    {
-        var json = JsonUtility.ToJson(_data);
-        File.WriteAllText(Path.Combine(Application.persistentDataPath, "SaveData.txt"), json);
-        print($"新しいセーブデータを作成します{json}");
-        return json;
-    }
     #endregion
 
     #region private method

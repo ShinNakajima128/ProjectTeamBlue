@@ -9,7 +9,11 @@ public class Stage
     #region property
     public string StageName => _stageName;
     public GameStates StageType => _stageType;
-    public int SubMissionNum => _subMissionNum;
+    public bool IsClearedStage => _isClearedStage;
+
+    /// <summary>"サブミッションの数"</summary>
+    public int SubMissionNum => _isClearedSubMissions.Length;
+    public bool[] IsClearedSubMissions => _isClearedSubMissions;
     #endregion
 
     #region serialize
@@ -20,10 +24,6 @@ public class Stage
     [Tooltip("ステージの種類")]
     [SerializeField]
     private GameStates _stageType;
-
-    [Tooltip("サブミッションの数")]
-    [SerializeField]
-    private int _subMissionNum = 0;
 
     [Tooltip("ステージをクリアしているかの判定")]
     [SerializeField]
@@ -65,6 +65,19 @@ public class Stage
             }
         }
         
+    }
+
+    /// <summary>
+    /// クリア状況をリセットする
+    /// </summary>
+    public void Reset()
+    {
+        _isClearedStage = false;
+
+        for (int i = 0; i < _isClearedSubMissions.Length; i++)
+        {
+            _isClearedSubMissions[i] = false;
+        }
     }
     #endregion
 

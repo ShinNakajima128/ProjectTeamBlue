@@ -9,10 +9,10 @@ using Cinemachine;
 /// <summary>
 /// タイトルの機能を管理するManagerクラス
 /// </summary>
-public class TitleManager : MonoBehaviour
+public class LobbyManager : MonoBehaviour
 {
     #region property
-    public static TitleManager Instance { get; private set; }
+    public static LobbyManager Instance { get; private set; }
     #endregion
 
     #region serialize
@@ -27,13 +27,11 @@ public class TitleManager : MonoBehaviour
     [Tooltip("Panel切り替え時に次のPanelが表示するまでの時間")]
     [SerializeField]
     private float _activePanelWaitTime = 2.0f;
-
-    //[Tooltip("ボタンを押して読み込むSceneの名前(仮機能)")]
-    //[SerializeField]
-    //private string _loadSceneName = "";
     #endregion
 
     #region private
+    /// <summary>"Panelの切り替え中かどうか"</summary>
+    private bool _isSwitchingPaneled = false;
     #endregion
 
     #region Constant
@@ -57,7 +55,7 @@ public class TitleManager : MonoBehaviour
             {
                 if (Input.GetKeyDown(KeyCode.Escape))
                 {
-                    if (GameManager.Instance.CurrentGameStates != GameStates.Lobby_StageSelect)
+                    if (GameManager.Instance.CurrentGameStates != GameStates.Lobby_StageSelect || _isSwitchingPaneled)
                     {
                         return;
                     }
@@ -66,6 +64,7 @@ public class TitleManager : MonoBehaviour
                     CameraManager.Instance.ChangeActiveCamera(CameraType.Lobby_Start);
                     StartCoroutine(ActivePanelCoroutine(_startPanel, _activePanelWaitTime, true));
                     _stageSelectPanel.SetActive(false);
+                    _isSwitchingPaneled = true;
                 }
             });
     }
@@ -78,6 +77,7 @@ public class TitleManager : MonoBehaviour
         CameraManager.Instance.ChangeActiveCamera(CameraType.Lobby_StageSelect);
         _startPanel.SetActive(false);
         StartCoroutine(ActivePanelCoroutine(_stageSelectPanel, _activePanelWaitTime, true));
+        _isSwitchingPaneled = true;
     }
     /// <summary>
     /// ステージ選択画面を読み込む
@@ -97,6 +97,7 @@ public class TitleManager : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
 
         panel.SetActive(isActived);
+        _isSwitchingPaneled = false;
     }
     #endregion
 }
