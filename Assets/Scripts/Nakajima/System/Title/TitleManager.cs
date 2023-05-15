@@ -16,13 +16,21 @@ public class TitleManager : MonoBehaviour
     #endregion
 
     #region serialize
-    [Tooltip("ゲーム開始時に表示されているボタンObject")]
+    [Tooltip("ゲーム開始時に表示されているPanel")]
     [SerializeField]
-    GameObject _startButton = default;
+    private GameObject _startPanel = default;
 
-    [Tooltip("ボタンを押して読み込むSceneの名前(仮機能)")]
+    [Tooltip("ステージ選択画面のPanel")]
     [SerializeField]
-    private string _loadSceneName = "";
+    private GameObject _stageSelectPanel = default;
+
+    [Tooltip("Panel切り替え時に次のPanelが表示するまでの時間")]
+    [SerializeField]
+    private float _activePanelWaitTime = 2.0f;
+
+    //[Tooltip("ボタンを押して読み込むSceneの名前(仮機能)")]
+    //[SerializeField]
+    //private string _loadSceneName = "";
     #endregion
 
     #region private
@@ -42,6 +50,8 @@ public class TitleManager : MonoBehaviour
 
     private void Start()
     {
+        _stageSelectPanel.SetActive(false);
+
         this.UpdateAsObservable()
             .Subscribe(_ =>
             {
@@ -54,7 +64,8 @@ public class TitleManager : MonoBehaviour
 
                     GameManager.Instance.SetCurrentGameStates(GameStates.Lobby_Start);
                     CameraManager.Instance.ChangeActiveCamera(CameraType.Lobby_Start);
-                    _startButton.SetActive(true);
+                    StartCoroutine(ActivePanelCoroutine(_startPanel, _activePanelWaitTime, true));
+                    _stageSelectPanel.SetActive(false);
                 }
             });
     }
@@ -65,17 +76,27 @@ public class TitleManager : MonoBehaviour
     {
         GameManager.Instance.SetCurrentGameStates(GameStates.Lobby_StageSelect);
         CameraManager.Instance.ChangeActiveCamera(CameraType.Lobby_StageSelect);
-        _startButton.SetActive(false);
+        _startPanel.SetActive(false);
+        StartCoroutine(ActivePanelCoroutine(_stageSelectPanel, _activePanelWaitTime, true));
     }
     /// <summary>
     /// ステージ選択画面を読み込む
     /// </summary>
-    public void LoadStageSelectScene()
+    public void LoadStageSelectScene(string stageName)
     {
-        //SceneManager.LoadScene(_loadSceneName);
+        SceneManager.LoadScene(stageName);
     }
     #endregion
 
     #region private method
+    #endregion
+
+    #region coroutine method
+    private IEnumerator ActivePanelCoroutine(GameObject panel, float waitTime, bool isActived)
+    {
+        yield return new WaitForSeconds(waitTime);
+
+        panel.SetActive(isActived);
+    }
     #endregion
 }
