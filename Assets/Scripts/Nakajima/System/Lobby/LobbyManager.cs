@@ -60,23 +60,28 @@ public class LobbyManager : MonoBehaviour
                         return;
                     }
 
-                    GameManager.Instance.SetCurrentGameStates(GameStates.Lobby_Start);
-                    CameraManager.Instance.ChangeActiveCamera(CameraType.Lobby_Start);
-                    StartCoroutine(ActivePanelCoroutine(_startPanel, _activePanelWaitTime, true));
-                    _stageSelectPanel.SetActive(false);
-                    _isSwitchingPaneled = true;
+                    ReturnLobbyStart();
                 }
             });
     }
     #endregion
 
     #region public method
-    public void PressStartButtonAction()
+    public void StartStageSelect()
     {
         GameManager.Instance.SetCurrentGameStates(GameStates.Lobby_StageSelect);
         CameraManager.Instance.ChangeActiveCamera(CameraType.Lobby_StageSelect);
         _startPanel.SetActive(false);
         StartCoroutine(ActivePanelCoroutine(_stageSelectPanel, _activePanelWaitTime, true));
+        _isSwitchingPaneled = true;
+    }
+
+    public void ReturnLobbyStart()
+    {
+        GameManager.Instance.SetCurrentGameStates(GameStates.Lobby_Start);
+        CameraManager.Instance.ChangeActiveCamera(CameraType.Lobby_Start);
+        StartCoroutine(ActivePanelCoroutine(_startPanel, _activePanelWaitTime, true));
+        _stageSelectPanel.SetActive(false);
         _isSwitchingPaneled = true;
     }
     /// <summary>

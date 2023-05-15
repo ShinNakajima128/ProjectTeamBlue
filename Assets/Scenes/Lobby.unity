@@ -703,8 +703,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 789, y: -459}
-  m_SizeDelta: {x: 375.46667, y: 187.73334}
+  m_AnchoredPosition: {x: 821, y: -470}
+  m_SizeDelta: {x: 288.82053, y: 144.41023}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &386383128
 MonoBehaviour:
@@ -751,7 +751,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 721012671}
-        m_MethodName: PressStartButtonAction
+        m_MethodName: ReturnLobbyStart
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2862,7 +2862,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 721012671}
-        m_MethodName: PressStartButtonAction
+        m_MethodName: StartStageSelect
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
