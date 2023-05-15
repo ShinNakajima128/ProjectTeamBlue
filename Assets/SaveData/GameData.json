@@ -1,1 +1,31 @@
-{"_stages":[{"_stageName":"ステージ1","_stageType":2,"_subMissionNum":1,"_isClearedStage":false,"_isClearedSubMissions":[false]},{"_stageName":"ステージ2","_stageType":3,"_subMissionNum":2,"_isClearedStage":false,"_isClearedSubMissions":[false,false]},{"_stageName":"ステージ3","_stageType":4,"_subMissionNum":3,"_isClearedStage":false,"_isClearedSubMissions":[false,false,false]}]}
+{
+    "_stages": [
+        {
+            "_stageName": "Stage1",
+            "_stageType": 2,
+            "_isClearedStage": false,
+            "_isClearedSubMissions": [
+                false
+            ]
+        },
+        {
+            "_stageName": "Stage2",
+            "_stageType": 3,
+            "_isClearedStage": false,
+            "_isClearedSubMissions": [
+                false,
+                false
+            ]
+        },
+        {
+            "_stageName": "Stage3",
+            "_stageType": 4,
+            "_isClearedStage": false,
+            "_isClearedSubMissions": [
+                false,
+                false,
+                false
+            ]
+        }
+    ]
+}
