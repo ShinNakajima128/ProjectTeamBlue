@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using UnityEngine;
 /// <summary>
 /// 各ステージの機能、データを管理するManagerクラス
 /// </summary>
-public class StageManager : SingletonMonoBehaviour<StageManager>
+public class DataManager : SingletonMonoBehaviour<DataManager>
 {
     #region property
     /// <summary>ステージのデータ</summary>

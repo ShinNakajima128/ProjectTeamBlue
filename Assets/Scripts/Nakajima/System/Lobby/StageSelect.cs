@@ -40,7 +40,7 @@ public class StageSelect : MonoBehaviour
     #region private method
     private void Setup()
     {
-        var data = StageManager.Instance.Data;
+        var data = DataManager.Instance.Data;
 
         for (int i = 0; i < _stageinfos.Length; i++)
         {

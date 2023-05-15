@@ -363,7 +363,7 @@ GameObject:
   - component: {fileID: 95989921}
   - component: {fileID: 95989922}
   m_Layer: 0
-  m_Name: StageManager
+  m_Name: DataManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -395,7 +395,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7352e9589f9d2646b1e7ac9b229671a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _data: {fileID: 11400000, guid: 4642d9df902e56c4994af0215e71e280, type: 2}
+  _data:
+    _stages: []
   _debugMode: 0
 --- !u!1001 &131478928
 PrefabInstance:
