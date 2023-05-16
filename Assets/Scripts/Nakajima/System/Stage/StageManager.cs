@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UniRx;
 
 /// <summary>各ステージのオブジェクトの配置、処理等を行うManagerクラス</summary>
@@ -11,9 +12,12 @@ public class StageManager : MonoBehaviour
     #region property
     public static StageManager Instance { get; private set; }
     public Stage CurrentStage => _currentStage;
+    public bool IsCompletedMainMission { get; set; } = false;
+    public int CompleteSubMissionNum { get; set; } = 0;
     public Subject<bool> IsInGameSubject => _isInGameSubject;
     public Subject<Unit> GameStartSubject => _gameStartSubject;
     public Subject<Unit> GamePauseSubject => _gamePauseSubject;
+    public Subject<Unit> GameRestartSubject => _gameRestartSubject;
     public Subject<Unit> GameEndSubject => _gameEndSubject;
     #endregion
 
@@ -32,8 +36,8 @@ public class StageManager : MonoBehaviour
     private Subject<bool> _isInGameSubject = new Subject<bool>();
     private Subject<Unit> _gameStartSubject = new Subject<Unit>();
     private Subject<Unit> _gamePauseSubject = new Subject<Unit>();
+    private Subject<Unit> _gameRestartSubject = new Subject<Unit>();
     private Subject<Unit> _gameEndSubject = new Subject<Unit>();
-    private int _completeSubMissionNum = 0;
     #endregion
 
     #region Constant
@@ -44,6 +48,10 @@ public class StageManager : MonoBehaviour
     #endregion
 
     #region unity methods
+    private void Awake()
+    {
+        Instance = this;
+    }
     private void Start()
     {
         SetupStage();
@@ -51,7 +59,35 @@ public class StageManager : MonoBehaviour
     }
     #endregion
 
+    /// <summary>
+    /// ゲームを開始する
+    /// </summary>
     #region public method
+    public void OnGameStart()
+    {
+        _inGame = true;
+        _isInGameSubject.OnNext(true);
+        _gameStartSubject.OnNext(Unit.Default);
+    }
+
+    /// <summary>
+    /// ゲームを中断する
+    /// </summary>
+    public void OnGamePause()
+    {
+        _gamePauseSubject.OnNext(Unit.Default);
+    }
+
+    /// <summary>
+    /// ゲームを終了する
+    /// </summary>
+    public void OnGameEnd()
+    {
+        _inGame = false;
+        _isInGameSubject.OnNext(false);
+        _gameEndSubject.OnNext(Unit.Default);
+        StartCoroutine(GameEndCoroutine());
+    }
     #endregion
 
     #region private method
@@ -81,8 +117,16 @@ public class StageManager : MonoBehaviour
 
         yield return new WaitForSeconds(COUNT_TIME);
 
-        PlayerController.Instance.IsOperable.OnNext(true);
-        _inGame = true;
+        OnGameStart();
+    }
+
+    private IEnumerator GameEndCoroutine()
+    {
+        Debug.Log("ゲーム終了");
+        yield return new WaitForSeconds(2.0f);
+
+        //Scene遷移機能をどのように作るか不明なため、仮のロード処理を行っている
+        SceneManager.LoadScene("Lobby");
     }
     #endregion
 }

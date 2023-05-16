@@ -48,6 +48,7 @@ public class ActionableObject : MonoBehaviour, IActionable
         if (other.CompareTag("Player"))
         {
             _playerAction.ResetAction();
+            Debug.Log("登録されたアクションをリセット");
         }
     }
     #endregion
@@ -70,5 +71,6 @@ public class ActionableObject : MonoBehaviour, IActionable
 public enum TargetType
 {
     Main,
-    Sub
+    Sub,
+    EscapePoint
 }

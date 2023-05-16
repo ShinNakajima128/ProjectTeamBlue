@@ -94,10 +94,27 @@ public class PlayerAction : MonoBehaviour
             {
                 case TargetType.Main:
                     currentActionTime = _mainTargetActionTime;
+                    
+                    //仮でこの場所に処理を記入しているが別の場所に今後書き直す予定
+                    StageManager.Instance.IsCompletedMainMission = true;
                     break;
                 case TargetType.Sub:
                     currentActionTime = _subTargetActionTime;
+
+                    //仮でこの場所に処理を記入しているが別の場所に今後書き直す予定
+                    StageManager.Instance.CompleteSubMissionNum++;
                     break;
+                case TargetType.EscapePoint:
+                    
+                    if (!StageManager.Instance.IsCompletedMainMission)
+                    {
+                        Debug.Log("メインミッションを達成していません");
+                        _isInAction = false;
+                        return;
+                    }
+                 
+                    StageManager.Instance.OnGameEnd(); 
+                    return;
             }
 
             PlayerController.Instance.MoveInterval(currentActionTime);

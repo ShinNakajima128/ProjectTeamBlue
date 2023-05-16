@@ -38,6 +38,11 @@ public class PlayerController : MonoBehaviour, IDamagable
         Instance = this;
         _currentHP = _maxHP;
     }
+
+    private void Start()
+    {
+        StageManager.Instance.IsInGameSubject.Subscribe(ChangeIsOperatable);
+    }
     #endregion
 
     #region public method
@@ -67,6 +72,14 @@ public class PlayerController : MonoBehaviour, IDamagable
     #endregion
 
     #region private method
+    /// <summary>
+    /// プレイヤー操作のON/OFFを切り替える
+    /// </summary>
+    /// <param name="isOperatable">ON/OFF</param>
+    private void ChangeIsOperatable(bool isOperatable)
+    {
+        _isOperable.OnNext(isOperatable);
+    }
     #endregion
 
     #region coroutine method
