@@ -27,9 +27,6 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     #endregion
 
     #region Event
-    public event Action OnGameStart;
-    public event Action OnGamePause;
-    public event Action OnGameEnd;
     #endregion
 
     #region unity methods

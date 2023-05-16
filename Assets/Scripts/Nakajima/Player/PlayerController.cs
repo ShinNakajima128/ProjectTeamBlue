@@ -38,15 +38,6 @@ public class PlayerController : MonoBehaviour, IDamagable
         Instance = this;
         _currentHP = _maxHP;
     }
-
-    private IEnumerator Start()
-    {
-        yield return new WaitForSeconds(1.0f);
-
-        Debug.Log("行動可能");
-
-        _isOperable.OnNext(true);
-    }
     #endregion
 
     #region public method

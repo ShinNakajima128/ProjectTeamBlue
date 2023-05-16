@@ -10,8 +10,11 @@ public class StageManager : MonoBehaviour
 {
     #region property
     public static StageManager Instance { get; private set; }
-    public Subject<bool> IsInGameSubject => _isInGameSubject;
     public Stage CurrentStage => _currentStage;
+    public Subject<bool> IsInGameSubject => _isInGameSubject;
+    public Subject<Unit> GameStartSubject => _gameStartSubject;
+    public Subject<Unit> GamePauseSubject => _gamePauseSubject;
+    public Subject<Unit> GameEndSubject => _gameEndSubject;
     #endregion
 
     #region serialize
@@ -27,6 +30,10 @@ public class StageManager : MonoBehaviour
     private Stage _currentStage;
     private bool _inGame = false;
     private Subject<bool> _isInGameSubject = new Subject<bool>();
+    private Subject<Unit> _gameStartSubject = new Subject<Unit>();
+    private Subject<Unit> _gamePauseSubject = new Subject<Unit>();
+    private Subject<Unit> _gameEndSubject = new Subject<Unit>();
+    private int _completeSubMissionNum = 0;
     #endregion
 
     #region Constant
@@ -71,6 +78,10 @@ public class StageManager : MonoBehaviour
             yield return new WaitForSeconds(COUNT_TIME);
         }
         Debug.Log("GameStart");
+
+        yield return new WaitForSeconds(COUNT_TIME);
+
+        PlayerController.Instance.IsOperable.OnNext(true);
         _inGame = true;
     }
     #endregion
