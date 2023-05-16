@@ -85,11 +85,15 @@ public class LobbyManager : MonoBehaviour
         _isSwitchingPaneled = true;
     }
     /// <summary>
-    /// ステージ選択画面を読み込む
+    /// ステージSceneを読み込む
     /// </summary>
-    public void LoadStageSelectScene(string stageName)
+    public void LoadStageScene(string stageName)
     {
         SceneManager.LoadScene(stageName);
+
+        //ステージ選択画面で押されたボタンのステージをGameManagerの関数の引数に入れる
+        //※現在は仮の処理なため、システムができ次第修正予定
+        GameManager.Instance.SetCurrentGameStates(GameStates.Stage1);
     }
     #endregion
 
