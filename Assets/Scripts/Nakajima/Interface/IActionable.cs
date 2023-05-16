@@ -3,5 +3,6 @@
 /// </summary>
 public interface IActionable 
 {
+    TargetType Type { get; }
     void OnAction();
 }

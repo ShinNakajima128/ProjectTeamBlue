@@ -12,9 +12,13 @@ public class PlayerAction : MonoBehaviour
     #endregion
 
     #region serialize
-    [Tooltip("アクションが完了するまでの時間")]
+    [Tooltip("メインターゲットの破壊工作が完了するまでの時間")]
     [SerializeField]
-    private float _actionTime = 3.0f;
+    private float _mainTargetActionTime = 4.0f;
+
+    [Tooltip("サブミッションが完了するまでの時間")]
+    [SerializeField]
+    private float _subTargetActionTime = 2.0f;
     #endregion
 
     #region private
@@ -78,9 +82,21 @@ public class PlayerAction : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F))
         {
             _isInAction = true;
-            PlayerController.Instance.MoveInterval(_actionTime);
-            StartCoroutine(OnActionCoroutine(_actionTime));
-            ActionGauge.StartAction(_actionTime);
+            float currentActionTime = 0;
+
+            switch (_currentActionable.Type)
+            {
+                case TargetType.Main:
+                    currentActionTime = _mainTargetActionTime;
+                    break;
+                case TargetType.Sub:
+                    currentActionTime = _subTargetActionTime;
+                    break;
+            }
+
+            PlayerController.Instance.MoveInterval(currentActionTime);
+            StartCoroutine(OnActionCoroutine(currentActionTime));
+            ActionGauge.StartAction(currentActionTime);
         }
     }
     #endregion

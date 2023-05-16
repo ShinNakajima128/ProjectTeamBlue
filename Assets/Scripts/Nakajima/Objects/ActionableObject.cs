@@ -8,13 +8,17 @@ using UnityEngine;
 public class ActionableObject : MonoBehaviour, IActionable
 {
     #region property
+    public TargetType Type => _targetType;
     #endregion
 
     #region serialize
+    [Tooltip("ターゲットの種類")]
+    [SerializeField]
+    private TargetType _targetType = default;
     #endregion
 
     #region private
-    PlayerAction _playerAction; 
+    private PlayerAction _playerAction; 
     #endregion
 
     #region Constant
@@ -55,4 +59,13 @@ public class ActionableObject : MonoBehaviour, IActionable
 
     #region private method
     #endregion
+}
+
+/// <summary>
+/// ターゲットの種類
+/// </summary>
+public enum TargetType
+{
+    Main,
+    Sub
 }
