@@ -4,5 +4,6 @@
 public interface IActionable 
 {
     TargetType Type { get; }
+    bool IsCompleted { get; }
     void OnAction();
 }

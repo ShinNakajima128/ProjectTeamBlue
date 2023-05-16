@@ -9,6 +9,8 @@ public class ActionableObject : MonoBehaviour, IActionable
 {
     #region property
     public TargetType Type => _targetType;
+    /// <summary>既に完了しているかどうか</summary>
+    public bool IsCompleted { get; private set; } = false;
     #endregion
 
     #region serialize
@@ -18,7 +20,7 @@ public class ActionableObject : MonoBehaviour, IActionable
     #endregion
 
     #region private
-    private PlayerAction _playerAction; 
+    private PlayerAction _playerAction;
     #endregion
 
     #region Constant
@@ -54,6 +56,7 @@ public class ActionableObject : MonoBehaviour, IActionable
     public void OnAction()
     {
         print("アクション実行");
+        IsCompleted = true;
     }
     #endregion
 

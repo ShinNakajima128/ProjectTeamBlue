@@ -81,6 +81,12 @@ public class PlayerAction : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F))
         {
+            //既にミッションを完了している場合は処理を行わない
+            if (_currentActionable.IsCompleted)
+            {
+                return;
+            }
+
             _isInAction = true;
             float currentActionTime = 0;
 
@@ -108,6 +114,7 @@ public class PlayerAction : MonoBehaviour
 
         _currentActionable.OnAction();
         _isInAction = false;
+
     }
     #endregion
 }
