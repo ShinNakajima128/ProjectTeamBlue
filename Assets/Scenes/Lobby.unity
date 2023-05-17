@@ -275,7 +275,7 @@ GameObject:
   - component: {fileID: 95989921}
   - component: {fileID: 95989922}
   m_Layer: 0
-  m_Name: StageManager
+  m_Name: DataManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

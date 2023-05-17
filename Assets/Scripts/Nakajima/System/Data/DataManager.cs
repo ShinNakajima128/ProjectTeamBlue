@@ -73,7 +73,6 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
         {
             LocalData.Save("SaveData/GameData.json", _data);
         }
-
     }
     #endregion
 
