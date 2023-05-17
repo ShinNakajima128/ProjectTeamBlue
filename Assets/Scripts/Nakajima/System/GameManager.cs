@@ -15,23 +15,30 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     #endregion
 
     #region serialize
+    [Tooltip("現在プレイしているステージ")]
+    [SerializeField]
+    private GameStates _currentGameState = GameStates.Lobby_Start;
     #endregion
 
     #region private
-    /// <summary>現在プレイしているステージ</summary>
-    private GameStates _currentGameState;
     #endregion
 
     #region Constant
     #endregion
 
     #region Event
-    public event Action OnGameStart;
-    public event Action OnGamePause;
-    public event Action OnGameEnd;
     #endregion
 
     #region unity methods
+    private void Awake()
+    {
+        if (Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        DontDestroyOnLoad(this);
+    }
     #endregion
 
     #region public method
@@ -52,8 +59,8 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 /// </summary>
 public enum GameStates
 {
-    Title,
-    StageSelectView,
+    Lobby_Start,
+    Lobby_StageSelect,
     Stage1,
     Stage2,
     Stage3

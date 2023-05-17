@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Lobby.unity
+    guid: 47aef71c4d7a2ac40995f3fe5a0bb4e0
+  - enabled: 1
+    path: Assets/Scenes/Test_Nakajima.unity
+    guid: 288464daab501f749b51bea1bc94f95d
   m_configObjects: {}

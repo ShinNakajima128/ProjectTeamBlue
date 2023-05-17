@@ -7,7 +7,7 @@ using UnityEngine;
 /// <summary>
 /// 各ステージの機能、データを管理するManagerクラス
 /// </summary>
-public class StageManager : SingletonMonoBehaviour<StageManager>
+public class DataManager : SingletonMonoBehaviour<DataManager>
 {
     #region property
     /// <summary>ステージのデータ</summary>
@@ -21,6 +21,11 @@ public class StageManager : SingletonMonoBehaviour<StageManager>
     [Tooltip("各ステージのデータ")]
     [SerializeField]
     StageData _data = default;
+
+    [Header("Debug")]
+    [Tooltip("デバッグ機能のON/OFF切り替え")]
+    [SerializeField]
+    private bool _debugMode = false;
     #endregion
 
     #region private
@@ -33,23 +38,42 @@ public class StageManager : SingletonMonoBehaviour<StageManager>
     #endregion
 
     #region unity methods
-    private void Awake()
+    private  void Awake()
     {
-
+        if (Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        DontDestroyOnLoad(this);
     }
 
     private void Start()
     {
-
-    }
-
-    private void Update()
-    {
-
+        if (!_debugMode)
+        {
+            LoadData();
+        }
     }
     #endregion
 
     #region public method
+    public void LoadData()
+    {
+        StageData data = default;
+
+
+        data = LocalData.Load<StageData>("SaveData/GameData.json");
+
+        if (data != null)
+        {
+            _data = data;
+        }
+        else
+        {
+            LocalData.Save("SaveData/GameData.json", _data);
+        }
+    }
     #endregion
 
     #region private method

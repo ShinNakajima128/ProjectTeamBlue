@@ -12,9 +12,13 @@ public class PlayerAction : MonoBehaviour
     #endregion
 
     #region serialize
-    [Tooltip("アクションが完了するまでの時間")]
+    [Tooltip("メインターゲットの破壊工作が完了するまでの時間")]
     [SerializeField]
-    private float _actionTime = 3.0f;
+    private float _mainTargetActionTime = 4.0f;
+
+    [Tooltip("サブミッションが完了するまでの時間")]
+    [SerializeField]
+    private float _subTargetActionTime = 2.0f;
     #endregion
 
     #region private
@@ -77,9 +81,45 @@ public class PlayerAction : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F))
         {
+            //既にミッションを完了している場合は処理を行わない
+            if (_currentActionable.IsCompleted)
+            {
+                return;
+            }
+
             _isInAction = true;
-            PlayerController.Instance.MoveInterval(3.0f);
-            StartCoroutine(OnActionCoroutine(3.0f));
+            float currentActionTime = 0;
+
+            switch (_currentActionable.Type)
+            {
+                case TargetType.Main:
+                    currentActionTime = _mainTargetActionTime;
+                    
+                    //仮でこの場所に処理を記入しているが別の場所に今後書き直す予定
+                    StageManager.Instance.IsCompletedMainMission = true;
+                    break;
+                case TargetType.Sub:
+                    currentActionTime = _subTargetActionTime;
+
+                    //仮でこの場所に処理を記入しているが別の場所に今後書き直す予定
+                    StageManager.Instance.CompleteSubMissionNum++;
+                    break;
+                case TargetType.EscapePoint:
+                    
+                    if (!StageManager.Instance.IsCompletedMainMission)
+                    {
+                        Debug.Log("メインミッションを達成していません");
+                        _isInAction = false;
+                        return;
+                    }
+                 
+                    StageManager.Instance.OnGameEnd(); 
+                    return;
+            }
+
+            PlayerController.Instance.MoveInterval(currentActionTime);
+            StartCoroutine(OnActionCoroutine(currentActionTime));
+            ActionGauge.StartAction(currentActionTime);
         }
     }
     #endregion
@@ -91,6 +131,7 @@ public class PlayerAction : MonoBehaviour
 
         _currentActionable.OnAction();
         _isInAction = false;
+
     }
     #endregion
 }
