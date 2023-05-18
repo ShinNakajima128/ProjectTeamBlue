@@ -41,7 +41,9 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private void Start()
     {
-        StageManager.Instance.IsInGameSubject.Subscribe(ChangeIsOperatable);
+        StageManager.Instance.IsInGameSubject
+                    .Subscribe(ChangeIsOperatable)
+                    .AddTo(this);
     }
     #endregion
 
@@ -99,6 +101,9 @@ public class PlayerController : MonoBehaviour, IDamagable
     #endregion
 }
 
+/// <summary>
+/// プレイヤーの状態
+/// </summary>
 public enum PlayerState
 {
     Idle,

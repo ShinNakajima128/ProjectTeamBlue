@@ -62,7 +62,8 @@ public class LobbyManager : MonoBehaviour
 
                     ReturnLobbyStart();
                 }
-            });
+            })
+            .AddTo(this);
     }
     #endregion
 

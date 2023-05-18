@@ -54,7 +54,8 @@ public class PlayerMove : MonoBehaviour
             .Subscribe(_ =>
             {
                 OnRotate();
-            });
+            })
+            .AddTo(this);
 
         this.FixedUpdateAsObservable()
             .Subscribe(_ =>
