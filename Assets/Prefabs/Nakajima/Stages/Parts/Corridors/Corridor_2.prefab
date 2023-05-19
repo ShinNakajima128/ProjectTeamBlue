@@ -173,6 +173,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2428852841237939118}
+  - component: {fileID: -9185127235920677721}
   m_Layer: 0
   m_Name: Corridor_2
   m_TagString: Untagged
@@ -197,6 +198,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-9185127235920677721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2428852841237523884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f4f53f49b338944b9485b87e7736170, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _partsName: "\u901A\u8DEF2"
+  _partsType: 1
+  _partsTexture: {fileID: 2800000, guid: ff912f6dbcb0df8409792adbc8f85550, type: 3}
+  _corridorType: 1
 --- !u!1 &2428852841237590956
 GameObject:
   m_ObjectHideFlags: 0

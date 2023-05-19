@@ -10,7 +10,7 @@ public abstract class PartsBase : MonoBehaviour
     #region property
     public string PartsName => _partsName;
     public PartsType PartsType => _partsType;
-    public Sprite PartsImage => _partsImage;
+    public Texture2D PartsTexture => _partsTexture;
     #endregion
 
     #region serialize
@@ -24,7 +24,7 @@ public abstract class PartsBase : MonoBehaviour
 
     [Tooltip("パーツの画像")]
     [SerializeField]
-    protected Sprite _partsImage = default;
+    protected Texture2D _partsTexture = default;
     #endregion
 
     #region private
@@ -37,15 +37,6 @@ public abstract class PartsBase : MonoBehaviour
     #endregion
 
     #region unity methods
-    protected void Awake()
-    {
-
-    }
-
-    protected void Start()
-    {
-
-    }
     #endregion
 
     #region public method
