@@ -2219,7 +2219,7 @@ MonoBehaviour:
   _partsName: "\u5341\u5B57"
   _partsType: 1
   _partsTexture: {fileID: 2800000, guid: d8862d4162bef954792753edb5ced006, type: 3}
-  _corridorType: 0
+  _corridorType: 7
 --- !u!1 &8172927206152724660
 GameObject:
   m_ObjectHideFlags: 0
