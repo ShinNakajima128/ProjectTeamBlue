@@ -12,6 +12,7 @@ public class StageCreater : EditorWindow
     public float GridSize => _gridSize;
     public string StageName => _stageName;
     public string SelectedPrefabPath => _selectedPrefabPath;
+    public bool IsEraserMode => _isEraserMode;
     #endregion
 
     #region serialize
@@ -34,6 +35,8 @@ public class StageCreater : EditorWindow
     private StageCreaterSubWindow _subWindow;
     /// <summary>選択しているPrefabのパス</summary>
     private string _selectedPrefabPath = "";
+    /// <summary>消しゴム状態かどうか</summary>
+    private bool _isEraserMode = false;
     //===Objects===
     private List<GameObject> _corridorPrefabList = new List<GameObject>();
     private List<Texture> _corridorTextureList = new List<Texture>();
@@ -72,47 +75,45 @@ public class StageCreater : EditorWindow
         _gridSize = EditorGUILayout.FloatField(_gridSize);
         GUILayout.EndHorizontal();
 
-        //作成したステージPrefabの保存先のフォルダをセットする枠の作成
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Add to Directry", GUILayout.Width(150));
-        _addToDirectry = EditorGUILayout.ObjectField(_addToDirectry, typeof(Object), true);
-        GUILayout.EndHorizontal();
-
         //ステージ名を入力する項目の作成
         GUILayout.BeginHorizontal();
         GUILayout.Label("StageName", GUILayout.Width(150));
         _stageName = EditorGUILayout.TextField(_stageName);
         GUILayout.EndHorizontal();
 
-        //テスト用のボタン
-        if (GUILayout.Button("テストボタン"))
-        {
-            //ステージのパーツを入れる親オブジェクトを作成
-            //var parentObj = new GameObject(_stageName);[
+        ////テスト用のボタン
+        //if (GUILayout.Button("テストボタン"))
+        //{
+        //    //ステージのパーツを入れる親オブジェクトを作成
+        //    //var parentObj = new GameObject(_stageName);[
 
-            if (_corridorDirectry != null)
-            {
-                string folderPath = AssetDatabase.GetAssetPath(_corridorDirectry);
-                string[] fileaddlesses = Directory.GetFiles(folderPath);
+        //    if (_corridorDirectry != null)
+        //    {
+        //        string folderPath = AssetDatabase.GetAssetPath(_corridorDirectry);
+        //        string[] fileaddlesses = Directory.GetFiles(folderPath);
 
-                var excludedList = fileaddlesses.Where(x => !x.Contains(".meta"));
+        //        var excludedList = fileaddlesses.Where(x => !x.Contains(".meta"));
 
-                _corridorPrefabList.Clear();
-                var parentObj = new GameObject(_stageName);
+        //        _corridorPrefabList.Clear();
+        //        var parentObj = new GameObject(_stageName);
 
-                foreach (var addless in excludedList)
-                {
-                    var corridorPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(addless);
-                    _corridorPrefabList.Add(corridorPrefab);
-                    Instantiate(corridorPrefab, parentObj.transform);
-                }
-            }
-        }
+        //        foreach (var addless in excludedList)
+        //        {
+        //            var corridorPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(addless);
+        //            _corridorPrefabList.Add(corridorPrefab);
+        //            Instantiate(corridorPrefab, parentObj.transform);
+        //        }
+        //    }
+        //}
+        //ツールバー描画
+        DrawToolBar();
 
+        //通路パーツ一覧描画
         DrawImageCorridorParts();
 
         GUILayout.FlexibleSpace();
 
+        //ステージ編集画面表示ボタン描画
         DrawStageWindowButton();
     }
     #endregion
@@ -127,6 +128,30 @@ public class StageCreater : EditorWindow
         GetWindow(typeof(StageCreater));
     }
 
+    private void DrawToolBar()
+    {
+        var e = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/AssetStoreTools/Temps/Editor/Eraser.png");
+
+        if (e != null)
+        {
+            EditorGUILayout.LabelField("ツール一覧");
+
+            float x = 0f;
+            float y = 0f;
+            float width = 50.0f;
+            float height = 50.0f;
+
+            EditorGUILayout.BeginVertical("Box");
+
+            if (GUILayout.Button(e, GUILayout.MaxWidth(width), GUILayout.MaxHeight(height)))
+            {
+                _isEraserMode = true;
+                _selectedPrefabPath = "";
+            }
+
+            EditorGUILayout.EndVertical();
+        }
+    }
 
     private void DrawImageCorridorParts()
     {
@@ -166,12 +191,14 @@ public class StageCreater : EditorWindow
                 GUILayout.FlexibleSpace();
 
                 var corridorPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<Corridor>();
-                Texture2D texture = corridorPrefab.PartsTexture;
+                Texture2D texture = corridorPrefab.PartsTextures[0];
 
                 //ボタンの描画
                 if (GUILayout.Button(texture, GUILayout.MaxWidth(width), GUILayout.MaxHeight(height)))
                 {
+                    _isEraserMode = false; //消しゴムモードの場合は解除
                     _selectedPrefabPath = path;
+                    corridorPrefab.CurrentDirType = DirectionType.North;
                 }
                 GUILayout.FlexibleSpace();
                 x += width;
@@ -219,7 +246,7 @@ public class StageCreater : EditorWindow
                 GUILayout.FlexibleSpace();
 
                 var roomPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<Room>();
-                Texture2D texture = roomPrefab.PartsTexture;
+                Texture2D texture = roomPrefab.PartsTextures[0];
 
                 //ボタンの描画
                 if (GUILayout.Button(texture, GUILayout.MaxWidth(width), GUILayout.MaxHeight(height)))
@@ -287,56 +314,88 @@ public class StageCreaterSubWindow : EditorWindow
 
         // クリックされた位置を探して、その場所に画像データを入れる
         Event e = Event.current;
-        if (e.type == EventType.MouseDown)
+        if (e.type == EventType.MouseDown && e.type != EventType.ContextClick)
         {
-            Vector2 pos = Event.current.mousePosition;
-            int row;
-
-            for (row = 0; row < _stageSize; row++)
+            if (!_parentWindow.IsEraserMode)
             {
-                Rect r = _gridRect[0, row];
+                Vector2 pos = Event.current.mousePosition;
+                int row;
 
-                if (r.x <= pos.x && pos.x <= r.x + r.width)
+                for (row = 0; row < _stageSize; row++)
                 {
-                    break;
+                    Rect r = _gridRect[0, row];
+
+                    if (r.x <= pos.x && pos.x <= r.x + r.width)
+                    {
+                        break;
+                    }
+                }
+
+                for (int column = 0; column < _stageSize; column++)
+                {
+                    if (_gridRect[column, row].Contains(pos))
+                    {
+                        _stageCells[column, row].SetData(_stageCells, _parentWindow.SelectedPrefabPath);
+                        Repaint();
+                        break;
+                    }
                 }
             }
-
-            for (int column = 0; column < _stageSize; column++)
+            else
             {
-                if (_gridRect[column, row].Contains(pos))
+                //パーツ画像を消去する処理
+                Vector2 pos = Event.current.mousePosition;
+                int row;
+
+                for (row = 0; row < _stageSize; row++)
                 {
-                    _stageCells[column, row].SetData(_stageCells, _parentWindow.SelectedPrefabPath);
-                    Repaint();
-                    break;
+                    Rect r = _gridRect[0, row];
+
+                    if (r.x <= pos.x && pos.x <= r.x + r.width)
+                    {
+                        break;
+                    }
+                }
+
+                for (int column = 0; column < _stageSize; column++)
+                {
+                    if (_gridRect[column, row].Contains(pos))
+                    {
+                        //_stage[column, row] = "";
+                        _stageCells[column, row].ResetData(_stageCells);
+                        Repaint();
+                        break;
+                    }
                 }
             }
         }
         else if (e.type == EventType.ContextClick)
         {
-            Vector2 pos = Event.current.mousePosition;
-            int row;
 
-            for (row = 0; row < _stageSize; row++)
+
+            if (_parentWindow.SelectedPrefabPath != "")
             {
-                Rect r = _gridRect[0, row];
+                var parts = AssetDatabase.LoadAssetAtPath<GameObject>(_parentWindow.SelectedPrefabPath).GetComponent<PartsBase>();
 
-                if (r.x <= pos.x && pos.x <= r.x + r.width)
+                switch (parts.CurrentDirType)
                 {
-                    break;
+                    case DirectionType.North:
+                        parts.CurrentDirType = DirectionType.East;
+                        break;
+                    case DirectionType.East:
+                        parts.CurrentDirType = DirectionType.Sorth;
+                        break;
+                    case DirectionType.Sorth:
+                        parts.CurrentDirType = DirectionType.West;
+                        break;
+                    case DirectionType.West:
+                        parts.CurrentDirType = DirectionType.North;
+                        break;
+                    default:
+                        break;
                 }
             }
-
-            for (int column = 0; column < _stageSize; column++)
-            {
-                if (_gridRect[column, row].Contains(pos))
-                {
-                    //_stage[column, row] = "";
-                    _stageCells[column, row].ResetData(_stageCells);
-                    Repaint();
-                    break;
-                }
-            }
+            Repaint();
         }
 
         for (int column = 0; column < _stageSize; column++)
@@ -347,7 +406,7 @@ public class StageCreaterSubWindow : EditorWindow
                 if (_stage[column, row] != null && _stage[column, row].Length > 0)
                 {
                     var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(_stage[column, row]).GetComponent<PartsBase>();
-                    Texture2D texture = prefab.PartsTexture;
+                    Texture2D texture = prefab.CurrentDirTexture;
 
                     GUI.DrawTexture(_gridRect[column, row], texture);
                 }
@@ -357,7 +416,6 @@ public class StageCreaterSubWindow : EditorWindow
                     _stageCells[column, row].IsOriginSet)
                 {
                     var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(_stageCells[column, row].PrefabPath).GetComponent<PartsBase>();
-                    Texture2D texture = prefab.PartsTexture;
 
                     switch (prefab.PartsType)
                     {
@@ -365,52 +423,7 @@ public class StageCreaterSubWindow : EditorWindow
                             break;
                         case PartsType.Corridor:
                             Corridor c = prefab.GetComponent<Corridor>();
-
-                            switch (c.CorridorType)
-                            {
-                                case CorridorType.Straight_1:
-                                    GUI.DrawTexture(_gridRect[column, row], texture);
-                                    break;
-                                case CorridorType.Straight_2:
-                                    GUI.DrawTexture(_gridRect[column, row], texture);
-                                    break;
-                                case CorridorType.Straight_3:
-                                    GUI.DrawTexture(_gridRect[column, row], texture);
-                                    break;
-                                case CorridorType.Straight_End:
-                                    GUI.DrawTexture(_gridRect[column, row], texture);
-                                    break;
-                                case CorridorType.Straight_Large:
-                                    //大きい通路のテクスチャ用にRectサイズを変更して描画する
-                                    GUI.DrawTexture(new Rect(_gridRect[column, row].position.x,
-                                                             _gridRect[column, row].position.y - _gridSize,
-                                                             _gridSize,
-                                                             _gridSize * 3), texture);
-                                    break;
-                                case CorridorType.Sharp_L:
-                                    //L字通路のテクスチャ用にRectサイズを変更して描画する
-                                    GUI.DrawTexture(new Rect(_gridRect[column, row].position.x,
-                                                             _gridRect[column, row].position.y,
-                                                             _gridSize * 2,
-                                                             _gridSize * 2), texture);
-                                    break;
-                                case CorridorType.Sharp_T:
-                                    //T字通路のテクスチャ用にRectサイズを変更して描画する
-                                    GUI.DrawTexture(new Rect(_gridRect[column, row].position.x - _gridSize,
-                                                             _gridRect[column, row].position.y,
-                                                             _gridSize * 3,
-                                                             _gridSize * 2), texture);
-                                    break;
-                                case CorridorType.Cross:
-                                    //十字通路のテクスチャ用にRectサイズを変更して描画する
-                                    GUI.DrawTexture(new Rect(_gridRect[column, row].position.x - _gridSize,
-                                                             _gridRect[column, row].position.y - _gridSize,
-                                                             _gridSize * 3,
-                                                             _gridSize * 3), texture);
-                                    break;
-                                default:
-                                    break;
-                            }
+                            DrawCorridorTexture(column, row, c.CorridorType, _stageCells[column, row].CurrentDir, c.GetTextureByDirection(_stageCells[column, row].CurrentDir));
                             break;
                         case PartsType.Room:
                             Room r = prefab.GetComponent<Room>();
@@ -419,6 +432,30 @@ public class StageCreaterSubWindow : EditorWindow
                             break;
                     }
                 }
+            }
+        }
+
+        Rect rect = new Rect(0, WINDOW_WIDTH - 50, 300, 50);
+        GUILayout.BeginArea(rect);
+        if (GUILayout.Button("ステージ生成", GUILayout.MinWidth(300), GUILayout.MinHeight(50)))
+        {
+
+        }
+        GUILayout.FlexibleSpace();
+        GUILayout.EndArea();
+
+        if (_parentWindow.SelectedPrefabPath != "")
+        {
+            if (Event.current.mousePosition.x >= 0 &&
+                Event.current.mousePosition.x <= _stageSize * _gridSize &&
+                Event.current.mousePosition.y >= 0 &&
+                Event.current.mousePosition.y <= _stageSize * _gridSize)
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(_parentWindow.SelectedPrefabPath).GetComponent<PartsBase>();
+                Texture2D texture = prefab.CurrentDirTexture;
+                Rect currentSelectParts = new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y, 30, 30);
+                GUI.DrawTexture(currentSelectParts, texture);
+                Repaint();
             }
         }
     }
@@ -520,6 +557,117 @@ public class StageCreaterSubWindow : EditorWindow
         Handles.DrawLine(new Vector2(r.position.x + r.size.x, r.position.y),
                          new Vector2(r.position.x + r.size.x, r.position.y + r.size.y));
     }
+
+    private void DrawCorridorTexture(int column, int row, CorridorType corridorType, DirectionType dirType, Texture2D texture)
+    {
+        switch (corridorType)
+        {
+            case CorridorType.Straight_1:
+                GUI.DrawTexture(_gridRect[column, row], texture);
+                break;
+            case CorridorType.Straight_2:
+                GUI.DrawTexture(_gridRect[column, row], texture);
+                break;
+            case CorridorType.Straight_3:
+                GUI.DrawTexture(_gridRect[column, row], texture);
+                break;
+            case CorridorType.Straight_End:
+                GUI.DrawTexture(_gridRect[column, row], texture);
+                break;
+            case CorridorType.Straight_Large:
+                switch (dirType)
+                {
+                    case DirectionType.North:
+                        //大きい通路のテクスチャ用にRectサイズを変更して描画する
+                        GUI.DrawTexture(new Rect(_gridRect[column, row].position.x,
+                                                 _gridRect[column, row].position.y - _gridSize,
+                                                 _gridSize,
+                                                 _gridSize * 3), texture);
+                        break;
+                    case DirectionType.East:
+                        //大きい通路のテクスチャ用にRectサイズを変更して描画する
+                        GUI.DrawTexture(new Rect(_gridRect[column, row].position.x + _gridSize,
+                                                 _gridRect[column, row].position.y,
+                                                 _gridSize * 3,
+                                                 _gridSize), texture);
+                        break;
+                    case DirectionType.Sorth:
+                        //大きい通路のテクスチャ用にRectサイズを変更して描画する
+                        GUI.DrawTexture(new Rect(_gridRect[column, row].position.x,
+                                                 _gridRect[column, row].position.y - _gridSize,
+                                                 _gridSize,
+                                                 _gridSize * 3), texture);
+                        break;
+                    case DirectionType.West:
+                        //大きい通路のテクスチャ用にRectサイズを変更して描画する
+                        GUI.DrawTexture(new Rect(_gridRect[column, row].position.x + _gridSize,
+                                                 _gridRect[column, row].position.y,
+                                                 _gridSize * 3,
+                                                 _gridSize), texture);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case CorridorType.Sharp_L:
+                //L字通路のテクスチャ用にRectサイズを変更して描画する
+                GUI.DrawTexture(new Rect(_gridRect[column, row].position.x,
+                                         _gridRect[column, row].position.y,
+                                         _gridSize * 2,
+                                         _gridSize * 2), texture);
+                break;
+            case CorridorType.Sharp_T:
+                switch (dirType)
+                {
+                    case DirectionType.North:
+                        //T字通路のテクスチャ用にRectサイズを変更して描画する
+                        GUI.DrawTexture(new Rect(_gridRect[column, row].position.x - _gridSize,
+                                                 _gridRect[column, row].position.y,
+                                                 _gridSize * 3,
+                                                 _gridSize * 2), texture);
+                        break;
+                    case DirectionType.East:
+                        //T字通路のテクスチャ用にRectサイズを変更して描画する
+                        GUI.DrawTexture(new Rect(_gridRect[column, row].position.x - _gridSize,
+                                                 _gridRect[column, row].position.y,
+                                                 _gridSize * 2,
+                                                 _gridSize * 3), texture);
+                        break;
+                    case DirectionType.Sorth:
+                        //T字通路のテクスチャ用にRectサイズを変更して描画する
+                        GUI.DrawTexture(new Rect(_gridRect[column, row].position.x - _gridSize,
+                                                 _gridRect[column, row].position.y,
+                                                 _gridSize * 3,
+                                                 _gridSize * 2), texture);
+                        break;
+                    case DirectionType.West:
+                        //T字通路のテクスチャ用にRectサイズを変更して描画する
+                        GUI.DrawTexture(new Rect(_gridRect[column, row].position.x - _gridSize,
+                                                 _gridRect[column, row].position.y,
+                                                 _gridSize * 2,
+                                                 _gridSize * 3), texture);
+                        break;
+                    default:
+                        break;
+                }
+                //T字通路のテクスチャ用にRectサイズを変更して描画する
+                GUI.DrawTexture(new Rect(_gridRect[column, row].position.x - _gridSize,
+                                         _gridRect[column, row].position.y,
+                                         _gridSize * 3,
+                                         _gridSize * 2), texture);
+                break;
+            case CorridorType.Cross:
+                //十字通路のテクスチャ用にRectサイズを変更して描画する
+                GUI.DrawTexture(new Rect(_gridRect[column, row].position.x - _gridSize,
+                                         _gridRect[column, row].position.y - _gridSize,
+                                         _gridSize * 3,
+                                         _gridSize * 3), texture);
+                break;
+            default:
+                break;
+        }
+
+    }
     #endregion
 }
 
@@ -532,6 +680,7 @@ public class StageCell
     public int Column => _column;
     public int Row => _row;
     public CellState CurrentState { get; set; } = CellState.None;
+    public DirectionType CurrentDir { get; set; } = DirectionType.North;
     public string PrefabPath { get; set; } = "";
     public bool IsOriginSet => _isOriginSet;
     #endregion
@@ -569,6 +718,7 @@ public class StageCell
                 if (CheckGrid(cells, c.CorridorType))
                 {
                     PrefabPath = path;
+                    CurrentDir = c.CurrentDirType;
                 }
                 else
                 {
@@ -590,6 +740,7 @@ public class StageCell
     {
         CurrentState = CellState.None;
         PrefabPath = "";
+        CurrentDir = DirectionType.North;
         _isOriginSet = false;
 
         switch (CurrentState)
