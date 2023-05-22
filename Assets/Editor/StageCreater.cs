@@ -111,6 +111,9 @@ public class StageCreater : EditorWindow
         //通路パーツ一覧描画
         DrawImageCorridorParts();
 
+        //部屋パーツ一覧描画
+        DrawImageRoomParts();
+
         GUILayout.FlexibleSpace();
 
         //ステージ編集画面表示ボタン描画
@@ -141,7 +144,7 @@ public class StageCreater : EditorWindow
             float width = 50.0f;
             float height = 50.0f;
 
-            EditorGUILayout.BeginVertical("Box");
+            EditorGUILayout.BeginVertical();
 
             if (GUILayout.Button(e, GUILayout.MaxWidth(width), GUILayout.MaxHeight(height)))
             {
@@ -172,7 +175,7 @@ public class StageCreater : EditorWindow
             //取得したリストからmetaファイルのアドレスを除く
             var excludedList = fileaddlesses.Where(f => !f.Contains(".meta")).ToArray();
 
-            EditorGUILayout.BeginVertical("Box");
+            EditorGUILayout.BeginVertical();
 
             foreach (var path in excludedList)
             {
@@ -188,8 +191,6 @@ public class StageCreater : EditorWindow
                     EditorGUILayout.BeginHorizontal();
                 }
 
-                GUILayout.FlexibleSpace();
-
                 var corridorPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<Corridor>();
                 Texture2D texture = corridorPrefab.PartsTextures[0];
 
@@ -198,9 +199,8 @@ public class StageCreater : EditorWindow
                 {
                     _isEraserMode = false; //消しゴムモードの場合は解除
                     _selectedPrefabPath = path;
-                    corridorPrefab.CurrentDirType = DirectionType.North;
+                    corridorPrefab.CurrentDirType = DirectionType.North; //パーツ選択時に向きをリセット
                 }
-                GUILayout.FlexibleSpace();
                 x += width;
             }
             EditorGUILayout.EndHorizontal();
@@ -227,7 +227,7 @@ public class StageCreater : EditorWindow
             //取得したリストからmetaファイルのアドレスを除く
             var excludedList = fileaddlesses.Where(f => !f.Contains(".meta")).ToArray();
 
-            EditorGUILayout.BeginVertical("Box");
+            EditorGUILayout.BeginVertical();
 
             foreach (var path in excludedList)
             {
@@ -243,17 +243,16 @@ public class StageCreater : EditorWindow
                     EditorGUILayout.BeginHorizontal();
                 }
 
-                GUILayout.FlexibleSpace();
-
                 var roomPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<Room>();
                 Texture2D texture = roomPrefab.PartsTextures[0];
 
                 //ボタンの描画
                 if (GUILayout.Button(texture, GUILayout.MaxWidth(width), GUILayout.MaxHeight(height)))
                 {
+                    _isEraserMode = false; //消しゴムモードの場合は解除
                     _selectedPrefabPath = path;
+                    roomPrefab.CurrentDirType = DirectionType.North; //パーツ選択時に向きをリセット
                 }
-                GUILayout.FlexibleSpace();
                 x += width;
             }
             EditorGUILayout.EndHorizontal();
@@ -439,7 +438,7 @@ public class StageCreaterSubWindow : EditorWindow
         GUILayout.BeginArea(rect);
         if (GUILayout.Button("ステージ生成", GUILayout.MinWidth(300), GUILayout.MinHeight(50)))
         {
-
+            CheckCurrentStageData(_stageCells);
         }
         GUILayout.FlexibleSpace();
         GUILayout.EndArea();
@@ -667,6 +666,33 @@ public class StageCreaterSubWindow : EditorWindow
                 break;
         }
 
+    }
+
+    /// <summary>
+    /// 現在のステージデータを確認する
+    /// </summary>
+    /// <param name="stageCells">確認するデータ</param>
+    private void CheckCurrentStageData(StageCell[,] stageCells)
+    {
+        string dataStr = "";
+
+        for (int column = 0; column < stageCells.GetLength(0); column++)
+        {
+            for (int row = 0; row < stageCells.GetLength(1); row++)
+            {
+                if (stageCells[column, row].CurrentState != CellState.None)
+                {
+                    dataStr += "#";
+                }
+                else
+                {
+                    dataStr += ".";
+                }
+            }
+            dataStr += "\n";
+        }
+
+        Debug.Log(dataStr);
     }
     #endregion
 }
