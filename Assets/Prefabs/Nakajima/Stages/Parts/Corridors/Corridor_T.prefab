@@ -1578,7 +1578,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _partsName: "T\u5B57"
   _partsType: 1
-  _currentDirType: 1
+  _currentDirType: 2
   _partsTextures:
   - {fileID: 2800000, guid: 7009a3ffd4e457a4f8b4f9447a412a74, type: 3}
   - {fileID: 2800000, guid: e1a13a041ba0361469f44505981001b1, type: 3}
