@@ -9,8 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4552922425985273972}
+  - component: {fileID: 2155198116984768766}
   m_Layer: 0
-  m_Name: SubMissionTargetRoom
+  m_Name: Room_SubTarget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31,6 +32,27 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &2155198116984768766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124503364898753768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a205183ab20666845897a0555dc0e0fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _partsName: "\u30B5\u30D6\u30BF\u30FC\u30B2\u30C3\u30C8\u90E8\u5C4B"
+  _partsType: 2
+  _currentDirType: 0
+  _partsTextures:
+  - {fileID: 2800000, guid: 1de630d89a16c1241ab0ff458ba2871c, type: 3}
+  - {fileID: 2800000, guid: 37a967cfe58cf7e4eada9a011156446a, type: 3}
+  - {fileID: 2800000, guid: af29933892c3d4b41b8fb96868357806, type: 3}
+  - {fileID: 2800000, guid: 74e15d9f35e744343a926ca2a3f2b55d, type: 3}
+  _roomType: 3
 --- !u!1 &9120028861618578727
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,9 +8,13 @@ using UnityEngine;
 public class Room : PartsBase
 {
     #region property
+    public RoomType RoomType => _roomType;
     #endregion
 
     #region serialize
+    [Tooltip("部屋の種類")]
+    [SerializeField]
+    private RoomType _roomType = default;
     #endregion
 
     #region private
@@ -23,20 +27,6 @@ public class Room : PartsBase
     #endregion
 
     #region unity methods
-    private void Awake()
-    {
-
-    }
-
-    private void Start()
-    {
-
-    }
-
-    private void Update()
-    {
-
-    }
     #endregion
 
     #region public method
@@ -44,4 +34,21 @@ public class Room : PartsBase
 
     #region private method
     #endregion
+}
+
+/// <summary>
+/// 部屋の種類
+/// </summary>
+public enum RoomType
+{
+    /// <summary>スタート部屋</summary>
+    Start,
+    /// <summary>十字部屋</summary>
+    Cross,
+    /// <summary>メインターゲット部屋</summary>
+    MainTarget,
+    /// <summary>サブターゲット部屋</summary>
+    SubTarget,
+    /// <summary>脱出部屋</summary>
+    Escape
 }

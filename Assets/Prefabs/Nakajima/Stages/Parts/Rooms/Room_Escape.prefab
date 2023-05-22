@@ -122,6 +122,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1021421560620570386}
+  - component: {fileID: -657340696370469452}
   m_Layer: 0
   m_Name: Room_Escape
   m_TagString: Untagged
@@ -145,6 +146,27 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-657340696370469452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4510604030391634830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a205183ab20666845897a0555dc0e0fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _partsName: "\u8131\u51FA\u90E8\u5C4B"
+  _partsType: 2
+  _currentDirType: 0
+  _partsTextures:
+  - {fileID: 2800000, guid: a2d792042b03569469da6183cea54401, type: 3}
+  - {fileID: 2800000, guid: 822f4722e6f790d41ba75084ff80071b, type: 3}
+  - {fileID: 2800000, guid: eefdb87e3476fe44cbb4f3caf7ee3b4e, type: 3}
+  - {fileID: 2800000, guid: 8cd2e01be8282be4b97bf7566fd92001, type: 3}
+  _roomType: 4
 --- !u!1001 &2300057430699900975
 PrefabInstance:
   m_ObjectHideFlags: 0
