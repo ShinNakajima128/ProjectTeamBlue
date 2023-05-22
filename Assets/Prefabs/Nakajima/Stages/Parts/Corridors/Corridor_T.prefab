@@ -1548,7 +1548,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7403890400945197834}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1578,7 +1578,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _partsName: "T\u5B57"
   _partsType: 1
-  _partsTexture: {fileID: 2800000, guid: 7009a3ffd4e457a4f8b4f9447a412a74, type: 3}
+  _currentDirType: 1
+  _partsTextures:
+  - {fileID: 2800000, guid: 7009a3ffd4e457a4f8b4f9447a412a74, type: 3}
+  - {fileID: 2800000, guid: e1a13a041ba0361469f44505981001b1, type: 3}
+  - {fileID: 2800000, guid: ec761d8cc9dd558428fc342c0d3aeb10, type: 3}
+  - {fileID: 2800000, guid: 0b712d4b1b01fb346a5ed7e421fe11d6, type: 3}
   _corridorType: 6
 --- !u!1 &7403890400945200490
 GameObject:

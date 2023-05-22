@@ -190,7 +190,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _partsName: "\u5927\u304D\u3044\u901A\u8DEF"
   _partsType: 1
-  _partsTexture: {fileID: 2800000, guid: def1076517d0db04d83e5ec89f363851, type: 3}
+  _partsTextures:
+  - {fileID: 2800000, guid: def1076517d0db04d83e5ec89f363851, type: 3}
+  - {fileID: 2800000, guid: 799356af5b665ba43be9399a70bd52e0, type: 3}
+  - {fileID: 2800000, guid: def1076517d0db04d83e5ec89f363851, type: 3}
+  - {fileID: 2800000, guid: 799356af5b665ba43be9399a70bd52e0, type: 3}
   _corridorType: 4
 --- !u!1 &2241074096314192802
 GameObject:

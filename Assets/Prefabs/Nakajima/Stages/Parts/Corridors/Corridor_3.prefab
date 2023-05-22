@@ -127,7 +127,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _partsName: "\u901A\u8DEF3"
   _partsType: 1
-  _partsTexture: {fileID: 2800000, guid: ff912f6dbcb0df8409792adbc8f85550, type: 3}
+  _partsTextures:
+  - {fileID: 2800000, guid: ff912f6dbcb0df8409792adbc8f85550, type: 3}
+  - {fileID: 2800000, guid: b71437fc49b3ae74ab87394cd99a0b60, type: 3}
+  - {fileID: 2800000, guid: ff912f6dbcb0df8409792adbc8f85550, type: 3}
+  - {fileID: 2800000, guid: b71437fc49b3ae74ab87394cd99a0b60, type: 3}
   _corridorType: 2
 --- !u!1 &1562740766239481686
 GameObject:
