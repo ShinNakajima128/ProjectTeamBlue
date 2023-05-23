@@ -92,21 +92,22 @@ public abstract class PartsBase : MonoBehaviour
     /// 向きによってオブジェクトを回転させる
     /// </summary>
     /// <param name="type"></param>
-    private void RotateByDirection(DirectionType type)
+    public virtual void RotateByDirection(DirectionType type)
     {
+        Debug.Log($"向き:{type}");
         switch (type)
         {
             case DirectionType.North:
-                transform.localRotation = new Quaternion(0, 0, 0, 0);
+                transform.Rotate(new Vector3(0, 0, 0));
                 break;
             case DirectionType.East:
-                transform.localRotation = new Quaternion(0, 90, 0, 0);
+                transform.Rotate(new Vector3(0, 90, 0));
                 break;
             case DirectionType.Sorth:
-                transform.localRotation = new Quaternion(0, 180, 0, 0);
+                transform.Rotate(new Vector3(0, 180, 0));
                 break;
             case DirectionType.West:
-                transform.localRotation = new Quaternion(0, 270, 0, 0);
+                transform.Rotate(new Vector3(0, 270, 0));
                 break;
             default:
                 break;

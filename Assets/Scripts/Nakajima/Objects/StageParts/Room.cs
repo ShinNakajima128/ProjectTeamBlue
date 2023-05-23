@@ -32,6 +32,114 @@ public class Room : PartsBase
     #region public method
     #endregion
 
+    #region protected method
+    public override void RotateByDirection(DirectionType type)
+    {
+        Debug.Log("派生メソッド");
+
+        switch (_roomType)
+        {
+            case RoomType.Start:
+                switch (type)
+                {
+                    case DirectionType.North:
+                        transform.Rotate(new Vector3(0, 180, 0));
+                        break;
+                    case DirectionType.East:
+                        transform.Rotate(new Vector3(0, 270, 0));
+                        break;
+                    case DirectionType.Sorth:
+                        transform.Rotate(new Vector3(0, 0, 0));
+                        break;
+                    case DirectionType.West:
+                        transform.Rotate(new Vector3(0, 90, 0));
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case RoomType.Cross:
+                switch (type)
+                {
+                    case DirectionType.North:
+                        transform.Rotate(new Vector3(0, 0, 0));
+                        break;
+                    case DirectionType.East:
+                        transform.Rotate(new Vector3(0, 90, 0));
+                        break;
+                    case DirectionType.Sorth:
+                        transform.Rotate(new Vector3(0, 180, 0));
+                        break;
+                    case DirectionType.West:
+                        transform.Rotate(new Vector3(0, 270, 0));
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case RoomType.MainTarget:
+                switch (type)
+                {
+                    case DirectionType.North:
+                        transform.Rotate(new Vector3(0, 270, 0));
+                        break;
+                    case DirectionType.East:
+                        transform.Rotate(new Vector3(0, 0, 0));
+                        break;
+                    case DirectionType.Sorth:
+                        transform.Rotate(new Vector3(0, 90, 0));
+                        break;
+                    case DirectionType.West:
+                        transform.Rotate(new Vector3(0, 180, 0));
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case RoomType.SubTarget:
+                switch (type)
+                {
+                    case DirectionType.North:
+                        transform.Rotate(new Vector3(0, 90, 0));
+                        break;
+                    case DirectionType.East:
+                        transform.Rotate(new Vector3(0, 180, 0));
+                        break;
+                    case DirectionType.Sorth:
+                        transform.Rotate(new Vector3(0, 270, 0));
+                        break;
+                    case DirectionType.West:
+                        transform.Rotate(new Vector3(0, 0, 0));
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case RoomType.Escape:
+                switch (type)
+                {
+                    case DirectionType.North:
+                        transform.Rotate(new Vector3(0, 0, 0));
+                        break;
+                    case DirectionType.East:
+                        transform.Rotate(new Vector3(0, 90, 0));
+                        break;
+                    case DirectionType.Sorth:
+                        transform.Rotate(new Vector3(0, 180, 0));
+                        break;
+                    case DirectionType.West:
+                        transform.Rotate(new Vector3(0, 270, 0));
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    #endregion
+
     #region private method
     #endregion
 }
