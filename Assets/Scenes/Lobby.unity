@@ -313,14 +313,17 @@ MonoBehaviour:
       _stageType: 2
       _isClearedStage: 0
       _isClearedSubMissions: 00
+      _highScore: 0
     - _stageName: Stage2
       _stageType: 3
       _isClearedStage: 0
       _isClearedSubMissions: 0000
+      _highScore: 0
     - _stageName: Stage3
       _stageType: 4
       _isClearedStage: 0
       _isClearedSubMissions: 000000
+      _highScore: 0
   _debugMode: 0
 --- !u!1 &238440923
 GameObject:
@@ -680,7 +683,7 @@ GameObject:
   - component: {fileID: 386383129}
   - component: {fileID: 386383128}
   m_Layer: 5
-  m_Name: Button_Return
+  m_Name: Button_Back
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1205,7 +1208,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u30B2\u30FC\u30E0\u30B9\u30BF\u30FC\u30C8"
+  m_Text: START
 --- !u!222 &634244573
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3343,7 +3346,7 @@ GameObject:
   - component: {fileID: 1876403046}
   - component: {fileID: 1876403045}
   m_Layer: 5
-  m_Name: Text_Return
+  m_Name: Text_Back
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3400,7 +3403,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u3082\u3069\u308B"
+  m_Text: BACK
 --- !u!222 &1876403046
 CanvasRenderer:
   m_ObjectHideFlags: 0
