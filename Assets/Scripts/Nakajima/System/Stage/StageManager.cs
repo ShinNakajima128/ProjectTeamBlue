@@ -14,6 +14,7 @@ public class StageManager : MonoBehaviour
     public Stage CurrentStage => _currentStage;
     public bool IsCompletedMainMission { get; set; } = false;
     public int CompleteSubMissionNum { get; set; } = 0;
+    public Subject<Vector3> SetStartPositionSubject => _setPlayerSubject;
     public Subject<bool> IsInGameSubject => _isInGameSubject;
     public Subject<Unit> GameStartSubject => _gameStartSubject;
     public Subject<Unit> GamePauseSubject => _gamePauseSubject;
@@ -33,6 +34,7 @@ public class StageManager : MonoBehaviour
     #region private
     private Stage _currentStage;
     private bool _inGame = false;
+    private Subject<Vector3> _setPlayerSubject = new Subject<Vector3>();
     private Subject<bool> _isInGameSubject = new Subject<bool>();
     private Subject<Unit> _gameStartSubject = new Subject<Unit>();
     private Subject<Unit> _gamePauseSubject = new Subject<Unit>();
@@ -52,8 +54,11 @@ public class StageManager : MonoBehaviour
     {
         Instance = this;
     }
-    private void Start()
+    private IEnumerator Start()
     {
+        //Subjectの登録処理のため、1フレーム待機
+        yield return null;
+
         SetupStage();
         StartCoroutine(GameStartCoroutine());
     }
@@ -99,6 +104,13 @@ public class StageManager : MonoBehaviour
 
         var stagePrefab = _stageModels.FirstOrDefault(x => x.StageType == currentStageType).StagePrefab;
         Instantiate(stagePrefab);
+
+        //子オブジェクトにあるRoomコンポーネントを全て取得
+        Room[] rooms = stagePrefab.GetComponentsInChildren<Room>();
+
+        //スタート位置の座標を取得
+        Vector3 startPos = rooms.FirstOrDefault(x => x.RoomType == RoomType.Start).transform.position;
+        _setPlayerSubject.OnNext(startPos);
     }
     #endregion
 

@@ -14,6 +14,7 @@ public class Stage
     /// <summary>"サブミッションの数"</summary>
     public int SubMissionNum => _isClearedSubMissions.Length;
     public bool[] IsClearedSubMissions => _isClearedSubMissions;
+    public int HighScore => _highScore; 
     #endregion
 
     #region serialize
@@ -32,6 +33,10 @@ public class Stage
     [Tooltip("クリアしたサブミッションの判定")]
     [SerializeField]
     private bool[] _isClearedSubMissions = default;
+
+    [Tooltip("ハイスコア")]
+    [SerializeField]
+    private int _highScore = 0;
     #endregion
 
     #region private
@@ -78,6 +83,15 @@ public class Stage
         {
             _isClearedSubMissions[i] = false;
         }
+    }
+
+    /// <summary>
+    /// ハイスコアを更新する
+    /// </summary>
+    /// <param name="value"></param>
+    public void SetHighScore(int value)
+    {
+        _highScore = value > _highScore ? value : _highScore;
     }
     #endregion
 

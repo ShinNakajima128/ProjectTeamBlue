@@ -41,6 +41,10 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private void Start()
     {
+        StageManager.Instance.SetStartPositionSubject
+                    .Subscribe(SetStartPosition)
+                    .AddTo(this);
+
         StageManager.Instance.IsInGameSubject
                     .Subscribe(ChangeIsOperatable)
                     .AddTo(this);
@@ -81,6 +85,12 @@ public class PlayerController : MonoBehaviour, IDamagable
     private void ChangeIsOperatable(bool isOperatable)
     {
         _isOperable.OnNext(isOperatable);
+    }
+
+
+    private void SetStartPosition(Vector3 startPos)
+    {
+        transform.position = startPos;
     }
     #endregion
 
