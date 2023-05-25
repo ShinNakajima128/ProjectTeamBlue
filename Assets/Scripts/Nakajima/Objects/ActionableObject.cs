@@ -54,8 +54,25 @@ public class ActionableObject : MonoBehaviour, IActionable
     #endregion
 
     #region public method
+    /// <summary>
+    /// アクションを実行する
+    /// </summary>
     public void OnAction()
     {
+        switch (_targetType)
+        {
+            case TargetType.Main:
+                StageManager.Instance.OnMainTargetComplete();
+                break;
+            case TargetType.Sub:
+                StageManager.Instance.OnSubTargetComplete();
+                break;
+            case TargetType.EscapePoint:
+                StageManager.Instance.OnEscape();
+                break;
+            default:
+                break;
+        }
         print("アクション実行");
         IsCompleted = true;
     }
