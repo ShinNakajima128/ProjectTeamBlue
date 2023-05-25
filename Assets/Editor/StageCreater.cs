@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+/// <summary>
+/// ステージをエディタ上で生成する自作ウィンドウEditor拡張機能
+/// </summary>
 public class StageCreater : EditorWindow
 {
     #region property
@@ -13,6 +16,7 @@ public class StageCreater : EditorWindow
     public string StageName => _stageName;
     public string SelectedPrefabPath => _selectedPrefabPath;
     public bool IsEraserMode => _isEraserMode;
+    public bool IsCreatePrefab => _isCreatePrefab;
     #endregion
 
     #region serialize
@@ -37,9 +41,8 @@ public class StageCreater : EditorWindow
     private string _selectedPrefabPath = "";
     /// <summary>消しゴム状態かどうか</summary>
     private bool _isEraserMode = false;
-    //===Objects===
-    private List<GameObject> _corridorPrefabList = new List<GameObject>();
-    private List<Texture> _corridorTextureList = new List<Texture>();
+    /// <summary>prefabを作成するかどうか</summary>
+    private bool _isCreatePrefab = false;
     #endregion
 
     #region Constant
@@ -79,6 +82,10 @@ public class StageCreater : EditorWindow
         GUILayout.BeginHorizontal();
         GUILayout.Label("StageName", GUILayout.Width(150));
         _stageName = EditorGUILayout.TextField(_stageName);
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        _isCreatePrefab = EditorGUILayout.Toggle("IsCreate Prefab", _isCreatePrefab);
         GUILayout.EndHorizontal();
 
         //ツールバー描画
@@ -290,8 +297,10 @@ public class StageCreaterSubWindow : EditorWindow
 
         // クリックされた位置を探して、その場所に画像データを入れる
         Event e = Event.current;
-        if (e.type == EventType.MouseDown && e.type != EventType.ContextClick)
+        
+        if (e.type == EventType.MouseDown && e.button == 0)
         {
+            //消しゴムモードではない場合
             if (!_parentWindow.IsEraserMode)
             {
                 Vector2 pos = Event.current.mousePosition;
@@ -337,7 +346,6 @@ public class StageCreaterSubWindow : EditorWindow
                 {
                     if (_gridRect[column, row].Contains(pos))
                     {
-                        //_stage[column, row] = "";
                         _stageCells[column, row].ResetData(_stageCells);
                         Repaint();
                         break;
@@ -345,7 +353,8 @@ public class StageCreaterSubWindow : EditorWindow
                 }
             }
         }
-        else if (e.type == EventType.ContextClick)
+        //右クリックでパーツを回転させる処理
+        else if (e.type == EventType.ContextClick && e.button == 1)
         {
             if (_parentWindow.SelectedPrefabPath != "")
             {
@@ -399,7 +408,6 @@ public class StageCreaterSubWindow : EditorWindow
                         case PartsType.Room:
                             Room r = prefab.GetComponent<Room>();
                             DrawRoomTexture(column, row, r.GetTextureByDirection(_stageCells[column, row].CurrentDir));
-                            Debug.Log(_stageCells[column, row].PrefabPath);
                             break;
                         default:
                             break;
@@ -669,6 +677,12 @@ public class StageCreaterSubWindow : EditorWindow
         }
     }
 
+    /// <summary>
+    /// 部屋のテクスチャを描画する
+    /// </summary>
+    /// <param name="column">列</param>
+    /// <param name="row">行</param>
+    /// <param name="texture">テクスチャ</param>
     private void DrawRoomTexture(int column, int row, Texture2D texture)
     {
         //部屋パーツのテクスチャ用にRectサイズを変更して描画する
@@ -678,8 +692,13 @@ public class StageCreaterSubWindow : EditorWindow
                                  _gridSize * 3), texture);
     }
 
+    /// <summary>
+    /// ステージをヒエラルキー上に生成する
+    /// </summary>
+    /// <param name="stageCells">ステージデータ</param>
     private void GenerateStageObject(StageCell[,] stageCells)
     {
+        //親オブジェクトとなる空のオブジェクトを作成
         var parentObj = new GameObject(_parentWindow.StageName);
         int generatePoint_X = 0;
         int generatePoint_Z = 0;
@@ -688,6 +707,7 @@ public class StageCreaterSubWindow : EditorWindow
         {
             for (int row = 0; row < stageCells.GetLength(1); row++)
             {
+                //パーツの原点がセットされていない場合はマスを飛ばす
                 if (!stageCells[column, row].IsOriginSet)
                 {
                     generatePoint_X += 4;
@@ -717,6 +737,19 @@ public class StageCreaterSubWindow : EditorWindow
             }
             generatePoint_X = 0;
             generatePoint_Z -= 4;
+        }
+
+        //生成と同時にPrefab化する設定がTrueの場合
+        if (_parentWindow.IsCreatePrefab)
+        {
+            // Prefabとして保存するためのパスを指定
+            string saveFolderPath = $"Assets/Prefabs/Nakajima/Stages/StagePrefabs/{parentObj.name}.prefab";
+
+            var prefab = PrefabUtility.SaveAsPrefabAsset(parentObj, saveFolderPath);
+            Debug.Log($"{parentObj.name}をPrefab化しました");
+
+            DestroyImmediate(parentObj);
+            Instantiate(prefab);
         }
     }
 
@@ -827,9 +860,7 @@ public class StageCell
     /// <param name="cells">マス全体のデータ</param>
     public void ResetData(StageCell[,] cells)
     {
-        CurrentState = CellState.None;
-        PrefabPath = "";
-
+        //マスの状態に応じて
         switch (CurrentState)
         {
             case CellState.None:
@@ -837,20 +868,89 @@ public class StageCell
             case CellState.Corridor_Straight:
                 break;
             case CellState.Corridor_Straight_Large:
-                cells[_column - 1, _row].CurrentState = CellState.None;
-                cells[_column + 1, _row].CurrentState = CellState.None;
+                switch (CurrentDir)
+                {
+                    case DirectionType.North:
+                        cells[_column - 1, _row].CurrentState = CellState.None;
+                        cells[_column + 1, _row].CurrentState = CellState.None;
+                        break;
+                    case DirectionType.East:
+                        cells[_column, _row - 1].CurrentState = CellState.None;
+                        cells[_column, _row + 1].CurrentState = CellState.None;
+                        break;
+                    case DirectionType.Sorth:
+                        cells[_column - 1, _row].CurrentState = CellState.None;
+                        cells[_column + 1, _row].CurrentState = CellState.None;
+                        break;
+                    case DirectionType.West:
+                        cells[_column, _row - 1].CurrentState = CellState.None;
+                        cells[_column, _row + 1].CurrentState = CellState.None;
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case CellState.Corridor_Sharp_L:
-                cells[_column + 1, _row].CurrentState = CellState.None;
-                cells[_column, _row + 1].CurrentState = CellState.None;
-                cells[_column + 1, _row + 1].CurrentState = CellState.None;
+                switch (CurrentDir)
+                {
+                    case DirectionType.North:
+                        cells[_column + 1, _row].CurrentState = CellState.None;
+                        cells[_column, _row + 1].CurrentState = CellState.None;
+                        cells[_column + 1, _row + 1].CurrentState = CellState.None;
+                        break;
+                    case DirectionType.East:
+                        cells[_column - 1, _row].CurrentState = CellState.None;
+                        cells[_column, _row + 1].CurrentState = CellState.None;
+                        cells[_column - 1, _row + 1].CurrentState = CellState.None;
+                        break;
+                    case DirectionType.Sorth:
+                        cells[_column - 1, _row].CurrentState = CellState.None;
+                        cells[_column, _row - 1].CurrentState = CellState.None;
+                        cells[_column - 1, _row - 1].CurrentState = CellState.None;
+                        break;
+                    case DirectionType.West:
+                        cells[_column + 1, _row].CurrentState = CellState.None;
+                        cells[_column + 1, _row - 1].CurrentState = CellState.None;
+                        cells[_column, _row - 1].CurrentState = CellState.None;
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case CellState.Corridor_Sharp_T:
-                cells[_column - 1, _row].CurrentState = CellState.None;
-                cells[_column + 1, _row].CurrentState = CellState.None;
-                cells[_column - 1, _row + 1].CurrentState = CellState.None;
-                cells[_column, _row + 1].CurrentState = CellState.None;
-                cells[_column + 1, _row + 1].CurrentState = CellState.None;
+                switch (CurrentDir)
+                {
+                    case DirectionType.North:
+                        cells[_column - 1, _row].CurrentState = CellState.None;
+                        cells[_column + 1, _row].CurrentState = CellState.None;
+                        cells[_column - 1, _row + 1].CurrentState = CellState.None;
+                        cells[_column, _row + 1].CurrentState = CellState.None;
+                        cells[_column + 1, _row + 1].CurrentState = CellState.None;
+                        break;
+                    case DirectionType.East:
+                        cells[_column - 1, _row - 1].CurrentState = CellState.None;
+                        cells[_column, _row - 1].CurrentState = CellState.None;
+                        cells[_column - 1, _row].CurrentState = CellState.None;
+                        cells[_column - 1, _row + 1].CurrentState = CellState.None;
+                        cells[_column, _row + 1].CurrentState = CellState.None;
+                        break;
+                    case DirectionType.Sorth:
+                        cells[_column - 1, _row].CurrentState = CellState.None;
+                        cells[_column + 1, _row].CurrentState = CellState.None;
+                        cells[_column - 1, _row - 1].CurrentState = CellState.None;
+                        cells[_column, _row - 1].CurrentState = CellState.None;
+                        cells[_column + 1, _row - 1].CurrentState = CellState.None;
+                        break;
+                    case DirectionType.West:
+                        cells[_column, _row - 1].CurrentState = CellState.None;
+                        cells[_column + 1, _row - 1].CurrentState = CellState.None;
+                        cells[_column + 1, _row].CurrentState = CellState.None;
+                        cells[_column, _row + 1].CurrentState = CellState.None;
+                        cells[_column + 1, _row + 1].CurrentState = CellState.None;
+                        break;
+                    default:
+                        break;
+                }      
                 break;
             case CellState.Corridor_Cross:
                 cells[_column - 1, _row - 1].CurrentState = CellState.None;
@@ -916,6 +1016,9 @@ public class StageCell
                 break;
         }
 
+        //選択したマスのデータを初期化
+        CurrentState = CellState.None;
+        PrefabPath = "";
         CurrentDir = DirectionType.North;
         _isOriginSet = false;
     }
