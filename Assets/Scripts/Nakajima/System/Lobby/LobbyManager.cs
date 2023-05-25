@@ -13,6 +13,7 @@ public class LobbyManager : MonoBehaviour
 {
     #region property
     public static LobbyManager Instance { get; private set; }
+    public Subject<Unit> ReflashDataSubject => _reflashDataSubject;
     #endregion
 
     #region serialize
@@ -32,6 +33,7 @@ public class LobbyManager : MonoBehaviour
     #region private
     /// <summary>"Panelの切り替え中かどうか"</summary>
     private bool _isSwitchingPaneled = false;
+    private Subject<Unit> _reflashDataSubject = new Subject<Unit>();
     #endregion
 
     #region Constant
@@ -68,6 +70,9 @@ public class LobbyManager : MonoBehaviour
     #endregion
 
     #region public method
+    /// <summary>
+    /// ステージ選択画面に進む
+    /// </summary>
     public void StartStageSelect()
     {
         GameManager.Instance.SetCurrentGameStates(GameStates.Lobby_StageSelect);
@@ -77,6 +82,9 @@ public class LobbyManager : MonoBehaviour
         _isSwitchingPaneled = true;
     }
 
+    /// <summary>
+    /// スタート画面に戻る
+    /// </summary>
     public void ReturnLobbyStart()
     {
         GameManager.Instance.SetCurrentGameStates(GameStates.Lobby_Start);
@@ -84,6 +92,15 @@ public class LobbyManager : MonoBehaviour
         StartCoroutine(ActivePanelCoroutine(_startPanel, _activePanelWaitTime, true));
         _stageSelectPanel.SetActive(false);
         _isSwitchingPaneled = true;
+    }
+
+    /// <summary>
+    /// データを初期化する
+    /// </summary>
+    public void ResetData()
+    {
+        DataManager.Instance.ResetData();
+        _reflashDataSubject.OnNext(Unit.Default);
     }
     /// <summary>
     /// ステージSceneを読み込む

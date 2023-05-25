@@ -149,7 +149,8 @@ public class StageManager : MonoBehaviour
         if (!IsGameover)
         {
             //テスト処理
-            _currrentScore = 1000;
+            _currrentScore = 3000;
+            _currentSubMissionCompleteNum = 1;
 
             _currentStage.SetClearData(_currentSubMissionCompleteNum, _currrentScore);
         }

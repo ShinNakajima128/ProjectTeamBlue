@@ -74,16 +74,18 @@ public class Stage
     }
 
     /// <summary>
-    /// クリア状況をリセットする
+    /// クリア状況、スコアの保持状況をリセットする
     /// </summary>
     public void Reset()
     {
         _isClearedStage = false;
+        _highScore = 0;
 
         for (int i = 0; i < _isClearedSubMissions.Length; i++)
         {
             _isClearedSubMissions[i] = false;
         }
+
     }
 
     /// <summary>
