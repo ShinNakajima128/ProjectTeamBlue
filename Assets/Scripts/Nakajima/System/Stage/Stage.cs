@@ -14,6 +14,7 @@ public class Stage
     /// <summary>"サブミッションの数"</summary>
     public int SubMissionNum => _isClearedSubMissions.Length;
     public bool[] IsClearedSubMissions => _isClearedSubMissions;
+    public ScoreRank Rank => _stageRank;
     public int HighScore => _highScore; 
     #endregion
 
@@ -37,6 +38,10 @@ public class Stage
     [Tooltip("ハイスコア")]
     [SerializeField]
     private int _highScore = 0;
+    
+    [Tooltip("スコアのランク")]
+    [SerializeField]
+    private ScoreRank _stageRank;
     #endregion
 
     #region private
