@@ -68,6 +68,7 @@ public class Stage
             {
                 _isClearedSubMissions[i] = stage._isClearedSubMissions[i];
             }
+            _highScore = stage.HighScore;
         }
         
     }
@@ -89,9 +90,19 @@ public class Stage
     /// ハイスコアを更新する
     /// </summary>
     /// <param name="value"></param>
-    public void SetHighScore(int value)
+    public void SetClearData(int subMissionCompleteNum, int score)
     {
-        _highScore = value > _highScore ? value : _highScore;
+        //ステージをクリア済にする
+        _isClearedStage = true;
+
+        //サブミッションを達成した数だけTrueにする
+        for (int i = 0; i < subMissionCompleteNum; i++)
+        {
+            _isClearedSubMissions[i] = true;
+        }
+
+        //スコアを更新した場合はハイスコアを差し替える
+        _highScore = score > _highScore ? score : _highScore;
     }
     #endregion
 
