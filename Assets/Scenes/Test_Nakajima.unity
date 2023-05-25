@@ -844,6 +844,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: StageManager
       objectReference: {fileID: 0}
+    - target: {fileID: 592935310267724209, guid: 3aea8b66d4f873643b28df4c3cee50b5,
+        type: 3}
+      propertyPath: _stageModels.Array.data[0].StagePrefab
+      value: 
+      objectReference: {fileID: 8743358000970982627, guid: f8fadb247c86d894e91913d7d2c20436,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3aea8b66d4f873643b28df4c3cee50b5, type: 3}
 --- !u!1001 &1716486328899686521

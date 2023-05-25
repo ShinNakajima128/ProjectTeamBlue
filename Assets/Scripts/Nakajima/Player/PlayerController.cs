@@ -41,7 +41,13 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private void Start()
     {
-        StageManager.Instance.IsInGameSubject.Subscribe(ChangeIsOperatable);
+        StageManager.Instance.SetStartPositionSubject
+                    .Subscribe(SetStartPosition)
+                    .AddTo(this);
+
+        StageManager.Instance.IsInGameSubject
+                    .Subscribe(ChangeIsOperatable)
+                    .AddTo(this);
     }
     #endregion
 
@@ -80,6 +86,12 @@ public class PlayerController : MonoBehaviour, IDamagable
     {
         _isOperable.OnNext(isOperatable);
     }
+
+
+    private void SetStartPosition(Vector3 startPos)
+    {
+        transform.position = startPos;
+    }
     #endregion
 
     #region coroutine method
@@ -99,6 +111,9 @@ public class PlayerController : MonoBehaviour, IDamagable
     #endregion
 }
 
+/// <summary>
+/// プレイヤーの状態
+/// </summary>
 public enum PlayerState
 {
     Idle,

@@ -44,5 +44,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data:
-    _stages: []
+    _stages:
+    - _stageName: Stage1
+      _stageType: 2
+      _isClearedStage: 0
+      _isClearedSubMissions: 00
+      _highScore: 0
+    - _stageName: Stage2
+      _stageType: 3
+      _isClearedStage: 0
+      _isClearedSubMissions: 0000
+      _highScore: 0
+    - _stageName: Stage3
+      _stageType: 4
+      _isClearedStage: 0
+      _isClearedSubMissions: 000000
+      _highScore: 0
   _debugMode: 0

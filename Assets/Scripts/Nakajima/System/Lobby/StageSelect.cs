@@ -44,8 +44,8 @@ public class StageSelect : MonoBehaviour
 
         for (int i = 0; i < _stageinfos.Length; i++)
         {
-            _stageinfos[i].IsClearStageText.text = data.Stages[i].IsClearedStage ? "クリア済" : "未クリア";
-            _stageinfos[i].IsClearSubMissionsText.text = $"サブミッション　{data.Stages[i].IsClearedSubMissions.Count(x => x)} ／ {data.Stages[i].IsClearedSubMissions.Length}";
+            _stageinfos[i].IsClearStageText.text = data.Stages[i].IsClearedStage ? "Complete" : "Incomplete";
+            _stageinfos[i].IsClearSubMissionsText.text = $"SUB MISSION　{data.Stages[i].IsClearedSubMissions.Count(x => x)} / {data.Stages[i].IsClearedSubMissions.Length}";
         }
     }
     #endregion
