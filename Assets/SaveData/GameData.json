@@ -6,7 +6,8 @@
             "_isClearedStage": false,
             "_isClearedSubMissions": [
                 false
-            ]
+            ],
+            "_highScore": 0
         },
         {
             "_stageName": "Stage2",
@@ -15,7 +16,8 @@
             "_isClearedSubMissions": [
                 false,
                 false
-            ]
+            ],
+            "_highScore": 0
         },
         {
             "_stageName": "Stage3",
@@ -25,7 +27,8 @@
                 false,
                 false,
                 false
-            ]
+            ],
+            "_highScore": 0
         }
     ]
 }

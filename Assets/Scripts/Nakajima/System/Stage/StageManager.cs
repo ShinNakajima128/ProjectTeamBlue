@@ -14,6 +14,7 @@ public class StageManager : MonoBehaviour
     public Stage CurrentStage => _currentStage;
     public bool IsCompletedMainMission { get; set; } = false;
     public int CompleteSubMissionNum { get; set; } = 0;
+    public bool IsGameover { get; set; } = false;
     public Subject<Vector3> SetStartPositionSubject => _setPlayerSubject;
     public Subject<bool> IsInGameSubject => _isInGameSubject;
     public Subject<Unit> GameStartSubject => _gameStartSubject;
@@ -34,10 +35,14 @@ public class StageManager : MonoBehaviour
     #region private
     private Stage _currentStage;
     private bool _inGame = false;
+    private int _currentSubMissionCompleteNum = 0;
+    private int _currrentScore = 0;
     private Subject<Vector3> _setPlayerSubject = new Subject<Vector3>();
     private Subject<bool> _isInGameSubject = new Subject<bool>();
     private Subject<Unit> _gameStartSubject = new Subject<Unit>();
     private Subject<Unit> _gamePauseSubject = new Subject<Unit>();
+    private Subject<Unit> _mainTargetCompleteSubject = new Subject<Unit>();
+    private Subject<Unit> _subTargetCompleteSubject = new Subject<Unit>();
     private Subject<Unit> _gameRestartSubject = new Subject<Unit>();
     private Subject<Unit> _gameEndSubject = new Subject<Unit>();
     #endregion
@@ -132,10 +137,24 @@ public class StageManager : MonoBehaviour
         OnGameStart();
     }
 
+    /// <summary>
+    /// ゲーム終了時に実行するコルーチン
+    /// </summary>
     private IEnumerator GameEndCoroutine()
     {
         Debug.Log("ゲーム終了");
         yield return new WaitForSeconds(2.0f);
+
+        //ゲームオーバー状態ではない場合
+        if (!IsGameover)
+        {
+            //テスト処理
+            _currrentScore = 1000;
+
+            _currentStage.SetClearData(_currentSubMissionCompleteNum, _currrentScore);
+        }
+        //データを保存
+        DataManager.Instance.SaveData();
 
         //Scene遷移機能をどのように作るか不明なため、仮のロード処理を行っている
         SceneManager.LoadScene("Lobby");

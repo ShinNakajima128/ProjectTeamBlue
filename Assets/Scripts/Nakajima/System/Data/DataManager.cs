@@ -74,6 +74,11 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
             LocalData.Save("SaveData/GameData.json", _data);
         }
     }
+
+    public void SaveData()
+    {
+        LocalData.Save("SaveData/GameData.json", _data);
+    }
     #endregion
 
     #region private method
