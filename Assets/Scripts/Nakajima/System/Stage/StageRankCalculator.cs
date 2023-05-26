@@ -14,7 +14,7 @@ public class StageRankCalculator :MonoBehaviour
     #endregion
 
     #region serialize
-    [Tooltip("各ステージのランク付けの時間")]
+    [Tooltip("各ステージのランク算出の基準データ")]
     [SerializeField]
     private RankedScore[] _rankedScores = default;
     #endregion
@@ -72,7 +72,9 @@ public class StageRankCalculator :MonoBehaviour
     #endregion
 }
 
-
+/// <summary>
+/// ステージの各ランクの基準データのクラス
+/// </summary>
 [Serializable]
 public class RankedScore
 {
