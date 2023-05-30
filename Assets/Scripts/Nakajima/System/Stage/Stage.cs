@@ -14,6 +14,7 @@ public class Stage
     /// <summary>"サブミッションの数"</summary>
     public int SubMissionNum => _isClearedSubMissions.Length;
     public bool[] IsClearedSubMissions => _isClearedSubMissions;
+    public ScoreRank Rank => _stageRank;
     public int HighScore => _highScore; 
     #endregion
 
@@ -37,6 +38,10 @@ public class Stage
     [Tooltip("ハイスコア")]
     [SerializeField]
     private int _highScore = 0;
+    
+    [Tooltip("スコアのランク")]
+    [SerializeField]
+    private ScoreRank _stageRank;
     #endregion
 
     #region private
@@ -74,16 +79,18 @@ public class Stage
     }
 
     /// <summary>
-    /// クリア状況をリセットする
+    /// クリア状況、スコアの保持状況をリセットする
     /// </summary>
     public void Reset()
     {
         _isClearedStage = false;
+        _highScore = 0;
 
         for (int i = 0; i < _isClearedSubMissions.Length; i++)
         {
             _isClearedSubMissions[i] = false;
         }
+
     }
 
     /// <summary>
@@ -103,6 +110,8 @@ public class Stage
 
         //スコアを更新した場合はハイスコアを差し替える
         _highScore = score > _highScore ? score : _highScore;
+
+        _stageRank = StageRankCalculator.CalculateScoreRank(_stageType, _highScore);
     }
     #endregion
 
