@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UniRx;
+using UniRx.Triggers;
 
 /// <summary>各ステージのオブジェクトの配置、処理等を行うManagerクラス</summary>
 public class StageManager : MonoBehaviour
@@ -12,8 +13,10 @@ public class StageManager : MonoBehaviour
     #region property
     public static StageManager Instance { get; private set; }
     public Stage CurrentStage => _currentStage;
+    public ReactiveProperty<float> CurrentLimitTime => _currentLimitTime;
     public bool IsCompletedMainMission { get; set; } = false;
     public int CompleteSubMissionNum { get; set; } = 0;
+    public bool IsGameover { get; set; } = false;
     public Subject<Vector3> SetStartPositionSubject => _setPlayerSubject;
     public Subject<bool> IsInGameSubject => _isInGameSubject;
     public Subject<Unit> GameStartSubject => _gameStartSubject;
@@ -23,21 +26,33 @@ public class StageManager : MonoBehaviour
     #endregion
 
     #region serialize
+    [Tooltip("制限時間")]
+    [SerializeField]
+    private float _limitTime = 300f;
+
     [Tooltip("各ステージのオブジェクト情報を持つクラスの配列")]
     [SerializeField]
     private StageModel[] _stageModels = default;
 
     [SerializeField]
-    private int _countDownTime = 3; 
+    private int _countDownTime = 3;
     #endregion
 
     #region private
     private Stage _currentStage;
+    private ScoreCalculation _scoreCalc;
+    private PlayerController _playerCtrl;
     private bool _inGame = false;
+    private int _currentSubMissionCompleteNum = 0;
+    private int _currrentScore = 0;
+    private ReactiveProperty<float> _currentLimitTime = new ReactiveProperty<float>();
     private Subject<Vector3> _setPlayerSubject = new Subject<Vector3>();
     private Subject<bool> _isInGameSubject = new Subject<bool>();
     private Subject<Unit> _gameStartSubject = new Subject<Unit>();
     private Subject<Unit> _gamePauseSubject = new Subject<Unit>();
+    private Subject<Unit> _mainTargetCompleteSubject = new Subject<Unit>();
+    private Subject<Unit> _subTargetCompleteSubject = new Subject<Unit>();
+    private Subject<Unit> _escapeSubject = new Subject<Unit>();
     private Subject<Unit> _gameRestartSubject = new Subject<Unit>();
     private Subject<Unit> _gameEndSubject = new Subject<Unit>();
     #endregion
@@ -53,14 +68,41 @@ public class StageManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        TryGetComponent(out _scoreCalc);
+        _playerCtrl = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
     }
     private IEnumerator Start()
     {
+        SetStartPositionSubject
+        .Subscribe(_playerCtrl.SetStartPosition)
+        .AddTo(this);
+
+        IsInGameSubject
+        .Subscribe(_playerCtrl.ChangeIsOperatable)
+        .AddTo(this);
+
         //Subjectの登録処理のため、1フレーム待機
         yield return null;
 
         SetupStage();
         StartCoroutine(GameStartCoroutine());
+
+        this.UpdateAsObservable()
+            .Subscribe(_ =>
+            {
+                if (_inGame)
+                {
+                    _currentLimitTime.Value -= Time.deltaTime;
+
+                    //制限時間が終了したらゲーム終了
+                    if (_currentLimitTime.Value <= 0)
+                    {
+                        _inGame = false;
+                        OnGameEnd();
+                    }
+                }
+            })
+            .AddTo(this);
     }
     #endregion
 
@@ -93,6 +135,36 @@ public class StageManager : MonoBehaviour
         _gameEndSubject.OnNext(Unit.Default);
         StartCoroutine(GameEndCoroutine());
     }
+    
+    /// <summary>
+    /// メインターゲット達成時に実行する
+    /// </summary>
+    public void OnMainTargetComplete()
+    {
+        IsCompletedMainMission = true;
+        _mainTargetCompleteSubject.OnNext(Unit.Default);
+    }
+
+    /// <summary>
+    /// サブターゲット達成時に実行する
+    /// </summary>
+    public void OnSubTargetComplete()
+    {
+        _currentSubMissionCompleteNum++;
+        _subTargetCompleteSubject.OnNext(Unit.Default);
+        Debug.Log("サブターゲット達成");
+    }
+
+    /// <summary>
+    /// 逃げ切り（ステージクリア）時に実行する
+    /// </summary>
+    public void OnEscape()
+    {
+        if (IsCompletedMainMission)
+        {
+            _escapeSubject.OnNext(Unit.Default);
+        }
+    }
     #endregion
 
     #region private method
@@ -101,6 +173,8 @@ public class StageManager : MonoBehaviour
         var currentStageType = GameManager.Instance.CurrentGameStates;
 
         _currentStage = DataManager.Instance.Data.Stages.FirstOrDefault(x => x.StageType == currentStageType);
+
+        _currentLimitTime.Value = _limitTime;
 
         var stagePrefab = _stageModels.FirstOrDefault(x => x.StageType == currentStageType).StagePrefab;
         Instantiate(stagePrefab);
@@ -132,10 +206,24 @@ public class StageManager : MonoBehaviour
         OnGameStart();
     }
 
+    /// <summary>
+    /// ゲーム終了時に実行するコルーチン
+    /// </summary>
     private IEnumerator GameEndCoroutine()
     {
         Debug.Log("ゲーム終了");
         yield return new WaitForSeconds(2.0f);
+
+        //ゲームオーバー状態ではない場合
+        if (!IsGameover)
+        {
+            //テスト処理
+            _currrentScore = _scoreCalc.CalcurlationScore(_currentSubMissionCompleteNum, (int)_currentLimitTime.Value); ;
+
+            _currentStage.SetClearData(_currentSubMissionCompleteNum, _currrentScore);
+        }
+        //データを保存
+        DataManager.Instance.SaveData();
 
         //Scene遷移機能をどのように作るか不明なため、仮のロード処理を行っている
         SceneManager.LoadScene("Lobby");

@@ -31,8 +31,6 @@ public class StageCreater : EditorWindow
     private int _stageSize = 30;
     /// <summary>エディタ画面のグリッドの大きさ</summary>
     private float _gridSize = 20.0f;
-    /// <summary>作成したオブジェクトの保存先フォルダ</summary>
-    private Object _addToDirectry;
     /// <summary>ステージ名</summary>
     private string _stageName = "";
     /// <summary>ステージ作成画面のサブウィンドウ</summary>
@@ -270,10 +268,11 @@ public class StageCreaterSubWindow : EditorWindow
     private int _stageSize = 0;
     private float _gridSize = 0f;
     private string[,] _stage;
-    private StageCell[,] _stageCells;
+    private StageCell[][] _stageCells;
     private Rect[,] _gridRect;
     private StageCreater _parentWindow;
-    private DirectionType _currentSelectDirType = DirectionType.North; 
+    private DirectionType _currentSelectDirType = DirectionType.North;
+    private Object _stageDataFileDirectry;
     #endregion
 
     #region constant
@@ -320,7 +319,7 @@ public class StageCreaterSubWindow : EditorWindow
                 {
                     if (_gridRect[column, row].Contains(pos))
                     {
-                        _stageCells[column, row].SetData(_stageCells, _parentWindow.SelectedPrefabPath, _currentSelectDirType);
+                        _stageCells[column][row].SetData(_stageCells, _parentWindow.SelectedPrefabPath, _currentSelectDirType);
                         Repaint();
                         break;
                     }
@@ -346,7 +345,7 @@ public class StageCreaterSubWindow : EditorWindow
                 {
                     if (_gridRect[column, row].Contains(pos))
                     {
-                        _stageCells[column, row].ResetData(_stageCells);
+                        _stageCells[column][row].ResetData(_stageCells);
                         Repaint();
                         break;
                     }
@@ -384,7 +383,7 @@ public class StageCreaterSubWindow : EditorWindow
             for (int row = 0; row < _stageSize; row++)
             {
                 //ステージデータにパスがセットされている部分に画像を描写する
-                if (_stage[column, row] != null && _stageCells[column, row].PrefabPath.Length > 0)
+                if (_stage[column, row] != null && _stageCells[column][row].PrefabPath.Length > 0)
                 {
                     var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(_stage[column, row]).GetComponent<PartsBase>();
                     Texture2D texture = prefab.CurrentDirTexture;
@@ -392,10 +391,10 @@ public class StageCreaterSubWindow : EditorWindow
                     GUI.DrawTexture(_gridRect[column, row], texture);
                 }
 
-                if (_stageCells[column, row] != null &&
-                    _stageCells[column, row].IsOriginSet)
+                if (_stageCells[column][row] != null &&
+                    _stageCells[column][row].IsOriginSet)
                 {
-                    var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(_stageCells[column, row].PrefabPath).GetComponent<PartsBase>();
+                    var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(_stageCells[column][row].PrefabPath).GetComponent<PartsBase>();
 
                     switch (prefab.PartsType)
                     {
@@ -403,11 +402,11 @@ public class StageCreaterSubWindow : EditorWindow
                             break;
                         case PartsType.Corridor:
                             Corridor c = prefab.GetComponent<Corridor>();
-                            DrawCorridorTexture(column, row, c.CorridorType, _stageCells[column, row].CurrentDir, c.GetTextureByDirection(_stageCells[column, row].CurrentDir));
+                            DrawCorridorTexture(column, row, c.CorridorType, _stageCells[column][row].CurrentDir, c.GetTextureByDirection(_stageCells[column][row].CurrentDir));
                             break;
                         case PartsType.Room:
                             Room r = prefab.GetComponent<Room>();
-                            DrawRoomTexture(column, row, r.GetTextureByDirection(_stageCells[column, row].CurrentDir));
+                            DrawRoomTexture(column, row, r.GetTextureByDirection(_stageCells[column][row].CurrentDir));
                             break;
                         default:
                             break;
@@ -415,18 +414,43 @@ public class StageCreaterSubWindow : EditorWindow
                 }
             }
         }
-        
-        //EditorGUILayout.LabelField("【操作方法】");
 
-        Rect rect = new Rect(0, WINDOW_HEIGHT - 50, 300, 50);
+        GUILayout.Space(600);
+        GUILayout.BeginVertical();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Stage Data File", GUILayout.Width(150));
+        _stageDataFileDirectry = EditorGUILayout.ObjectField(_stageDataFileDirectry, typeof(Object), true);
+        GUILayout.EndHorizontal();
+        if (GUILayout.Button("ステージデータ読込み", GUILayout.MinWidth(200), GUILayout.MinHeight(30)))
+        {
+            //ファイルがセットされている場合
+            if (_stageDataFileDirectry != null)
+            {
+                LoadStageDataFile();
+            }
+        }
+        GUILayout.EndVertical();
+
+        GUILayout.Space(10);
+
+        GUILayout.BeginVertical();
+        EditorGUILayout.LabelField("【操作方法】", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("・パーツ選択後、配置したいマスを「左クリック」でパーツを配置");
+        EditorGUILayout.LabelField("・「右クリック」で回転");
+        EditorGUILayout.LabelField("・配置完了後、「ステージ生成」で「Hierarchy」に生成されます");
+        GUILayout.EndVertical();
+
+        GUILayout.BeginVertical();
+        Rect rect = new Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 50, 200, 50);
         GUILayout.BeginArea(rect);
-        if (GUILayout.Button("ステージ生成", GUILayout.MinWidth(300), GUILayout.MinHeight(50)))
+        if (GUILayout.Button("ステージ生成", GUILayout.MinWidth(200), GUILayout.MinHeight(50)))
         {
             GenerateStageObject(_stageCells);
             //CheckCurrentStageData(_stageCells);
         }
         GUILayout.FlexibleSpace();
         GUILayout.EndArea();
+        GUILayout.EndVertical();
 
         if (_parentWindow.SelectedPrefabPath != "")
         {
@@ -462,7 +486,12 @@ public class StageCreaterSubWindow : EditorWindow
         _gridSize = _parentWindow.GridSize;
 
         _stage = new string[_stageSize, _stageSize];
-        _stageCells = new StageCell[_stageSize, _stageSize];
+        _stageCells = new StageCell[_stageSize][];
+
+        for (int i = 0; i < _stageSize; i++)
+        {
+            _stageCells[i] = new StageCell[_stageSize];
+        }
 
         for (int i = 0; i < _stage.GetLength(0); i++)
         {
@@ -472,11 +501,13 @@ public class StageCreaterSubWindow : EditorWindow
             }
         }
 
-        for (int i = 0; i < _stageCells.GetLength(0); i++)
+        for (int i = 0; i < _stageSize; i++)
         {
-            for (int j = 0; j < _stageCells.GetLength(1); j++)
+            for (int j = 0; j < _stageSize; j++)
             {
-                _stageCells[i, j] = new StageCell(i, j);
+                _stageCells[i][j] = new StageCell();
+                _stageCells[i][j].Column = i;
+                _stageCells[i][j].Row = j;
             }
         }
 
@@ -696,38 +727,38 @@ public class StageCreaterSubWindow : EditorWindow
     /// ステージをヒエラルキー上に生成する
     /// </summary>
     /// <param name="stageCells">ステージデータ</param>
-    private void GenerateStageObject(StageCell[,] stageCells)
+    private void GenerateStageObject(StageCell[][] stageCells)
     {
         //親オブジェクトとなる空のオブジェクトを作成
         var parentObj = new GameObject(_parentWindow.StageName);
         int generatePoint_X = 0;
         int generatePoint_Z = 0;
 
-        for (int column = 0; column < stageCells.GetLength(0); column++)
+        for (int column = 0; column < stageCells.Length; column++)
         {
-            for (int row = 0; row < stageCells.GetLength(1); row++)
+            for (int row = 0; row < stageCells[0].Length; row++)
             {
                 //パーツの原点がセットされていない場合はマスを飛ばす
-                if (!stageCells[column, row].IsOriginSet)
+                if (!stageCells[column][row].IsOriginSet)
                 {
                     generatePoint_X += 4;
                     continue;
                 }
 
-                var parts = AssetDatabase.LoadAssetAtPath<PartsBase>(stageCells[column, row].PrefabPath);
+                var parts = AssetDatabase.LoadAssetAtPath<PartsBase>(stageCells[column][row].PrefabPath);
                 
                 if (parts.PartsType == PartsType.Room)
                 {
                     Room r = parts.GetComponent<Room>();
                     var partsObj = Instantiate(r, new Vector3(generatePoint_X, 0, generatePoint_Z), Quaternion.identity);
-                    partsObj.RotateByDirection(stageCells[column, row].CurrentDir);
+                    partsObj.RotateByDirection(stageCells[column][row].CurrentDir);
 
                     partsObj.transform.SetParent(parentObj.transform);
                 }
                 else
                 {
                     var partsObj = Instantiate(parts, new Vector3(generatePoint_X, 0, generatePoint_Z), Quaternion.identity);
-                    partsObj.RotateByDirection(stageCells[column, row].CurrentDir);
+                    partsObj.RotateByDirection(stageCells[column][row].CurrentDir);
 
                     partsObj.transform.SetParent(parentObj.transform);
                 }
@@ -751,6 +782,14 @@ public class StageCreaterSubWindow : EditorWindow
             DestroyImmediate(parentObj);
             Instantiate(prefab);
         }
+
+        //ステージデータの作成
+        StageCellData data = new StageCellData();
+
+        data.Cells = _stageCells;
+        //CheckCurrentStageData(data.Cells);
+
+        LocalData.SaveMultidimArray($"SaveData/StageData/{_parentWindow.StageName}.json", data);
     }
 
     /// <summary>
@@ -774,9 +813,25 @@ public class StageCreaterSubWindow : EditorWindow
                     dataStr += ".";
                 }
             }
+            dataStr += "\n";
         }
 
         Debug.Log(dataStr);
+    }
+
+    private void LoadStageDataFile()
+    {
+        string path = AssetDatabase.GetAssetPath(_stageDataFileDirectry);
+        StageCellData data = LocalData.LoadMultidimArray<StageCellData>(path);
+
+        if (data == null)
+        {
+            Debug.LogError("データがありません");
+            return;
+        }
+        
+        _stageCells = data.Cells;
+        Repaint();
     }
     #endregion
 }
@@ -784,37 +839,24 @@ public class StageCreaterSubWindow : EditorWindow
 /// <summary>
 /// グリッド上に配置するマス
 /// </summary>
+[System.Serializable]
 public class StageCell
 {
     #region property
-    public int Column => _column;
-    public int Row => _row;
-    public CellState CurrentState { get; set; } = CellState.None;
-    public DirectionType CurrentDir { get; set; } = DirectionType.North;
-    public string PrefabPath { get; set; } = "";
-    public bool IsOriginSet => _isOriginSet;
+    public int Column = 0;
+    public int Row = 0;
+    public CellState CurrentState = CellState.None;
+    public DirectionType CurrentDir = DirectionType.North;
+    public string PrefabPath = "";
+    /// <summary>パーツの原点がセットされているか</summary>
+    public bool IsOriginSet = false;
     #endregion
 
     #region private
-    private int _column;
-    private int _row;
-    /// <summary>パーツの原点がセットされているか</summary>
-    private bool _isOriginSet;
     #endregion
 
-    /// <summary>
-    /// コンストラクタ
-    /// </summary>
-    /// <param name="column">列</param>
-    /// <param name="row">行</param>
-    public StageCell(int column, int row)
-    {
-        _column = column;
-        _row = row;
-    }
-
     #region public method
-    public void SetData(StageCell[,] cells, string path, DirectionType dirType)
+    public void SetData(StageCell[][] cells, string path, DirectionType dirType)
     {
         var t = AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<PartsBase>();
 
@@ -858,7 +900,7 @@ public class StageCell
     /// マスのデータをリセットする
     /// </summary>
     /// <param name="cells">マス全体のデータ</param>
-    public void ResetData(StageCell[,] cells)
+    public void ResetData(StageCell[][] cells)
     {
         //マスの状態に応じて
         switch (CurrentState)
@@ -871,20 +913,20 @@ public class StageCell
                 switch (CurrentDir)
                 {
                     case DirectionType.North:
-                        cells[_column - 1, _row].CurrentState = CellState.None;
-                        cells[_column + 1, _row].CurrentState = CellState.None;
+                        cells[Column - 1][Row].CurrentState = CellState.None;
+                        cells[Column + 1][Row].CurrentState = CellState.None;
                         break;
                     case DirectionType.East:
-                        cells[_column, _row - 1].CurrentState = CellState.None;
-                        cells[_column, _row + 1].CurrentState = CellState.None;
+                        cells[Column][Row - 1].CurrentState = CellState.None;
+                        cells[Column][Row + 1].CurrentState = CellState.None;
                         break;
                     case DirectionType.Sorth:
-                        cells[_column - 1, _row].CurrentState = CellState.None;
-                        cells[_column + 1, _row].CurrentState = CellState.None;
+                        cells[Column - 1][Row].CurrentState = CellState.None;
+                        cells[Column + 1][Row].CurrentState = CellState.None;
                         break;
                     case DirectionType.West:
-                        cells[_column, _row - 1].CurrentState = CellState.None;
-                        cells[_column, _row + 1].CurrentState = CellState.None;
+                        cells[Column][Row - 1].CurrentState = CellState.None;
+                        cells[Column][Row + 1].CurrentState = CellState.None;
                         break;
                     default:
                         break;
@@ -894,24 +936,24 @@ public class StageCell
                 switch (CurrentDir)
                 {
                     case DirectionType.North:
-                        cells[_column + 1, _row].CurrentState = CellState.None;
-                        cells[_column, _row + 1].CurrentState = CellState.None;
-                        cells[_column + 1, _row + 1].CurrentState = CellState.None;
+                        cells[Column + 1][Row].CurrentState = CellState.None;
+                        cells[Column][Row + 1].CurrentState = CellState.None;
+                        cells[Column + 1][Row + 1].CurrentState = CellState.None;
                         break;
                     case DirectionType.East:
-                        cells[_column - 1, _row].CurrentState = CellState.None;
-                        cells[_column, _row + 1].CurrentState = CellState.None;
-                        cells[_column - 1, _row + 1].CurrentState = CellState.None;
+                        cells[Column - 1][Row].CurrentState = CellState.None;
+                        cells[Column][Row + 1].CurrentState = CellState.None;
+                        cells[Column - 1][Row + 1].CurrentState = CellState.None;
                         break;
                     case DirectionType.Sorth:
-                        cells[_column - 1, _row].CurrentState = CellState.None;
-                        cells[_column, _row - 1].CurrentState = CellState.None;
-                        cells[_column - 1, _row - 1].CurrentState = CellState.None;
+                        cells[Column - 1][Row].CurrentState = CellState.None;
+                        cells[Column][Row - 1].CurrentState = CellState.None;
+                        cells[Column - 1][Row - 1].CurrentState = CellState.None;
                         break;
                     case DirectionType.West:
-                        cells[_column + 1, _row].CurrentState = CellState.None;
-                        cells[_column + 1, _row - 1].CurrentState = CellState.None;
-                        cells[_column, _row - 1].CurrentState = CellState.None;
+                        cells[Column + 1][Row].CurrentState = CellState.None;
+                        cells[Column + 1][Row - 1].CurrentState = CellState.None;
+                        cells[Column][Row - 1].CurrentState = CellState.None;
                         break;
                     default:
                         break;
@@ -921,96 +963,96 @@ public class StageCell
                 switch (CurrentDir)
                 {
                     case DirectionType.North:
-                        cells[_column - 1, _row].CurrentState = CellState.None;
-                        cells[_column + 1, _row].CurrentState = CellState.None;
-                        cells[_column - 1, _row + 1].CurrentState = CellState.None;
-                        cells[_column, _row + 1].CurrentState = CellState.None;
-                        cells[_column + 1, _row + 1].CurrentState = CellState.None;
+                        cells[Column - 1][Row].CurrentState = CellState.None;
+                        cells[Column + 1][Row].CurrentState = CellState.None;
+                        cells[Column - 1][Row + 1].CurrentState = CellState.None;
+                        cells[Column][Row + 1].CurrentState = CellState.None;
+                        cells[Column + 1][Row + 1].CurrentState = CellState.None;
                         break;
                     case DirectionType.East:
-                        cells[_column - 1, _row - 1].CurrentState = CellState.None;
-                        cells[_column, _row - 1].CurrentState = CellState.None;
-                        cells[_column - 1, _row].CurrentState = CellState.None;
-                        cells[_column - 1, _row + 1].CurrentState = CellState.None;
-                        cells[_column, _row + 1].CurrentState = CellState.None;
+                        cells[Column - 1][Row - 1].CurrentState = CellState.None;
+                        cells[Column][Row - 1].CurrentState = CellState.None;
+                        cells[Column - 1][Row].CurrentState = CellState.None;
+                        cells[Column - 1][Row + 1].CurrentState = CellState.None;
+                        cells[Column][Row + 1].CurrentState = CellState.None;
                         break;
                     case DirectionType.Sorth:
-                        cells[_column - 1, _row].CurrentState = CellState.None;
-                        cells[_column + 1, _row].CurrentState = CellState.None;
-                        cells[_column - 1, _row - 1].CurrentState = CellState.None;
-                        cells[_column, _row - 1].CurrentState = CellState.None;
-                        cells[_column + 1, _row - 1].CurrentState = CellState.None;
+                        cells[Column - 1][Row].CurrentState = CellState.None;
+                        cells[Column + 1][Row].CurrentState = CellState.None;
+                        cells[Column - 1][Row - 1].CurrentState = CellState.None;
+                        cells[Column][Row - 1].CurrentState = CellState.None;
+                        cells[Column + 1][Row - 1].CurrentState = CellState.None;
                         break;
                     case DirectionType.West:
-                        cells[_column, _row - 1].CurrentState = CellState.None;
-                        cells[_column + 1, _row - 1].CurrentState = CellState.None;
-                        cells[_column + 1, _row].CurrentState = CellState.None;
-                        cells[_column, _row + 1].CurrentState = CellState.None;
-                        cells[_column + 1, _row + 1].CurrentState = CellState.None;
+                        cells[Column][Row - 1].CurrentState = CellState.None;
+                        cells[Column + 1][Row - 1].CurrentState = CellState.None;
+                        cells[Column + 1][Row].CurrentState = CellState.None;
+                        cells[Column][Row + 1].CurrentState = CellState.None;
+                        cells[Column + 1][Row + 1].CurrentState = CellState.None;
                         break;
                     default:
                         break;
                 }      
                 break;
             case CellState.Corridor_Cross:
-                cells[_column - 1, _row - 1].CurrentState = CellState.None;
-                cells[_column, _row - 1].CurrentState = CellState.None;
-                cells[_column + 1, _row - 1].CurrentState = CellState.None;
-                cells[_column - 1, _row].CurrentState = CellState.None;
-                cells[_column + 1, _row].CurrentState = CellState.None;
-                cells[_column - 1, _row + 1].CurrentState = CellState.None;
-                cells[_column, _row + 1].CurrentState = CellState.None;
-                cells[_column + 1, _row + 1].CurrentState = CellState.None;
+                cells[Column - 1][Row - 1].CurrentState = CellState.None;
+                cells[Column][Row - 1].CurrentState = CellState.None;
+                cells[Column + 1][Row - 1].CurrentState = CellState.None;
+                cells[Column - 1][Row].CurrentState = CellState.None;
+                cells[Column + 1][Row].CurrentState = CellState.None;
+                cells[Column - 1][Row + 1].CurrentState = CellState.None;
+                cells[Column][Row + 1].CurrentState = CellState.None;
+                cells[Column + 1][Row + 1].CurrentState = CellState.None;
                 break;
             case CellState.Room_Start:
-                cells[_column - 1, _row - 1].CurrentState = CellState.None;
-                cells[_column, _row - 1].CurrentState = CellState.None;
-                cells[_column + 1, _row - 1].CurrentState = CellState.None;
-                cells[_column - 1, _row].CurrentState = CellState.None;
-                cells[_column + 1, _row].CurrentState = CellState.None;
-                cells[_column - 1, _row + 1].CurrentState = CellState.None;
-                cells[_column, _row + 1].CurrentState = CellState.None;
-                cells[_column + 1, _row + 1].CurrentState = CellState.None;
+                cells[Column - 1][Row - 1].CurrentState = CellState.None;
+                cells[Column][Row - 1].CurrentState = CellState.None;
+                cells[Column + 1][Row - 1].CurrentState = CellState.None;
+                cells[Column - 1][Row].CurrentState = CellState.None;
+                cells[Column + 1][Row].CurrentState = CellState.None;
+                cells[Column - 1][Row + 1].CurrentState = CellState.None;
+                cells[Column][Row + 1].CurrentState = CellState.None;
+                cells[Column + 1][Row + 1].CurrentState = CellState.None;
                 break;
             case CellState.Room_MainMissionTarget:
-                cells[_column - 1, _row - 1].CurrentState = CellState.None;
-                cells[_column, _row - 1].CurrentState = CellState.None;
-                cells[_column + 1, _row - 1].CurrentState = CellState.None;
-                cells[_column - 1, _row].CurrentState = CellState.None;
-                cells[_column + 1, _row].CurrentState = CellState.None;
-                cells[_column - 1, _row + 1].CurrentState = CellState.None;
-                cells[_column, _row + 1].CurrentState = CellState.None;
-                cells[_column + 1, _row + 1].CurrentState = CellState.None;
+                cells[Column - 1][Row - 1].CurrentState = CellState.None;
+                cells[Column][Row - 1].CurrentState = CellState.None;
+                cells[Column + 1][Row - 1].CurrentState = CellState.None;
+                cells[Column - 1][Row].CurrentState = CellState.None;
+                cells[Column + 1][Row].CurrentState = CellState.None;
+                cells[Column - 1][Row + 1].CurrentState = CellState.None;
+                cells[Column][Row + 1].CurrentState = CellState.None;
+                cells[Column + 1][Row + 1].CurrentState = CellState.None;
                 break;
             case CellState.Room_subMissionTarget:
-                cells[_column - 1, _row - 1].CurrentState = CellState.None;
-                cells[_column, _row - 1].CurrentState = CellState.None;
-                cells[_column + 1, _row - 1].CurrentState = CellState.None;
-                cells[_column - 1, _row].CurrentState = CellState.None;
-                cells[_column + 1, _row].CurrentState = CellState.None;
-                cells[_column - 1, _row + 1].CurrentState = CellState.None;
-                cells[_column, _row + 1].CurrentState = CellState.None;
-                cells[_column + 1, _row + 1].CurrentState = CellState.None;
+                cells[Column - 1][Row - 1].CurrentState = CellState.None;
+                cells[Column][Row - 1].CurrentState = CellState.None;
+                cells[Column + 1][Row - 1].CurrentState = CellState.None;
+                cells[Column - 1][Row].CurrentState = CellState.None;
+                cells[Column + 1][Row].CurrentState = CellState.None;
+                cells[Column - 1][Row + 1].CurrentState = CellState.None;
+                cells[Column][Row + 1].CurrentState = CellState.None;
+                cells[Column + 1][Row + 1].CurrentState = CellState.None;
                 break;
             case CellState.Room_Escape:
-                cells[_column - 1, _row - 1].CurrentState = CellState.None;
-                cells[_column, _row - 1].CurrentState = CellState.None;
-                cells[_column + 1, _row - 1].CurrentState = CellState.None;
-                cells[_column - 1, _row].CurrentState = CellState.None;
-                cells[_column + 1, _row].CurrentState = CellState.None;
-                cells[_column - 1, _row + 1].CurrentState = CellState.None;
-                cells[_column, _row + 1].CurrentState = CellState.None;
-                cells[_column + 1, _row + 1].CurrentState = CellState.None;
+                cells[Column - 1][Row - 1].CurrentState = CellState.None;
+                cells[Column][Row - 1].CurrentState = CellState.None;
+                cells[Column + 1][Row - 1].CurrentState = CellState.None;
+                cells[Column - 1][Row].CurrentState = CellState.None;
+                cells[Column + 1][Row].CurrentState = CellState.None;
+                cells[Column - 1][Row + 1].CurrentState = CellState.None;
+                cells[Column][Row + 1].CurrentState = CellState.None;
+                cells[Column + 1][Row + 1].CurrentState = CellState.None;
                 break;
             case CellState.Room_Cross:
-                cells[_column - 1, _row - 1].CurrentState = CellState.None;
-                cells[_column, _row - 1].CurrentState = CellState.None;
-                cells[_column + 1, _row - 1].CurrentState = CellState.None;
-                cells[_column - 1, _row].CurrentState = CellState.None;
-                cells[_column + 1, _row].CurrentState = CellState.None;
-                cells[_column - 1, _row + 1].CurrentState = CellState.None;
-                cells[_column, _row + 1].CurrentState = CellState.None;
-                cells[_column + 1, _row + 1].CurrentState = CellState.None;
+                cells[Column - 1][Row - 1].CurrentState = CellState.None;
+                cells[Column][Row - 1].CurrentState = CellState.None;
+                cells[Column + 1][Row - 1].CurrentState = CellState.None;
+                cells[Column - 1][Row].CurrentState = CellState.None;
+                cells[Column + 1][Row].CurrentState = CellState.None;
+                cells[Column - 1][Row + 1].CurrentState = CellState.None;
+                cells[Column][Row + 1].CurrentState = CellState.None;
+                cells[Column + 1][Row + 1].CurrentState = CellState.None;
                 break;
             default:
                 break;
@@ -1020,7 +1062,7 @@ public class StageCell
         CurrentState = CellState.None;
         PrefabPath = "";
         CurrentDir = DirectionType.North;
-        _isOriginSet = false;
+        IsOriginSet = false;
     }
     #endregion
 
@@ -1032,7 +1074,7 @@ public class StageCell
     /// <param name="type">通路の種類</param>
     /// <param name="dirType">向き</param>
     /// <returns></returns>
-    private bool CheckGridForCorridor(StageCell[,] cells, CorridorType type, DirectionType dirType)
+    private bool CheckGridForCorridor(StageCell[][] cells, CorridorType type, DirectionType dirType)
     {
         //既にセットされている場合は処理を行わない
         if (CurrentState != CellState.None)
@@ -1058,28 +1100,28 @@ public class StageCell
                 if (dirType == DirectionType.North || dirType == DirectionType.Sorth)
                 {
                     //パーツがグリッドの範囲外に出る場合は処理を行わない
-                    if (_column - 1 < 0 ||
-                        _column + 1 > cells.GetLength(0) - 1)
+                    if (Column - 1 < 0 ||
+                        Column + 1 > cells.GetLength(0) - 1)
                     {
                         return false;
                     }
 
                     //上下1マスを同じステータスに変更
-                    cells[_column - 1, _row].CurrentState = CellState.Corridor_Straight_Large;
-                    cells[_column + 1, _row].CurrentState = CellState.Corridor_Straight_Large;
+                    cells[Column - 1][Row].CurrentState = CellState.Corridor_Straight_Large;
+                    cells[Column + 1][Row].CurrentState = CellState.Corridor_Straight_Large;
                 }
                 else
                 {
                     //パーツがグリッドの範囲外に出る場合は処理を行わない
-                    if (_row - 1 < 0 ||
-                        _row + 1 > cells.GetLength(1) - 1)
+                    if (Row - 1 < 0 ||
+                        Row + 1 > cells.GetLength(1) - 1)
                     {
                         return false;
                     }
 
                     //上下1マスを同じステータスに変更
-                    cells[_column, _row - 1].CurrentState = CellState.Corridor_Straight_Large;
-                    cells[_column, _row + 1].CurrentState = CellState.Corridor_Straight_Large;
+                    cells[Column][Row - 1].CurrentState = CellState.Corridor_Straight_Large;
+                    cells[Column][Row + 1].CurrentState = CellState.Corridor_Straight_Large;
                 }
 
                 CurrentState = CellState.Corridor_Straight_Large;
@@ -1089,55 +1131,55 @@ public class StageCell
                 {
                     case DirectionType.North:
                         //パーツがグリッドの範囲外に出る場合は処理を行わない
-                        if (_column + 1 > cells.GetLength(0) - 1 ||
-                            _row + 1 > cells.GetLength(1) - 1)
+                        if (Column + 1 > cells[0].Length - 1 ||
+                            Row + 1 > cells[0].Length - 1)
                         {
                             return false;
                         }
 
                         //パーツの範囲内のマスを同じステータスに変更
-                        cells[_column + 1, _row].CurrentState = CellState.Corridor_Sharp_L;
-                        cells[_column, _row + 1].CurrentState = CellState.Corridor_Sharp_L;
-                        cells[_column + 1, _row + 1].CurrentState = CellState.Corridor_Sharp_L;
+                        cells[Column + 1][Row].CurrentState = CellState.Corridor_Sharp_L;
+                        cells[Column][Row + 1].CurrentState = CellState.Corridor_Sharp_L;
+                        cells[Column + 1][Row + 1].CurrentState = CellState.Corridor_Sharp_L;
                         break;
                     case DirectionType.East:
                         //パーツがグリッドの範囲外に出る場合は処理を行わない
-                        if (_column - 1 < 0 ||
-                            _row + 1 > cells.GetLength(1) - 1)
+                        if (Column - 1 < 0 ||
+                            Row + 1 > cells[0].Length - 1)
                         {
                             return false;
                         }
 
                         //パーツの範囲内のマスを同じステータスに変更
-                        cells[_column - 1, _row].CurrentState = CellState.Corridor_Sharp_L;
-                        cells[_column, _row + 1].CurrentState = CellState.Corridor_Sharp_L;
-                        cells[_column - 1, _row + 1].CurrentState = CellState.Corridor_Sharp_L;
+                        cells[Column - 1][Row].CurrentState = CellState.Corridor_Sharp_L;
+                        cells[Column][Row + 1].CurrentState = CellState.Corridor_Sharp_L;
+                        cells[Column - 1][Row + 1].CurrentState = CellState.Corridor_Sharp_L;
                         break;
                     case DirectionType.Sorth:
                         //パーツがグリッドの範囲外に出る場合は処理を行わない
-                        if (_column - 1 < 0 ||
-                            _row - 1 < 0)
+                        if (Column - 1 < 0 ||
+                            Row - 1 < 0)
                         {
                             return false;
                         }
 
                         //パーツの範囲内のマスを同じステータスに変更
-                        cells[_column - 1, _row].CurrentState = CellState.Corridor_Sharp_L;
-                        cells[_column, _row - 1].CurrentState = CellState.Corridor_Sharp_L;
-                        cells[_column - 1, _row - 1].CurrentState = CellState.Corridor_Sharp_L;
+                        cells[Column - 1][Row].CurrentState = CellState.Corridor_Sharp_L;
+                        cells[Column][Row - 1].CurrentState = CellState.Corridor_Sharp_L;
+                        cells[Column - 1][Row - 1].CurrentState = CellState.Corridor_Sharp_L;
                         break;
                     case DirectionType.West:
                         //パーツがグリッドの範囲外に出る場合は処理を行わない
-                        if (_column + 1 > cells.GetLength(0) - 1 ||
-                            _row - 1 < 0)
+                        if (Column + 1 > cells.GetLength(0) - 1 ||
+                            Row - 1 < 0)
                         {
                             return false;
                         }
 
                         //パーツの範囲内のマスを同じステータスに変更
-                        cells[_column + 1, _row].CurrentState = CellState.Corridor_Sharp_L;
-                        cells[_column, _row - 1].CurrentState = CellState.Corridor_Sharp_L;
-                        cells[_column + 1, _row - 1].CurrentState = CellState.Corridor_Sharp_L;
+                        cells[Column + 1][Row].CurrentState = CellState.Corridor_Sharp_L;
+                        cells[Column][Row - 1].CurrentState = CellState.Corridor_Sharp_L;
+                        cells[Column + 1][Row - 1].CurrentState = CellState.Corridor_Sharp_L;
                         break;
                     default:
                         break;
@@ -1150,69 +1192,69 @@ public class StageCell
                 {
                     case DirectionType.North:
                         //パーツがグリッドの範囲外に出る場合は処理を行わない
-                        if (_column - 1 < 0 ||
-                            _column + 1 > cells.GetLength(0) - 1 ||
-                            _row + 1 > cells.GetLength(1) - 1)
+                        if (Column - 1 < 0 ||
+                            Column + 1 > cells[0].Length - 1 ||
+                            Row + 1 > cells[0].Length - 1)
                         {
                             return false;
                         }
 
                         //原点以外のマスを同じステータスに変更
-                        cells[_column - 1, _row].CurrentState = CellState.Corridor_Sharp_T;
-                        cells[_column + 1, _row].CurrentState = CellState.Corridor_Sharp_T;
-                        cells[_column - 1, _row + 1].CurrentState = CellState.Corridor_Sharp_T;
-                        cells[_column, _row + 1].CurrentState = CellState.Corridor_Sharp_T;
-                        cells[_column + 1, _row + 1].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column - 1][Row].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column + 1][Row].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column - 1][Row + 1].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column][Row + 1].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column + 1][Row + 1].CurrentState = CellState.Corridor_Sharp_T;
                         break;
                     case DirectionType.East:
                         //パーツがグリッドの範囲外に出る場合は処理を行わない
-                        if (_column - 1 < 0 ||
-                            _row - 1 < 0 ||
-                            _row + 1 > cells.GetLength(1) - 1)
+                        if (Column - 1 < 0 ||
+                            Row - 1 < 0 ||
+                            Row + 1 > cells[0].Length - 1)
                         {
                             return false;
                         }
 
                         //原点以外のマスを同じステータスに変更
-                        cells[_column - 1, _row].CurrentState = CellState.Corridor_Sharp_T;
-                        cells[_column - 1, _row - 1].CurrentState = CellState.Corridor_Sharp_T;
-                        cells[_column - 1, _row + 1].CurrentState = CellState.Corridor_Sharp_T;
-                        cells[_column, _row - 1].CurrentState = CellState.Corridor_Sharp_T;
-                        cells[_column, _row + 1].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column - 1][Row].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column - 1][Row - 1].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column - 1][Row + 1].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column][Row - 1].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column][Row + 1].CurrentState = CellState.Corridor_Sharp_T;
 
                         break;
                     case DirectionType.Sorth:
                         //パーツがグリッドの範囲外に出る場合は処理を行わない
-                        if (_column - 1 < 0 ||
-                            _column + 1 > cells.GetLength(0) - 1 ||
-                            _row - 1 < 0)
+                        if (Column - 1 < 0 ||
+                            Column + 1 > cells[0].Length - 1 ||
+                            Row - 1 < 0)
                         {
                             return false;
                         }
 
                         //原点以外のマスを同じステータスに変更
-                        cells[_column - 1, _row].CurrentState = CellState.Corridor_Sharp_T;
-                        cells[_column + 1, _row].CurrentState = CellState.Corridor_Sharp_T;
-                        cells[_column - 1, _row - 1].CurrentState = CellState.Corridor_Sharp_T;
-                        cells[_column, _row - 1].CurrentState = CellState.Corridor_Sharp_T;
-                        cells[_column + 1, _row - 1].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column - 1][Row].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column + 1][Row].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column - 1][Row - 1].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column][Row - 1].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column + 1][Row - 1].CurrentState = CellState.Corridor_Sharp_T;
 
                         break;
                     case DirectionType.West:
                         //パーツがグリッドの範囲外に出る場合は処理を行わない
-                        if (_column < 0 ||
-                            _column + 1 > cells.GetLength(0) - 1 ||
-                            _row - 1 < 0)
+                        if (Column < 0 ||
+                            Column + 1 > cells[0].Length - 1 ||
+                            Row - 1 < 0)
                         {
                             return false;
                         }
 
                         //原点以外のマスを同じステータスに変更
-                        cells[_column - 1, _row].CurrentState = CellState.Corridor_Sharp_T;
-                        cells[_column + 1, _row].CurrentState = CellState.Corridor_Sharp_T;
-                        cells[_column - 1, _row - 1].CurrentState = CellState.Corridor_Sharp_T;
-                        cells[_column, _row - 1].CurrentState = CellState.Corridor_Sharp_T;
-                        cells[_column + 1, _row - 1].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column - 1][Row].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column + 1][Row].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column - 1][Row - 1].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column][Row - 1].CurrentState = CellState.Corridor_Sharp_T;
+                        cells[Column + 1][Row - 1].CurrentState = CellState.Corridor_Sharp_T;
                         break;
                     default:
                         break;
@@ -1222,35 +1264,35 @@ public class StageCell
                 break;
             case CorridorType.Cross:
                 //パーツがグリッドの範囲外に出る場合は処理を行わない
-                if (_column - 1 < 0 ||
-                    _column + 1 > cells.GetLength(0) - 1 ||
-                    _row - 1 < 0 ||
-                    _row + 1 > cells.GetLength(1) - 1)
+                if (Column - 1 < 0 ||
+                    Column + 1 > cells[0].Length - 1 ||
+                    Row - 1 < 0 ||
+                    Row + 1 > cells[0].Length - 1)
                 {
                     return false;
                 }
 
                 CurrentState = CellState.Corridor_Cross;
-                _isOriginSet = true;
+                IsOriginSet = true;
 
                 //原点以外のマスを同じステータスに変更
-                cells[_column - 1, _row - 1].CurrentState = CellState.Corridor_Cross;
-                cells[_column, _row - 1].CurrentState = CellState.Corridor_Cross;
-                cells[_column + 1, _row - 1].CurrentState = CellState.Corridor_Cross;
-                cells[_column - 1, _row].CurrentState = CellState.Corridor_Cross;
-                cells[_column + 1, _row].CurrentState = CellState.Corridor_Cross;
-                cells[_column - 1, _row + 1].CurrentState = CellState.Corridor_Cross;
-                cells[_column, _row + 1].CurrentState = CellState.Corridor_Cross;
-                cells[_column + 1, _row + 1].CurrentState = CellState.Corridor_Cross;
+                cells[Column - 1][Row - 1].CurrentState = CellState.Corridor_Cross;
+                cells[Column][Row - 1].CurrentState = CellState.Corridor_Cross;
+                cells[Column + 1][Row - 1].CurrentState = CellState.Corridor_Cross;
+                cells[Column - 1][Row].CurrentState = CellState.Corridor_Cross;
+                cells[Column + 1][Row].CurrentState = CellState.Corridor_Cross;
+                cells[Column - 1][Row + 1].CurrentState = CellState.Corridor_Cross;
+                cells[Column][Row + 1].CurrentState = CellState.Corridor_Cross;
+                cells[Column + 1][Row + 1].CurrentState = CellState.Corridor_Cross;
                 break;
             default:
                 break;
         }
-        _isOriginSet = true;
+        IsOriginSet = true;
         return true;
     }
 
-    private bool CheckGridForRoom(StageCell[,] cells, RoomType type)
+    private bool CheckGridForRoom(StageCell[][] cells, RoomType type)
     {
         //既にセットされている場合は処理を行わない
         if (CurrentState != CellState.None)
@@ -1258,7 +1300,16 @@ public class StageCell
             return false;
         }
 
-        _isOriginSet = true;
+        //パーツがグリッドの範囲外に出る場合は処理を行わない
+        if (Column - 1 < 0 ||
+            Column + 1 > cells[0].Length - 1 ||
+            Row - 1 < 0 ||
+            Row + 1 > cells[0].Length - 1)
+        {
+            return false;
+        }
+
+        IsOriginSet = true;
 
         switch (type)
         {
@@ -1282,14 +1333,14 @@ public class StageCell
         }
 
         //原点以外のマスを同じステータスに変更
-        cells[_column - 1, _row - 1].CurrentState = CurrentState;
-        cells[_column, _row - 1].CurrentState = CurrentState;
-        cells[_column + 1, _row - 1].CurrentState = CurrentState;
-        cells[_column - 1, _row].CurrentState = CurrentState;
-        cells[_column + 1, _row].CurrentState = CurrentState;
-        cells[_column - 1, _row + 1].CurrentState = CurrentState;
-        cells[_column, _row + 1].CurrentState = CurrentState;
-        cells[_column + 1, _row + 1].CurrentState = CurrentState;
+        cells[Column - 1][Row - 1].CurrentState = CurrentState;
+        cells[Column][Row - 1].CurrentState = CurrentState;
+        cells[Column + 1][Row - 1].CurrentState = CurrentState;
+        cells[Column - 1][Row].CurrentState = CurrentState;
+        cells[Column + 1][Row].CurrentState = CurrentState;
+        cells[Column - 1][Row + 1].CurrentState = CurrentState;
+        cells[Column][Row + 1].CurrentState = CurrentState;
+        cells[Column + 1][Row + 1].CurrentState = CurrentState;
         return true;
     }
     #endregion
@@ -1311,4 +1362,13 @@ public enum CellState
     Room_subMissionTarget,
     Room_Escape,
     Room_Cross
+}
+
+/// <summary>
+/// ステージのマスデータ
+/// </summary>
+[System.Serializable]
+public class StageCellData
+{
+    public StageCell[][] Cells;
 }

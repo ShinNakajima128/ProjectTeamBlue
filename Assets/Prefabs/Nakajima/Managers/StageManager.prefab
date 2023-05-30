@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 592935310267724206}
   - component: {fileID: 592935310267724209}
+  - component: {fileID: 3168524083495119407}
   m_Layer: 0
   m_Name: StageManager
   m_TagString: Untagged
@@ -46,7 +47,7 @@ MonoBehaviour:
   _stageModels:
   - StageName: "\u30B9\u30C6\u30FC\u30B81"
     StageType: 2
-    StagePrefab: {fileID: 4388573938592968882, guid: b57242d05bd8fac4a95a2529e82a2de8,
+    StagePrefab: {fileID: 8743358000970982627, guid: f8fadb247c86d894e91913d7d2c20436,
       type: 3}
   - StageName: "\u30B9\u30C6\u30FC\u30B82"
     StageType: 3
@@ -55,3 +56,18 @@ MonoBehaviour:
     StageType: 4
     StagePrefab: {fileID: 0}
   _countDownTime: 3
+--- !u!114 &3168524083495119407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 592935310267724207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1276d094e05e32146b0400688f89f2a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _mainTargetCoefficient: 3000
+  _subTargetCoefficient: 500
+  _remainingTimeCoefficient: 10
