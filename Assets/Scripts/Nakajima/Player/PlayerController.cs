@@ -41,13 +41,7 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private void Start()
     {
-        StageManager.Instance.SetStartPositionSubject
-                    .Subscribe(SetStartPosition)
-                    .AddTo(this);
-
-        StageManager.Instance.IsInGameSubject
-                    .Subscribe(ChangeIsOperatable)
-                    .AddTo(this);
+        
     }
     #endregion
 
@@ -75,23 +69,22 @@ public class PlayerController : MonoBehaviour, IDamagable
             Debug.Log("Gameover");
         }
     }
-    #endregion
-
-    #region private method
     /// <summary>
     /// プレイヤー操作のON/OFFを切り替える
     /// </summary>
     /// <param name="isOperatable">ON/OFF</param>
-    private void ChangeIsOperatable(bool isOperatable)
+    public void ChangeIsOperatable(bool isOperatable)
     {
         _isOperable.OnNext(isOperatable);
     }
 
-
-    private void SetStartPosition(Vector3 startPos)
+    public void SetStartPosition(Vector3 startPos)
     {
         transform.position = startPos;
     }
+    #endregion
+
+    #region private method
     #endregion
 
     #region coroutine method

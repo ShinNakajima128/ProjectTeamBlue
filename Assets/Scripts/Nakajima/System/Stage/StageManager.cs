@@ -41,6 +41,7 @@ public class StageManager : MonoBehaviour
     #region private
     private Stage _currentStage;
     private ScoreCalculation _scoreCalc;
+    private PlayerController _playerCtrl;
     private bool _inGame = false;
     private int _currentSubMissionCompleteNum = 0;
     private int _currrentScore = 0;
@@ -68,9 +69,18 @@ public class StageManager : MonoBehaviour
     {
         Instance = this;
         TryGetComponent(out _scoreCalc);
+        _playerCtrl = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
     }
     private IEnumerator Start()
     {
+        SetStartPositionSubject
+        .Subscribe(_playerCtrl.SetStartPosition)
+        .AddTo(this);
+
+        IsInGameSubject
+        .Subscribe(_playerCtrl.ChangeIsOperatable)
+        .AddTo(this);
+
         //Subjectの登録処理のため、1フレーム待機
         yield return null;
 
