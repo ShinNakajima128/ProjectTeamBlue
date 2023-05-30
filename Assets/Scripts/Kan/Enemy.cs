@@ -550,7 +550,7 @@ public class Enemy : MonoBehaviour
                     Debug.Log(checkPointPositionList.Count);
                 //Debug.Log(transform.position + "⇒"+ nextPos);
 
-                float threshold = .99f;
+                float threshold = .95f;
 
                 //Quaternion.Slerp(transform.rotation,)
                 if (dotProduct >= threshold)
