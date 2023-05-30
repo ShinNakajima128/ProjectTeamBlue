@@ -53,11 +53,19 @@ public class HPBar : MonoBehaviour
         //maxHP = enemy.maxHP;
     }
 
+
+
     private void Update()
     {
-        transform.forward = Camera.main.transform.forward;
-        hpFillImage.fillAmount = hp * 1 / maxHP;
+        
+        hpFillImage.fillAmount = Mathf.Clamp(hp * 1 / maxHP, 0, 1);
     }
+
+    private void FixedUpdate()
+    {
+        transform.forward = Camera.main.transform.forward;
+    }
+
     #endregion
 
     #region public method
