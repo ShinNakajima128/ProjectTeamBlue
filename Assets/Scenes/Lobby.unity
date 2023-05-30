@@ -186,7 +186,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &40923160
 GameObject:
@@ -218,7 +218,7 @@ Transform:
   - {fileID: 2072836814}
   - {fileID: 791479326}
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &48812896
 GameObject:
@@ -314,16 +314,19 @@ MonoBehaviour:
       _isClearedStage: 0
       _isClearedSubMissions: 00
       _highScore: 0
+      _stageRank: 0
     - _stageName: Stage2
       _stageType: 3
       _isClearedStage: 0
       _isClearedSubMissions: 0000
       _highScore: 0
+      _stageRank: 0
     - _stageName: Stage3
       _stageType: 4
       _isClearedStage: 0
       _isClearedSubMissions: 000000
       _highScore: 0
+      _stageRank: 0
   _debugMode: 0
 --- !u!1 &139601830
 GameObject:
@@ -1121,11 +1124,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 721012671}
         m_MethodName: LoadStageScene
-        m_Mode: 5
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 3
           m_FloatArgument: 0
           m_StringArgument: Test_Nakajima
           m_BoolArgument: 0
@@ -1331,11 +1334,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 721012671}
         m_MethodName: LoadStageScene
-        m_Mode: 5
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 2
           m_FloatArgument: 0
           m_StringArgument: Test_Nakajima
           m_BoolArgument: 0
@@ -1674,7 +1677,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &678836932
 GameObject:
@@ -2616,11 +2619,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 721012671}
         m_MethodName: LoadStageScene
-        m_Mode: 5
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: Test_Nakajima
           m_BoolArgument: 0
@@ -3944,7 +3947,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &1772754362
 GameObject:
@@ -4119,7 +4122,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1872712544
 MonoBehaviour:
