@@ -8,13 +8,19 @@ using UnityEngine;
 public class ActionableObject : MonoBehaviour, IActionable
 {
     #region property
+    public TargetType Type => _targetType;
+    /// <summary>既に完了しているかどうか</summary>
+    public bool IsCompleted { get; private set; } = false;
     #endregion
 
     #region serialize
+    [Tooltip("ターゲットの種類")]
+    [SerializeField]
+    private TargetType _targetType = default;
     #endregion
 
     #region private
-    PlayerAction _playerAction; 
+    private PlayerAction _playerAction;
     #endregion
 
     #region Constant
@@ -42,6 +48,7 @@ public class ActionableObject : MonoBehaviour, IActionable
         if (other.CompareTag("Player"))
         {
             _playerAction.ResetAction();
+            Debug.Log("登録されたアクションをリセット");
         }
     }
     #endregion
@@ -50,9 +57,20 @@ public class ActionableObject : MonoBehaviour, IActionable
     public void OnAction()
     {
         print("アクション実行");
+        IsCompleted = true;
     }
     #endregion
 
     #region private method
     #endregion
+}
+
+/// <summary>
+/// ターゲットの種類
+/// </summary>
+public enum TargetType
+{
+    Main,
+    Sub,
+    EscapePoint
 }

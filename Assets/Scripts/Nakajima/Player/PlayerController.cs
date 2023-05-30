@@ -39,13 +39,15 @@ public class PlayerController : MonoBehaviour, IDamagable
         _currentHP = _maxHP;
     }
 
-    private IEnumerator Start()
+    private void Start()
     {
-        yield return new WaitForSeconds(1.0f);
+        StageManager.Instance.SetStartPositionSubject
+                    .Subscribe(SetStartPosition)
+                    .AddTo(this);
 
-        Debug.Log("行動可能");
-
-        _isOperable.OnNext(true);
+        StageManager.Instance.IsInGameSubject
+                    .Subscribe(ChangeIsOperatable)
+                    .AddTo(this);
     }
     #endregion
 
@@ -76,6 +78,20 @@ public class PlayerController : MonoBehaviour, IDamagable
     #endregion
 
     #region private method
+    /// <summary>
+    /// プレイヤー操作のON/OFFを切り替える
+    /// </summary>
+    /// <param name="isOperatable">ON/OFF</param>
+    private void ChangeIsOperatable(bool isOperatable)
+    {
+        _isOperable.OnNext(isOperatable);
+    }
+
+
+    private void SetStartPosition(Vector3 startPos)
+    {
+        transform.position = startPos;
+    }
     #endregion
 
     #region coroutine method
@@ -95,6 +111,9 @@ public class PlayerController : MonoBehaviour, IDamagable
     #endregion
 }
 
+/// <summary>
+/// プレイヤーの状態
+/// </summary>
 public enum PlayerState
 {
     Idle,

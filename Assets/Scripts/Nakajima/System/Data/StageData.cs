@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "MyScriptable/StageData")]
 [Serializable]
-public class StageData : ScriptableObject
+public class StageData
 {
     #region property
     public Stage[] Stages => _stages;
@@ -27,11 +26,26 @@ public class StageData : ScriptableObject
     #endregion
 
     #region public method
+    /// <summary>
+    /// データをセットする。保存データがある場合に使用
+    /// </summary>
+    /// <param name="stageDatas"></param>
     public void Setup(Stage[] stageDatas)
     {
         for (int i = 0; i < _stages.Length; i++)
         {
             _stages[i].SetupData(stageDatas[i]);
+        }
+    }
+
+    /// <summary>
+    /// データを初期状態にリセットする
+    /// </summary>
+    public void DataReset()
+    {
+        for (int i = 0; i < _stages.Length; i++)
+        {
+            _stages[i].Reset();
         }
     }
     #endregion
