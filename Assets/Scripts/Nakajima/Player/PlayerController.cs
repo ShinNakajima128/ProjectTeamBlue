@@ -19,6 +19,9 @@ public class PlayerController : MonoBehaviour, IDamagable
     #region serialize
     [SerializeField]
     private int _maxHP = 5;
+
+    [SerializeField]
+    private bool _debugMode = false;
     #endregion
 
     #region private
@@ -41,7 +44,10 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private void Start()
     {
-        
+        if (_debugMode)
+        {
+            _isOperable.OnNext(true);
+        }
     }
     #endregion
 
