@@ -105,13 +105,15 @@ public class LobbyManager : MonoBehaviour
     /// <summary>
     /// ステージSceneを読み込む
     /// </summary>
-    public void LoadStageScene(string stageName)
+    public void LoadStageScene(int stageType)
     {
-        SceneManager.LoadScene(stageName);
+        GameStates stage = (GameStates)(stageType + 1);
 
         //ステージ選択画面で押されたボタンのステージをGameManagerの関数の引数に入れる
         //※現在は仮の処理なため、システムができ次第修正予定
-        GameManager.Instance.SetCurrentGameStates(GameStates.Stage1);
+
+        GameManager.Instance.SetCurrentGameStates(stage);
+        SceneManager.LoadScene("InGame");
     }
     #endregion
 
