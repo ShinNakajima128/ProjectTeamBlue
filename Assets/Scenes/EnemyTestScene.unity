@@ -321,6 +321,7 @@ MonoBehaviour:
   patrolTurningSpeed: 1
   angleThreshold: 1
   enemyWaiter: {fileID: 0}
+  SummonNum: 0
   summonRadius: 0
   summonCheckRadius: 0
   hpBar: {fileID: 196566187}
@@ -2621,6 +2622,7 @@ MonoBehaviour:
   patrolTurningSpeed: 1
   angleThreshold: 1
   enemyWaiter: {fileID: 0}
+  SummonNum: 0
   summonRadius: 0
   summonCheckRadius: 0
   hpBar: {fileID: 1924045605}
@@ -3327,9 +3329,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4113484643387756275, guid: 9622427915e4fc1418cb32937d84b0a9,
         type: 3}
+      propertyPath: SummonNum
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4113484643387756275, guid: 9622427915e4fc1418cb32937d84b0a9,
+        type: 3}
       propertyPath: enemyWaiter
       value: 
-      objectReference: {fileID: 6680927125457631935, guid: a5d6acf8e5311f842b977e7d20ea3d4c,
+      objectReference: {fileID: 2633403833245601580, guid: f4ac08f4bbb1ba645a71680dc0f9fba4,
         type: 3}
     - target: {fileID: 4113484643387756275, guid: 9622427915e4fc1418cb32937d84b0a9,
         type: 3}

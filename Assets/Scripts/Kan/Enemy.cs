@@ -21,6 +21,8 @@ public class Enemy : MonoBehaviour
     public float patrolTurningSpeed = 1f;//巡回回転速度
     public float angleThreshold = 1.0f;//最小回転角度
     public GameObject enemyWaiter;//召喚された敵（雑魚）
+    public int SummonNum = 5;//召喚可能敵数
+    
     public float summonRadius;//召喚半径
     public float summonCheckRadius;//召喚出来ない円範囲の半径
 
@@ -48,6 +50,7 @@ public class Enemy : MonoBehaviour
     bool isLookingAround = false;//巡回中
     bool isFindPlayer = false;
     float totalAngle = 0.0f;//全回転角度
+    int SummonCnt = 0;//召喚された敵数
     GameObject taget;
     Quaternion initialRotation;
 
@@ -236,7 +239,6 @@ public class Enemy : MonoBehaviour
                 DoAttack();
                 break;
             case ENEMY_ACT.SUMMON:
-                maxDepth = 5;
                 DoSummon();
                 //TODO:type3敵を作成し、召喚を実装
                 break;
@@ -520,12 +522,23 @@ public class Enemy : MonoBehaviour
         }
 
     }
-    int maxDepth = 0;
-    bool testbool = false;
+
     void DoSummon()
     {
-        if (testbool == true) return;
-        if (maxDepth <= 0) return;
+        if (SummonCnt >= SummonNum)
+        {
+            GameObject playerObject = enemyCheck.HitPlayer;
+
+            if (playerObject != null)
+            {
+                Vector3 playerPos = new Vector3(playerObject.transform.position.x, transform.position.y, playerObject.transform.position.z);
+                transform.LookAt(playerPos);
+            }
+            else
+                enemyAct = ENEMY_ACT.WAIT_AND_SEARCH;
+            return;
+        }
+
         //public GameObject enemyWaiter;//召喚された敵（雑魚）
         //public float summonRadius;//召喚半径
         //public float summonCheckRadius;//召喚出来ない円範囲の半径
@@ -537,26 +550,22 @@ public class Enemy : MonoBehaviour
 
         NavMeshHit hit;
 
-        if (NavMesh.SamplePosition(position, out hit, 1.0f, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(position, out hit, 1.0f, NavMesh.AllAreas))//移動できるポジションを取得
         {
-            //if (!Physics.CheckSphere(hit.position, summonCheckRadius,~gameObject.layer))
+            if (!Physics.CheckSphere(hit.position, summonCheckRadius,gameObject.layer))//~gameObject.layer))
             {
                 Instantiate(enemyWaiter, hit.position, Quaternion.identity);
-                testbool = true;
+                SummonCnt++;
             }
-            //else
-            //{
-            //    maxDepth--;
-            //    DoSummon();
-            //}
+            else
+            {
+                DoSummon();
+            }
         }
         else
         {
-            maxDepth--;
             DoSummon();
         }
-
-        //Instantiate(enemyWaiter)
     }
 
     IEnumerator LookAround()
