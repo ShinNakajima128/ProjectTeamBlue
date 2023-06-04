@@ -20,6 +20,10 @@ public class Enemy : MonoBehaviour
     public float rotWaitTime = 2f;
     public float patrolTurningSpeed = 1f;//巡回回転速度
     public float angleThreshold = 1.0f;//最小回転角度
+    public GameObject enemyWaiter;//召喚された敵（雑魚）
+    public float summonRadius;//召喚半径
+    public float summonCheckRadius;//召喚出来ない円範囲の半径
+
 
     public List<Tuple<bool,Vector3>> checkPointPositionList;
     public HPBar hpBar;
@@ -39,6 +43,7 @@ public class Enemy : MonoBehaviour
     Coroutine lookAroundCorutine;
 
     int currentTargetIndex = 0;//回転パターン
+    bool isOverRound = false;
     Vector3[] targets = new Vector3[] { new Vector3(0, -90, 0),Vector3.zero, new Vector3(0, 90, 0), new Vector3(0, 180, 0), new Vector3(0, 270, 0) };//回転パターン
     bool isLookingAround = false;//巡回中
     bool isFindPlayer = false;
@@ -231,7 +236,8 @@ public class Enemy : MonoBehaviour
                 DoAttack();
                 break;
             case ENEMY_ACT.SUMMON:
-                Debug.Log("ENEMY_ACT.SUMMON");
+                maxDepth = 5;
+                DoSummon();
                 //TODO:type3敵を作成し、召喚を実装
                 break;
             case ENEMY_ACT.DEATH:
@@ -514,7 +520,45 @@ public class Enemy : MonoBehaviour
         }
 
     }
-    bool isOverRound = false;
+    int maxDepth = 0;
+    bool testbool = false;
+    void DoSummon()
+    {
+        if (testbool == true) return;
+        if (maxDepth <= 0) return;
+        //public GameObject enemyWaiter;//召喚された敵（雑魚）
+        //public float summonRadius;//召喚半径
+        //public float summonCheckRadius;//召喚出来ない円範囲の半径
+        if (enemyWaiter == null) return;
+
+        Vector3 position = UnityEngine.Random.insideUnitCircle * summonRadius;//insideUnitCircle円内乱数
+
+        position = new Vector3(position.x, 0, position.y) + transform.position;
+
+        NavMeshHit hit;
+
+        if (NavMesh.SamplePosition(position, out hit, 1.0f, NavMesh.AllAreas))
+        {
+            //if (!Physics.CheckSphere(hit.position, summonCheckRadius,~gameObject.layer))
+            {
+                Instantiate(enemyWaiter, hit.position, Quaternion.identity);
+                testbool = true;
+            }
+            //else
+            //{
+            //    maxDepth--;
+            //    DoSummon();
+            //}
+        }
+        else
+        {
+            maxDepth--;
+            DoSummon();
+        }
+
+        //Instantiate(enemyWaiter)
+    }
+
     IEnumerator LookAround()
     {
         isLookingAround = true;
