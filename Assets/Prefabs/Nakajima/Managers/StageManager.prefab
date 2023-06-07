@@ -44,17 +44,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61bdfd42a4a8a5d439cf70b0b45441bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _limitTime: 300
   _stageModels:
   - StageName: "\u30B9\u30C6\u30FC\u30B81"
     StageType: 2
-    StagePrefab: {fileID: 8743358000970982627, guid: f8fadb247c86d894e91913d7d2c20436,
+    StagePrefab: {fileID: 4388573938592968882, guid: b57242d05bd8fac4a95a2529e82a2de8,
       type: 3}
   - StageName: "\u30B9\u30C6\u30FC\u30B82"
     StageType: 3
-    StagePrefab: {fileID: 0}
+    StagePrefab: {fileID: 8743358000970982627, guid: f8fadb247c86d894e91913d7d2c20436,
+      type: 3}
   - StageName: "\u30B9\u30C6\u30FC\u30B83"
     StageType: 4
-    StagePrefab: {fileID: 0}
+    StagePrefab: {fileID: 1236198115442529800, guid: d54406d71e232244ea8e5c50716c4bac,
+      type: 3}
   _countDownTime: 3
 --- !u!114 &3168524083495119407
 MonoBehaviour:
@@ -70,4 +73,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mainTargetCoefficient: 3000
   _subTargetCoefficient: 500
-  _remainingTimeCoefficient: 10
+  _remainingTimeCoefficient: 100
