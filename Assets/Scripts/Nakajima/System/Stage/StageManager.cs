@@ -15,12 +15,15 @@ public class StageManager : MonoBehaviour
     public Stage CurrentStage => _currentStage;
     public ReactiveProperty<float> CurrentLimitTime => _currentLimitTime;
     public bool IsCompletedMainMission { get; set; } = false;
-    public int CompleteSubMissionNum { get; set; } = 0;
+    public ReactiveProperty<int> CompleteSubMissionNum => _currentSubMissionCompleteNum;
+    public ReactiveProperty<int> StartCountDownNum => _startCountDownNum;
     public bool IsGameover { get; set; } = false;
     public Subject<Vector3> SetStartPositionSubject => _setPlayerSubject;
     public Subject<bool> IsInGameSubject => _isInGameSubject;
     public Subject<Unit> GameStartSubject => _gameStartSubject;
     public Subject<Unit> GamePauseSubject => _gamePauseSubject;
+    public Subject<Unit> MainTargetCompleteSubject => _mainTargetCompleteSubject;
+    public Subject<Unit> SubMissionCompleteSubject => _subTargetCompleteSubject;
     public Subject<Unit> GameRestartSubject => _gameRestartSubject;
     public Subject<Unit> GameEndSubject => _gameEndSubject;
     #endregion
@@ -30,12 +33,13 @@ public class StageManager : MonoBehaviour
     [SerializeField]
     private float _limitTime = 300f;
 
+    [Tooltip("カウントダウン時間")]
+    [SerializeField]
+    private int _countDownTime = 3;
+
     [Tooltip("各ステージのオブジェクト情報を持つクラスの配列")]
     [SerializeField]
     private StageModel[] _stageModels = default;
-
-    [SerializeField]
-    private int _countDownTime = 3;
     #endregion
 
     #region private
@@ -43,7 +47,8 @@ public class StageManager : MonoBehaviour
     private ScoreCalculation _scoreCalc;
     private PlayerController _playerCtrl;
     private bool _inGame = false;
-    private int _currentSubMissionCompleteNum = 0;
+    private ReactiveProperty<int> _currentSubMissionCompleteNum = new ReactiveProperty<int>();
+    private ReactiveProperty<int> _startCountDownNum = new ReactiveProperty<int>();
     private int _currrentScore = 0;
     private ReactiveProperty<float> _currentLimitTime = new ReactiveProperty<float>();
     private Subject<Vector3> _setPlayerSubject = new Subject<Vector3>();
@@ -70,6 +75,7 @@ public class StageManager : MonoBehaviour
         Instance = this;
         TryGetComponent(out _scoreCalc);
         _playerCtrl = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        _startCountDownNum.Value = _countDownTime;
     }
     private IEnumerator Start()
     {
@@ -80,6 +86,7 @@ public class StageManager : MonoBehaviour
         IsInGameSubject
         .Subscribe(_playerCtrl.ChangeIsOperatable)
         .AddTo(this);
+
 
         //Subjectの登録処理のため、1フレーム待機
         yield return null;
@@ -150,7 +157,7 @@ public class StageManager : MonoBehaviour
     /// </summary>
     public void OnSubTargetComplete()
     {
-        _currentSubMissionCompleteNum++;
+        _currentSubMissionCompleteNum.Value++;
         _subTargetCompleteSubject.OnNext(Unit.Default);
         Debug.Log("サブターゲット達成");
     }
@@ -194,12 +201,11 @@ public class StageManager : MonoBehaviour
     /// </summary>
     private IEnumerator GameStartCoroutine()
     {
-        for (int i = _countDownTime; i > 0; i--)
+        for (int i = _startCountDownNum.Value; i > 0; i--)
         {
-            Debug.Log(i.ToString());
             yield return new WaitForSeconds(COUNT_TIME);
+            _startCountDownNum.Value--;
         }
-        Debug.Log("GameStart");
 
         yield return new WaitForSeconds(COUNT_TIME);
 
@@ -218,9 +224,9 @@ public class StageManager : MonoBehaviour
         if (!IsGameover)
         {
             //テスト処理
-            _currrentScore = _scoreCalc.CalcurlationScore(_currentSubMissionCompleteNum, (int)_currentLimitTime.Value); ;
+            _currrentScore = _scoreCalc.CalcurlationScore(_currentSubMissionCompleteNum.Value, (int)_currentLimitTime.Value); ;
 
-            _currentStage.SetClearData(_currentSubMissionCompleteNum, _currrentScore);
+            _currentStage.SetClearData(_currentSubMissionCompleteNum.Value, _currrentScore);
         }
         //データを保存
         DataManager.Instance.SaveData();
