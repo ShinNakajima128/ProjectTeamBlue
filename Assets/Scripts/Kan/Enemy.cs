@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,12 @@ public class Enemy : MonoBehaviour
     public float rotWaitTime = 2f;
     public float patrolTurningSpeed = 1f;//巡回回転速度
     public float angleThreshold = 1.0f;//最小回転角度
+    public GameObject enemyWaiter;//召喚された敵（雑魚）
+    public int SummonNum = 5;//召喚可能敵数
+    
+    public float summonRadius;//召喚半径
+    public float summonCheckRadius;//召喚出来ない円範囲の半径
+
 
     public List<Tuple<bool,Vector3>> checkPointPositionList;
     public HPBar hpBar;
@@ -39,10 +46,12 @@ public class Enemy : MonoBehaviour
     Coroutine lookAroundCorutine;
 
     int currentTargetIndex = 0;//回転パターン
+    bool isOverRound = false;
     Vector3[] targets = new Vector3[] { new Vector3(0, -90, 0),Vector3.zero, new Vector3(0, 90, 0), new Vector3(0, 180, 0), new Vector3(0, 270, 0) };//回転パターン
     bool isLookingAround = false;//巡回中
     bool isFindPlayer = false;
     float totalAngle = 0.0f;//全回転角度
+    int SummonCnt = 0;//召喚された敵数
     GameObject taget;
     Quaternion initialRotation;
 
@@ -72,10 +81,10 @@ public class Enemy : MonoBehaviour
 
     public enum ENEMY_TYPE
     {
-        WARDER,
-        WANDERER,
-        WAITER,
-        CAPTAIN
+        WARDER,//監視カメラタイプ
+        WANDERER,//巡回タイプ
+        WAITER,//召喚された雑魚
+        CAPTAIN//強敵
     }
 
     //public struct checkPointInfo
@@ -109,6 +118,7 @@ public class Enemy : MonoBehaviour
 
         
         SetPosList();
+        if (enemyType == ENEMY_TYPE.WAITER) return;
         nextPos = GetNextPositon();
     }
 
@@ -123,8 +133,9 @@ public class Enemy : MonoBehaviour
                     enemyAct = ENEMY_ACT.WAIT_AND_SEARCH;
                 }
 
-                if (enemyType == ENEMY_TYPE.WANDERER)
+                if (enemyType == ENEMY_TYPE.WANDERER || enemyType == ENEMY_TYPE.WAITER)
                 {
+                    
                     if (checkPointPositionList.Count == 0)
                         checkPointPositionList.Add(new Tuple<bool, Vector3>(false, transform.position));
                     else
@@ -135,38 +146,18 @@ public class Enemy : MonoBehaviour
 
                     //backToGoNextPointCorutine = StartCoroutine(ReturnToOtherAct(ENEMY_ACT.GO_TO_NEXT_POINT, waitTime));
 
+                    if(enemyType == ENEMY_TYPE.WAITER)
+                    {
+                        enemyAct = ENEMY_ACT.CHASE;
+                        break;
+                    }
                     enemyAct = ENEMY_ACT.WAIT_AND_SEARCH;
                 }
                 
                 break;
             case ENEMY_ACT.WAIT_AND_SEARCH:
-
-                if (enemyType == ENEMY_TYPE.WARDER)
+                //if (enemyType == ENEMY_TYPE.WARDER)
                 {
-                    if (!isLookingAround)
-                    {
-                        lookAroundCorutine = StartCoroutine(LookAround());
-                    }
-
-                        GameObject playerObject = enemyCheck.HitPlayer;
-                        if (playerObject == null)
-                        {
-                            //enemyAct = ENEMY_ACT.GO_TO_NEXT_POINT;
-                            break;
-                        }
-
-                        taget = playerObject;
-                        StopCoroutine(lookAroundCorutine);
-                        isLookingAround = false;
-                        enemyAct = ENEMY_ACT.SUMMON;
-                    
-                }
-
-                if (enemyType == ENEMY_TYPE.WANDERER)
-                {
-                    //if (backToWaitAndSearchCoroutine != null)
-                    //StopCoroutine(backToWaitAndSearchCoroutine);
-
                     if (!isLookingAround)
                     {
                         lookAroundCorutine = StartCoroutine(LookAround());
@@ -175,29 +166,27 @@ public class Enemy : MonoBehaviour
                     GameObject playerObject = enemyCheck.HitPlayer;
                     if (playerObject == null)
                     {
-                        //enemyAct = ENEMY_ACT.GO_TO_NEXT_POINT;
                         break;
                     }
 
-                    //isFindPlayer = true;
-
-                    //if (NearByTarget(playerObject.transform.position, stopFarWithPlayer))
-                    //{
-                    //    //StopCoroutine(backToWaitAndSearchCoroutine);
-
-                    //    if (oldEnemyAct == ENEMY_ACT.ATTACKING)
-                    //    {
-                    //        //enemyAct = ENEMY_ACT.ATTACK;
-                    //Debug.Log("TEST");
-                    //        break;
-                    //    }
-
-                    //break;
-                    //}
                     taget = playerObject;
                     StopCoroutine(lookAroundCorutine);
                     isLookingAround = false;
-                    enemyAct = ENEMY_ACT.CHASE;
+
+                    switch (enemyType)
+                    {
+                        case ENEMY_TYPE.WARDER:
+                            enemyAct = ENEMY_ACT.SUMMON;
+                            break;
+                        case ENEMY_TYPE.WANDERER:
+                        case ENEMY_TYPE.WAITER:
+                            enemyAct = ENEMY_ACT.CHASE;
+                            break;
+                        case ENEMY_TYPE.CAPTAIN:
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 break;
             case ENEMY_ACT.GO_TO_NEXT_POINT:
@@ -213,6 +202,7 @@ public class Enemy : MonoBehaviour
                 BackToStartPosition();
                 break;
             case ENEMY_ACT.CHASE:
+                
                 backToStartPointCoroutine = StartCoroutine(ReturnToOtherAct(ENEMY_ACT.BACK_TO_STARTPOINT, followTime));
                 enemyAct = ENEMY_ACT.CHASEING;
                 break;
@@ -221,8 +211,6 @@ public class Enemy : MonoBehaviour
                 break;
             case ENEMY_ACT.ATTACK:
                 StopCoroutine(backToStartPointCoroutine);
-                //backToWaitAndSearchCoroutine = StartCoroutine(ReturnToOtherAct(ENEMY_ACT.WAIT_AND_SEARCH, attcckCoolTime));
-                //checkPointPositionList[checkPointPositionList.Count - 1] = new Tuple<bool, Vector3>(true, transform.position);//敵の最初座標を更新
                 enemyAct = ENEMY_ACT.ATTACKING;
                 break;
             case ENEMY_ACT.ATTACKING:
@@ -231,8 +219,7 @@ public class Enemy : MonoBehaviour
                 DoAttack();
                 break;
             case ENEMY_ACT.SUMMON:
-                Debug.Log("ENEMY_ACT.SUMMON");
-                //TODO:type3敵を作成し、召喚を実装
+                DoSummon();
                 break;
             case ENEMY_ACT.DEATH:
                 break;
@@ -253,6 +240,12 @@ public class Enemy : MonoBehaviour
     #region private method
     void SetPosList()
     {
+        if (enemyType == ENEMY_TYPE.WAITER)
+        {
+            checkPointPositionList.Add(new Tuple<bool,Vector3>(true, transform.position));
+            return;
+        }
+
         List<GameObject> objArr = GetComponent<EnemyCheckPoint>().GetChildsFormPointArr();
 
         bool isFirst = true;
@@ -323,6 +316,7 @@ public class Enemy : MonoBehaviour
 
             enemyAgent.isStopped = false;
             enemyAgent.SetDestination(taget.transform.position);
+            transform.LookAt(taget.transform);
             
         }
         
@@ -514,7 +508,53 @@ public class Enemy : MonoBehaviour
         }
 
     }
-    bool isOverRound = false;
+
+    void DoSummon()
+    {
+        if (SummonCnt >= SummonNum)
+        {
+            GameObject playerObject = enemyCheck.HitPlayer;
+
+            if (playerObject != null)
+            {
+                Vector3 playerPos = new Vector3(playerObject.transform.position.x, transform.position.y, playerObject.transform.position.z);
+                transform.LookAt(playerPos);
+            }
+            else
+                enemyAct = ENEMY_ACT.WAIT_AND_SEARCH;
+            return;
+        }
+
+        //public GameObject enemyWaiter;//召喚された敵（雑魚）
+        //public float summonRadius;//召喚半径
+        //public float summonCheckRadius;//召喚出来ない円範囲の半径
+        if (enemyWaiter == null) return;
+
+        Vector3 position = UnityEngine.Random.insideUnitCircle * summonRadius;//insideUnitCircle円内乱数
+
+        position = new Vector3(position.x, 0, position.y) + transform.position;
+
+        NavMeshHit hit;
+
+        if (NavMesh.SamplePosition(position, out hit, 1.0f, NavMesh.AllAreas))//移動できるポジションを取得
+        {
+            if (!Physics.CheckSphere(hit.position, summonCheckRadius,gameObject.layer))//~gameObject.layer))
+            {
+                GameObject obj = Instantiate(enemyWaiter, hit.position, Quaternion.identity);
+                obj.GetComponent<Enemy>().taget = taget;
+                SummonCnt++;
+            }
+            else
+            {
+                DoSummon();
+            }
+        }
+        else
+        {
+            DoSummon();
+        }
+    }
+
     IEnumerator LookAround()
     {
         isLookingAround = true;
