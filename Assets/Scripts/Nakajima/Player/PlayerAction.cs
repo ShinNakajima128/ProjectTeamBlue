@@ -24,6 +24,8 @@ public class PlayerAction : MonoBehaviour
     #region private
     /// <summary>アクション中かどうか</summary>
     private bool _isInAction = false;
+    /// <summary>アクションを行えるかどうか</summary>
+    private bool _isCanAction = true;
     /// <summary>現在行えるアクション</summary>
     IActionable _currentActionable = default;
     #endregion
@@ -37,6 +39,11 @@ public class PlayerAction : MonoBehaviour
     #region unity methods
     private void Start()
     {
+        PlayerController.Instance.IsOperable
+                        .Subscribe(ChangeIsCanAction)
+                        .AddTo(this);
+
+        //アクション入力の受付処理を登録
         this.UpdateAsObservable()
             .Subscribe(_ =>
             {
@@ -82,7 +89,7 @@ public class PlayerAction : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F))
         {
             //既にミッションを完了している場合は処理を行わない
-            if (_currentActionable.IsCompleted)
+            if (_currentActionable.IsCompleted || !_isCanAction)
             {
                 return;
             }
@@ -115,6 +122,15 @@ public class PlayerAction : MonoBehaviour
             StartCoroutine(OnActionCoroutine(currentActionTime));
             ActionGauge.StartAction(currentActionTime);
         }
+    }
+
+    /// <summary>
+    /// アクション可能かどうかの判定を切り替える
+    /// </summary>
+    /// <param name="value">判定</param>
+    private void ChangeIsCanAction(bool value)
+    {
+        _isCanAction = value;
     }
     #endregion
 

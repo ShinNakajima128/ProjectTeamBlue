@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1014969652043983885
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1014969652043983887}
+  - component: {fileID: 1014969652043983884}
+  m_Layer: 0
+  m_Name: ScoreRankCalculator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1014969652043983887
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1014969652043983885}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1014969652043983884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1014969652043983885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4486db20c397c8049879750b9f0166e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rankedScores:
+  - StageName: Stage1
+    StageType: 2
+    Time_Rank_S: 8000
+    Time_Rank_A: 7000
+    Time_Rank_B: 6000
+    Time_Rank_C: 5000
+  - StageName: Stage2
+    StageType: 3
+    Time_Rank_S: 9000
+    Time_Rank_A: 8000
+    Time_Rank_B: 7000
+    Time_Rank_C: 6000
+  - StageName: Stage3
+    StageType: 4
+    Time_Rank_S: 10000
+    Time_Rank_A: 9000
+    Time_Rank_B: 8000
+    Time_Rank_C: 7000
