@@ -246,6 +246,11 @@ MonoBehaviour:
   rotWaitTime: 1
   patrolTurningSpeed: 1
   angleThreshold: 1
+  enemyWaiter: {fileID: 2633403833245601580, guid: f4ac08f4bbb1ba645a71680dc0f9fba4,
+    type: 3}
+  SummonNum: 5
+  summonRadius: 3
+  summonCheckRadius: 2
   hpBar: {fileID: 4113484643420384591}
   enemyAct: 0
 --- !u!195 &4113484643387756274

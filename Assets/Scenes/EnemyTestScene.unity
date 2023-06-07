@@ -3327,27 +3327,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemyType_4
       objectReference: {fileID: 0}
-    - target: {fileID: 4113484643387756275, guid: 9622427915e4fc1418cb32937d84b0a9,
-        type: 3}
-      propertyPath: SummonNum
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4113484643387756275, guid: 9622427915e4fc1418cb32937d84b0a9,
-        type: 3}
-      propertyPath: enemyWaiter
-      value: 
-      objectReference: {fileID: 2633403833245601580, guid: f4ac08f4bbb1ba645a71680dc0f9fba4,
-        type: 3}
-    - target: {fileID: 4113484643387756275, guid: 9622427915e4fc1418cb32937d84b0a9,
-        type: 3}
-      propertyPath: summonRadius
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 4113484643387756275, guid: 9622427915e4fc1418cb32937d84b0a9,
-        type: 3}
-      propertyPath: summonCheckRadius
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 4113484643420384594, guid: 9622427915e4fc1418cb32937d84b0a9,
         type: 3}
       propertyPath: m_Camera
