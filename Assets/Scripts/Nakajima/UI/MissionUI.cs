@@ -38,18 +38,21 @@ public class MissionUI : MonoBehaviour
 
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
         StageManager.Instance.MainTargetCompleteSubject
                              .Subscribe(_ => CompleteMainMission())
                              .AddTo(this);
 
-        //
         StageManager.Instance.CompleteSubMissionNum
                              .Subscribe(value => CompleteSubMission(value))
                              .AddTo(this);
 
         _mainTargetNumText.text = "0 / 1";
+
+        yield return new WaitForSeconds(0.5f);
+
+        _currentStageSubMissionNum = StageManager.Instance.CurrentStage.SubMissionNum;
         CompleteSubMission(0);
     }
     #endregion
