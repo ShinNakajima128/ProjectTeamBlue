@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f01751e2c2b241c40a2a37f6740a7798, type: 3}
+  m_Name: SoundData
+  m_EditorClassIdentifier: 
+  bgmList:
+  - _key: "\u767A\u898B"
+    _clip: {fileID: 8300000, guid: fb0087707bcb0cb4e80497b630de9ad5, type: 3}
+    _volume: 0
+  - _key: Stage1
+    _clip: {fileID: 8300000, guid: 9b7633e4172507245b1e3588734b0491, type: 3}
+    _volume: 0
+  - _key: "\u30ED\u30D3\u30FC"
+    _clip: {fileID: 8300000, guid: ccaab1623efc0644aa02a9da7eba2d7f, type: 3}
+    _volume: 0
+  seList:
+  - _key: "\u30AB\u30FC\u30BD\u30EB\u79FB\u52D5"
+    _clip: {fileID: 8300000, guid: c030c78e6d5963f4d916df272c088570, type: 3}
+    _volume: 0
+  - _key: "\u30AD\u30E3\u30F3\u30BB\u30EB"
+    _clip: {fileID: 8300000, guid: b575f0beaa901914db892aac5a21e0f8, type: 3}
+    _volume: 0
+  - _key: "\u30C7\u30FC\u30BF\u8868\u793A\uFF12"
+    _clip: {fileID: 8300000, guid: 8e91348c68113c343b4e465465eaec6c, type: 3}
+    _volume: 0
+  - _key: "\u30C7\u30FC\u30BF\u8868\u793A\uFF13"
+    _clip: {fileID: 8300000, guid: 2802fe07bea34c543990ed78c3504bb5, type: 3}
+    _volume: 0
+  - _key: "\u5927\u7206\u767A"
+    _clip: {fileID: 8300000, guid: 2c1c519ff73362441ad4e12549166b38, type: 3}
+    _volume: 0
+  - _key: "\u8EFD\u3044\u30AD\u30C3\u30AF"
+    _clip: {fileID: 8300000, guid: 024b5db6c0f2810449bd1065f9242ef9, type: 3}
+    _volume: 0
