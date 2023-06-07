@@ -2,23 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoundManager : MonoBehaviour
+public class SoundManager : SingletonMonoBehaviour<SoundManager>
 {
 	#region property
 	// プロパティを入れる。
 	
-
-	public static SoundManager Instance
-	{
-		get
-		{
-			if (_instance == null)
-			{
-				_instance = FindObjectOfType<SoundManager>();
-			}
-			return _instance;
-		}
-	}
 	public bool IsFade => _isFadeOut;
 	#endregion
 
@@ -40,7 +28,6 @@ public class SoundManager : MonoBehaviour
 
 	#region private
 	// プライベートなメンバー変数。
-	private static SoundManager _instance;
 
 	//BGMをフェードアウト中か
 	bool _isFadeOut = false;
@@ -72,10 +59,12 @@ public class SoundManager : MonoBehaviour
 	//  Start, UpdateなどのUnityのイベント関数。
 	private void Awake()
 	{
-		if (_instance == null)
+		if (Instance != this)
 		{
-			_instance = this;
+			Destroy(gameObject);
+			return;
 		}
+		DontDestroyOnLoad(gameObject);
 	}
 
 	private void Start()
