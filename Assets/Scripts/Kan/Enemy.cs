@@ -23,7 +23,8 @@ public class Enemy : MonoBehaviour
     public float angleThreshold = 1.0f;//最小回転角度
     public GameObject enemyWaiter;//召喚された敵（雑魚）
     public int SummonNum = 5;//召喚可能敵数
-    
+    public Animator _anim;
+
     public float summonRadius;//召喚半径
     public float summonCheckRadius;//召喚出来ない円範囲の半径
 
@@ -102,6 +103,7 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
+        
         enemyAct = ENEMY_ACT.IDOL;
         enemyAgent = GetComponent<NavMeshAgent>();
         checkPointPositionList = new List<Tuple<bool,Vector3>>();
@@ -121,11 +123,14 @@ public class Enemy : MonoBehaviour
         if (enemyType == ENEMY_TYPE.WAITER) return;
         nextPos = GetNextPositon();
     }
-
+    
     private void Update()
     {
+        
+        _anim.SetFloat("Speed", enemyAgent.velocity.sqrMagnitude);//, _rb.velocity.magnitude);
+        
 
-        switch(enemyAct)
+        switch (enemyAct)
         {
             case ENEMY_ACT.IDOL:
                 if(enemyType == ENEMY_TYPE.WARDER)
@@ -210,10 +215,12 @@ public class Enemy : MonoBehaviour
                 DoHunter();
                 break;
             case ENEMY_ACT.ATTACK:
+                //_anim.SetTrigger("IsAttack");
                 StopCoroutine(backToStartPointCoroutine);
                 enemyAct = ENEMY_ACT.ATTACKING;
                 break;
             case ENEMY_ACT.ATTACKING:
+                _anim.SetTrigger("IsAttack");
                 //if(enemyCheck.StayingInSomething() == true || enemyCheck.GetStayInGameObjectByTag("Player"))
                 //enemyAct = ENEMY_ACT.WAIT_AND_SEARCH;
                 DoAttack();
@@ -497,10 +504,12 @@ public class Enemy : MonoBehaviour
     {
         if (taget)
         {
+            transform.LookAt(taget.transform);
             if (!NearByTarget(taget.transform.position, attackFarWithPlayer))
             {
                 //enemyAgent.isStopped = true;
                 //enemyAgent.velocity = Vector3.zero;
+                
                 enemyAct = ENEMY_ACT.CHASE;
                 return;
             }
