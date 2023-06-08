@@ -51,6 +51,8 @@ public class LobbyManager : MonoBehaviour
     private void Start()
     {
         _stageSelectPanel.SetActive(false);
+        
+        SoundManager.Instance.PlayBGM(SoundTag.BGMLobby);
 
         this.UpdateAsObservable()
             .Subscribe(_ =>
