@@ -11,6 +11,7 @@ public class StageRankCalculator :MonoBehaviour
 {
     #region property
     public static StageRankCalculator Instance { get; private set; }
+    public ScoreRank CurrentRank { get; private set; }
     #endregion
 
     #region serialize
@@ -64,6 +65,7 @@ public class StageRankCalculator :MonoBehaviour
         {
             rank = ScoreRank.C;
         }
+        Instance.CurrentRank = rank;
         return rank;
     }
     #endregion

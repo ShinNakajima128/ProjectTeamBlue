@@ -8,6 +8,11 @@ using UnityEngine;
 public class ScoreCalculation : MonoBehaviour
 {
     #region property
+    public static ScoreCalculation Instance { get; private set; }
+    public int MainTargetScore => _mainTargetScore;
+    public int SubTargetScore => _subTargetScore;
+    public int RemainingTimeScore => _remainingTimeScore;
+    public int ResultScore => _resultScore;
     #endregion
 
     #region serialize
@@ -25,6 +30,10 @@ public class ScoreCalculation : MonoBehaviour
     #endregion
 
     #region private
+    private int _mainTargetScore = 0;
+    private int _subTargetScore = 0;
+    private int _remainingTimeScore = 0;
+    private int _resultScore = 0;
     #endregion
 
     #region Constant
@@ -34,6 +43,10 @@ public class ScoreCalculation : MonoBehaviour
     #endregion
 
     #region unity methods
+    private void Awake()
+    {
+        Instance = this;
+    }
     #endregion
 
     #region public method
@@ -45,13 +58,12 @@ public class ScoreCalculation : MonoBehaviour
     /// <returns></returns>
     public int CalcurlationScore(int subTargetCompleteNum, int remainingTime)
     {
-        int result = 0;
+        _mainTargetScore = _mainTargetCoefficient;
+        _subTargetScore = subTargetCompleteNum * _subTargetCoefficient;
+        _remainingTimeScore = remainingTime * _remainingTimeCoefficient;
 
-        result += _mainTargetCoefficient;
-        result += subTargetCompleteNum * _subTargetCoefficient;
-        result += remainingTime * _remainingTimeCoefficient;
-
-        return result;
+        _resultScore = _mainTargetScore + _subTargetScore + _remainingTimeScore;
+        return _resultScore;
     }
     #endregion
 
