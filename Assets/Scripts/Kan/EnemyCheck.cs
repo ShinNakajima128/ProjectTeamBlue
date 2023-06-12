@@ -52,7 +52,7 @@ public class EnemyCheck : MonoBehaviour
     {
         //hitByPlayer = false;
 
-        isStartCheck = false;
+        isStartCheck = true;
 
         hitCollider = GetComponent<SphereCollider>();
         hitCollider.radius = detectionRadius;
