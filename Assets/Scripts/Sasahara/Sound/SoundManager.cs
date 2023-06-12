@@ -1,54 +1,69 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class SoundManager : SingletonMonoBehaviour<SoundManager>
 {
 	#region property
 	// プロパティを入れる。
-	
+
 	public bool IsFade => _isFadeOut;
 	#endregion
 
 	#region serialize
 	// unity inpectorに表示したいものを記述。
 
-	[SerializeField] SoundsScriptableObj scriptableObj = default;
+	//Soundデータのスクリプタブルオブジェクト
+	[SerializeField]
+	SoundsScriptableObj scriptableObj = default;
 
 	//BGMがフェードするのにかかる時間
-	[SerializeField] const float bgmDefaltFadeTime = 0.5f;
+	[SerializeField]
+	const float bgmDefaltFadeTime = 0.5f;
 	//BGMのデフォルトボリューム
-	[SerializeField] const float bgmDefaltVolume = 0.1f;
+	[SerializeField]
+	const float bgmDefaltVolume = 0.1f;
 	//SEのデフォルトボリューム
-	[SerializeField] const float seDefaltVolume = 0.3f;
+	[SerializeField]
+	const float seDefaltVolume = 0.3f;
 
-	public AudioSource _attachBGMSource;
-　　[SerializeField] GameObject _sePrefab = null;
+	[SerializeField]
+	private AudioSource _attachBGMSource;
+	[SerializeField,Range(0, 20)]
+	private int _seAudioPrefabCount = 10;
+　　[SerializeField]
+	private GameObject _seAudioPrefab = null;
+　　[SerializeField]
+	private GameObject _seAudioObj = null;
+　　[SerializeField]
+	private AudioMixerGroup _seAudioGroup = null;
 	#endregion
 
 	#region private
 	// プライベートなメンバー変数。
 
 	//BGMをフェードアウト中か
-	bool _isFadeOut = false;
+	private bool _isFadeOut = false;
 
 
 	//次流すBGM名、SE名
-	string _nextBGMName;
-    string _nextSEName;
-	
-	float _fadeTimeCount = 0.0f;
-	/// <summary>BGMをフェードさせる時間</summary>
-	float _bgmfadeTime = bgmDefaltFadeTime;
-	float _bgmVolume = bgmDefaltVolume;
-	float _bgmNextVolume = bgmDefaltVolume;
+	private string _nextBGMName;
+	private string _nextSEName;
 
-	AudioSource[] _seAudioSources;
-	float _seVolume = seDefaltVolume;
+	private float _fadeTimeCount = 0.0f;
+	/// <summary>BGMをフェードさせる時間</summary>
+	private float _bgmfadeTime = bgmDefaltFadeTime;
+	private float _bgmVolume = bgmDefaltVolume;
+	private float _bgmNextVolume = bgmDefaltVolume;
+
+	private AudioSource[] _seAudioSources;
+	private float _seVolume = seDefaltVolume;
 	#endregion
 
 	#region Constant
 	// 定数をいれる。
+
 	#endregion
 
 	#region Event
@@ -59,18 +74,28 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
 	//  Start, UpdateなどのUnityのイベント関数。
 	private void Awake()
 	{
-		if (Instance != this)
+		_attachBGMSource.volume = bgmDefaltVolume;
+		for (int i = 0; i < _seAudioPrefabCount; i++)
 		{
-			Destroy(gameObject);
-			return;
+			GameObject obj = Instantiate(_seAudioObj);
+			obj.transform.parent = _seAudioPrefab.transform;
+			AudioSource source = obj.GetComponent<AudioSource>();
+			source.playOnAwake = false;
+			source.outputAudioMixerGroup = _seAudioGroup;
 		}
-		DontDestroyOnLoad(gameObject);
-	}
+		_seAudioSources = _seAudioPrefab.GetComponentsInChildren<AudioSource>();
+
+        if (Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        DontDestroyOnLoad(gameObject);
+    }
 
 	private void Start()
 	{
-		_attachBGMSource.volume = bgmDefaltVolume;
-		_seAudioSources = _sePrefab.GetComponentsInChildren<AudioSource>();
+		
 
 	}
 
@@ -97,7 +122,6 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
 		}
 	}
 	#endregion
-
 	#region public method
 	//　自身で作成したPublicな関数を入れる。
 
@@ -190,14 +214,12 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
 				break;
 			}
 		}
-
 		se.clip = ac;
 		se.volume = volume;
 		se.Play();
-		#endregion
-
-		#region private method
-		// 自身で作成したPrivateな関数を入れる。
-		#endregion
 	}
+	#endregion
+	#region private method
+	// 自身で作成したPrivateな関数を入れる。
+	#endregion
 }
