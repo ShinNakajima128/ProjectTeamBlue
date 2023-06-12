@@ -41,6 +41,14 @@ public class ResultViewer : MonoBehaviour
     [Tooltip("ランクを表示するText")]
     [SerializeField]
     private Text _scoreRankText = default;
+
+    [Tooltip("リザルト画面の背景")]
+    [SerializeField]
+    private Image _resultBackground = default;
+
+    [Tooltip("各ステージのイメージSprite")]
+    [SerializeField]
+    private Sprite[] _stageSprites = default;
     #endregion
 
     #region private
@@ -83,10 +91,26 @@ public class ResultViewer : MonoBehaviour
     /// <returns></returns>
     private IEnumerator ViewingCoroutine()
     {
+        //リザルト画面の背景をステージによって差し替える
+        switch (GameManager.Instance.CurrentGameStates)
+        {
+            case GameStates.Stage1:
+                _resultBackground.sprite = _stageSprites[0];
+                break;
+            case GameStates.Stage2:
+                _resultBackground.sprite = _stageSprites[1];
+                break;
+            case GameStates.Stage3:
+                _resultBackground.sprite = _stageSprites[2];
+                break;
+            default:
+                break;
+        }
+
         //リザルト画面のパネルを表示
         _resultGroup.alpha = 1;
 
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.5f);
 
         //メインターゲットのスコアを表示
         int mainScore = 0;
