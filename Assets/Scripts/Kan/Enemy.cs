@@ -126,9 +126,8 @@ public class Enemy : MonoBehaviour
     
     private void Update()
     {
-        
-        _anim.SetFloat("Speed", enemyAgent.velocity.sqrMagnitude);//, _rb.velocity.magnitude);
-        
+        if(_anim != null)
+            _anim.SetFloat("Speed", enemyAgent.velocity.magnitude);
 
         switch (enemyAct)
         {
