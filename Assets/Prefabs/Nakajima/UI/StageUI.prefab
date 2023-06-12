@@ -316,6 +316,11 @@ MonoBehaviour:
   _remainingTimeScoreText: {fileID: 1145295449}
   _totalScoreText: {fileID: 1141817081}
   _scoreRankText: {fileID: 1875602234}
+  _resultBackground: {fileID: 1464274033}
+  _stageSprites:
+  - {fileID: 21300000, guid: 1f6cd568767916b48b173dfc1761919a, type: 3}
+  - {fileID: 21300000, guid: 4cc28835ba3f87b45bac559af53543de, type: 3}
+  - {fileID: 21300000, guid: 535f2b51c50600f4d84831a2d29e5aad, type: 3}
 --- !u!225 &855577411
 CanvasGroup:
   m_ObjectHideFlags: 0
