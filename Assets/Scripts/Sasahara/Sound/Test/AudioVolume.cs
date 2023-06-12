@@ -41,7 +41,9 @@ public class AudioVolume : MonoBehaviour
 
     private void Start()
     {
-        
+        _MasterSlider.value = _MasterSlider.maxValue / 2;
+        _bgmSlider.value = _bgmSlider.maxValue / 2;
+        _seSlider.value = _seSlider.maxValue / 2;
     }
 
     private void Update()
@@ -57,7 +59,7 @@ public class AudioVolume : MonoBehaviour
     public void SetAudioMixerMaster(float value)
     {
         //5段階補正
-        value /= 5;
+        value /= 10;
         //-80~0に変換
         var volume = Mathf.Clamp(Mathf.Log10(value) * 20f, -80f, 0f);
         //audioMixerに代入
@@ -69,7 +71,7 @@ public class AudioVolume : MonoBehaviour
     public void SetAudioMixerBGM(float value)
     {
         //5段階補正
-        value /= 5;
+        value /= 10;
         //-80~0に変換
         var volume = Mathf.Clamp(Mathf.Log10(value) * 20f, -80f, 0f);
         //audioMixerに代入
@@ -81,7 +83,7 @@ public class AudioVolume : MonoBehaviour
     public void SetAudioMixerSE(float value)
     {
         //5段階補正
-        value /= 5;
+        value /= 10;
         //-80~0に変換
         var volume = Mathf.Clamp(Mathf.Log10(value) * 20f, -80f, 0f);
         //audioMixerに代入
