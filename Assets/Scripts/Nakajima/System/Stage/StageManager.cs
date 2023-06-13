@@ -79,6 +79,9 @@ public class StageManager : MonoBehaviour
     }
     private IEnumerator Start()
     {
+        //BGMを再生する
+        SoundManager.Instance.PlayBGM(SoundTag.BGMStage1);
+
         SetStartPositionSubject
         .Subscribe(_playerCtrl.SetStartPosition)
         .AddTo(this);
@@ -107,7 +110,14 @@ public class StageManager : MonoBehaviour
                         _inGame = false;
                         OnGameEnd();
                     }
+
+                    if (Input.GetKeyDown(KeyCode.Escape))
+                    {
+                        OnGamePause();
+                    }
                 }
+
+                
             })
             .AddTo(this);
     }
