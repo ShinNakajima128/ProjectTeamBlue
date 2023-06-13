@@ -263,9 +263,6 @@ public class Enemy : MonoBehaviour,IDamagable
         Debug.Log("敵攻撃アクション完了");
         PlayerController.Instance.Damage((int)atk);
         SoundManager.Instance.PlaySE(SoundTag.SEAttack);
-        //TODO:敵攻撃と攻撃を受ける処理
-        //TODO:敵関連音
-        //TODO:敵死亡処理
         //TODO:TimeLineの演出 プレイヤーはゴールまで着いたら、一定条件を立つ（コールバック？要確認）、カメラをメインターゲットへ瞬間移動して爆発エフェクト演出、ゲーム終了
     }
 
