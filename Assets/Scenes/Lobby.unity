@@ -5915,6 +5915,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 721012671}
+        m_MethodName: PlayButtonSelectSE
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1287659928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7382,6 +7393,30 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 336025825, guid: e1bea2a64a04a454ca30174877c9e3bb, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 410204589, guid: e1bea2a64a04a454ca30174877c9e3bb, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 634037070, guid: e1bea2a64a04a454ca30174877c9e3bb, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1041113879, guid: e1bea2a64a04a454ca30174877c9e3bb, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1511826364, guid: e1bea2a64a04a454ca30174877c9e3bb, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1828261639, guid: e1bea2a64a04a454ca30174877c9e3bb, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1515273899808897152, guid: e1bea2a64a04a454ca30174877c9e3bb,
         type: 3}
       propertyPath: m_RootOrder
@@ -7441,6 +7476,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SoundManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 5185191500336598743, guid: e1bea2a64a04a454ca30174877c9e3bb,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e1bea2a64a04a454ca30174877c9e3bb, type: 3}
@@ -7763,6 +7803,17 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 721012671}
         m_MethodName: StartStageSelect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 721012671}
+        m_MethodName: PlayButtonSelectSE
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
