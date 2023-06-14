@@ -22,7 +22,7 @@ public class EnemyCheckPoint : MonoBehaviour
     {
         
     }
-
+#if UNITY_EDITOR
     public void AddNewPoint()
     {
         string parentName = "MovePoint_" + transform.name + "_Array";
@@ -50,7 +50,13 @@ public class EnemyCheckPoint : MonoBehaviour
         pointList.Add(obj);
         pointList[pointList.Count - 1].name = "MovePoint_"+transform.name + "_"+(pointList.Count - 1);
     }
-
+    public void RemoveMovePointArray()
+    {
+        string parentName = "MovePoint_" + transform.name + "_Array";
+        Transform parent = transform.parent.Find(parentName);
+        DestroyImmediate(parent.gameObject);
+    }
+#endif
     public List<GameObject> GetChildsFormPointArr()
     {
         string parentName = "MovePoint_" + transform.name + "_Array";
@@ -59,18 +65,11 @@ public class EnemyCheckPoint : MonoBehaviour
 
         List<GameObject> childs = new List<GameObject>();
 
-        for(int childCnt = 0;childCnt<parent.transform.childCount;childCnt++)
+        for (int childCnt = 0; childCnt < parent.transform.childCount; childCnt++)
         {
             childs.Add(parent.GetChild(childCnt).gameObject);
         }
 
         return childs;
-    }
-
-    public void RemoveMovePointArray()
-    {
-        string parentName = "MovePoint_" + transform.name + "_Array";
-        Transform parent = transform.parent.Find(parentName);
-        DestroyImmediate(parent.gameObject);
     }
 }

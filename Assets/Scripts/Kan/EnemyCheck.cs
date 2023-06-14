@@ -179,6 +179,7 @@ public class EnemyCheck : MonoBehaviour
         hitCollider.enabled = checkBool;
     }
 
+#if UNITY_EDITOR
     void OnDrawGizmos()
     {
         if(hitCollider == null)
@@ -197,5 +198,7 @@ public class EnemyCheck : MonoBehaviour
         Handles.DrawSolidArc(center, normal, forward, angle / 2f, radius);
         Handles.DrawSolidArc(center, normal, forward, -angle / 2f, radius);
     }
-    #endregion
+#endif
+#endregion
+
 }

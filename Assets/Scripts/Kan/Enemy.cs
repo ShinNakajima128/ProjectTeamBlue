@@ -5,12 +5,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour,IDamagable
 {
     #region property
     public ENEMY_TYPE enemyType;
     public float speed = 5f;
     public float hp = 10;
+    public float atk = 1;
+    [HideInInspector]
+    public int CurrentHP { get { return (int)hp; } }
     public float maxHP = 10;
     public float attackFarWithPlayer = 1.3f;
     public float stopFarWithPlayer = 1.5f;
@@ -22,7 +25,7 @@ public class Enemy : MonoBehaviour
     public float patrolTurningSpeed = 1f;//巡回回転速度
     public float angleThreshold = 1.0f;//最小回転角度
     public GameObject enemyWaiter;//召喚された敵（雑魚）
-    public int SummonNum = 5;//召喚可能敵数
+    public int SummonNum = 1;//召喚可能敵数
     public Animator _anim;
 
     public float summonRadius;//召喚半径
@@ -31,6 +34,8 @@ public class Enemy : MonoBehaviour
 
     public List<Tuple<bool,Vector3>> checkPointPositionList;
     public HPBar hpBar;
+
+    public static Enemy Instance { get; private set; }
     #endregion
 
     #region serialize
@@ -77,7 +82,8 @@ public class Enemy : MonoBehaviour
         ATTACK,
         ATTACKING,
         SUMMON,
-        DEATH
+        DEATH,
+        DESTORY
     }
 
     public enum ENEMY_TYPE
@@ -98,7 +104,7 @@ public class Enemy : MonoBehaviour
     #region unity methods
     private void Awake()
     {
-
+        Instance = this;
     }
 
     private void Start()
@@ -126,7 +132,12 @@ public class Enemy : MonoBehaviour
     
     private void Update()
     {
-        if(_anim != null)
+        if (hp <= 0 && enemyAct != ENEMY_ACT.DESTORY)
+        {
+            StopAllCoroutines();
+            enemyAct = ENEMY_ACT.DEATH;
+        }
+        if (_anim != null)
             _anim.SetFloat("Speed", enemyAgent.velocity.magnitude);
 
         switch (enemyAct)
@@ -228,6 +239,10 @@ public class Enemy : MonoBehaviour
                 DoSummon();
                 break;
             case ENEMY_ACT.DEATH:
+                Death();
+                break;
+            case ENEMY_ACT.DESTORY:
+                DoDestroy();
                 break;
             default:
                 Debug.LogError("ENEMYACT_ERROR:" + enemyAct);
@@ -240,7 +255,34 @@ public class Enemy : MonoBehaviour
     }
     #endregion
 
+    //SoundManager.Instance.PlayBGM(SoundTag.SEAttack);
+    //PlayerController.Instace.Damage(1)//プレイヤーはダメージを受ける
     #region public method
+    public void OnEnemyDisableAttack()
+    {
+        Debug.Log("敵攻撃アクション完了");
+        PlayerController.Instance.Damage((int)atk);
+        SoundManager.Instance.PlaySE(SoundTag.SEAttack);
+        //TODO:TimeLineの演出 プレイヤーはゴールまで着いたら、一定条件を立つ（コールバック？要確認）、カメラをメインターゲットへ瞬間移動して爆発エフェクト演出、ゲーム終了
+    }
+
+    public void OnEnemyEnableAttack()
+    {
+        Debug.Log("敵攻撃アクション開始");
+        //PlayerController.Instance.Damage((int)atk);
+        //SoundManager.Instance.PlaySE(SoundTag.SEAttack);
+    }
+
+    public void Damage(int damageAmount)
+    {
+        hp -= damageAmount;
+        Debug.Log("ENEMY_HP:" + hp);
+        if (hp <= 0)
+        {
+        //    enemyAct = ENEMY_ACT.DEATH;
+            Debug.Log("ENEMY_DIE");
+        }
+    }
     #endregion
 
     #region private method
@@ -563,6 +605,25 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    void Death()
+    {
+        string deathName = "IsDead";
+        _anim.SetBool(deathName, true);
+        enemyAct = ENEMY_ACT.DESTORY;
+
+    }
+
+    void DoDestroy()
+    {
+        AnimatorStateInfo stateInfo = _anim.GetCurrentAnimatorStateInfo(0);
+        string deathName = "IsDead";
+        bool isDead = _anim.GetBool(deathName);
+        if(isDead && stateInfo.normalizedTime >= stateInfo.length)
+        {
+            Destroy(gameObject);
+        }
+    }
+
     IEnumerator LookAround()
     {
         isLookingAround = true;
@@ -638,5 +699,6 @@ public class Enemy : MonoBehaviour
 
         return ret;
     }
+
     #endregion
 }

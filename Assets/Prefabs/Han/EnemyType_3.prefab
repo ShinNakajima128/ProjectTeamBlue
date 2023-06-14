@@ -1,5 +1,17 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &55400890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1199745190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ac43e81fa4776f4bb518de1038c0385, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2251399341738668918
 GameObject:
   m_ObjectHideFlags: 0
@@ -267,6 +279,7 @@ MonoBehaviour:
   enemyType: 2
   speed: 5
   hp: 5
+  atk: 1
   maxHP: 10
   attackFarWithPlayer: 1.3
   stopFarWithPlayer: 1.5
@@ -319,9 +332,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameStage: {fileID: 0}
-  pointList:
-  - {fileID: 0}
-  - {fileID: 0}
+  pointList: []
 --- !u!1 &6651503555235310492
 GameObject:
   m_ObjectHideFlags: 0
@@ -484,7 +495,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400154, guid: 765e2fde8c84f094e99304c6198491ea, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1
+      value: -1.3
       objectReference: {fileID: 0}
     - target: {fileID: 400154, guid: 765e2fde8c84f094e99304c6198491ea, type: 3}
       propertyPath: m_LocalPosition.z
@@ -524,6 +535,12 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: 32e379c87e35ae942bb3d5f29bb69e65, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 765e2fde8c84f094e99304c6198491ea, type: 3}
+--- !u!1 &1199745190 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100154, guid: 765e2fde8c84f094e99304c6198491ea,
+    type: 3}
+  m_PrefabInstance: {fileID: 1199779740}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1199912070 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400154, guid: 765e2fde8c84f094e99304c6198491ea,
