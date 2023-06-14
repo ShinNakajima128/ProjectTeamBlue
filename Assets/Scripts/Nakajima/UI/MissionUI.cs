@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UniRx;
 
 /// <summary>
-/// 
+/// ミッションの状況を表記するコンポーネント
 /// </summary>
 public class MissionUI : MonoBehaviour
 {
@@ -38,18 +38,21 @@ public class MissionUI : MonoBehaviour
 
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
         StageManager.Instance.MainTargetCompleteSubject
                              .Subscribe(_ => CompleteMainMission())
                              .AddTo(this);
 
-        //
         StageManager.Instance.CompleteSubMissionNum
                              .Subscribe(value => CompleteSubMission(value))
                              .AddTo(this);
 
         _mainTargetNumText.text = "0 / 1";
+
+        yield return new WaitForSeconds(0.5f);
+
+        _currentStageSubMissionNum = StageManager.Instance.CurrentStage.SubMissionNum;
         CompleteSubMission(0);
     }
     #endregion
@@ -58,11 +61,18 @@ public class MissionUI : MonoBehaviour
     #endregion
 
     #region private method
+    /// <summary>
+    /// メインミッションの完了表記を行う
+    /// </summary>
     private void CompleteMainMission()
     {
         _mainTargetNumText.text = "1 / 1";
     }
 
+    /// <summary>
+    /// サブミッションの完了表記を行う
+    /// </summary>
+    /// <param name="value">完了したミッション数</param>
     private void CompleteSubMission(int value)
     {
         _subTargetNumText.text = $"{value} / {_currentStageSubMissionNum}";

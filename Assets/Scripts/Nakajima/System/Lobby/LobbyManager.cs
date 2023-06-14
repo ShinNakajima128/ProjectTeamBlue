@@ -52,12 +52,16 @@ public class LobbyManager : MonoBehaviour
     {
         _stageSelectPanel.SetActive(false);
 
+        FadeManager.Fade(FadeType.In);
+        SoundManager.Instance.PlayBGM(SoundTag.BGMLobby);
+
         this.UpdateAsObservable()
             .Subscribe(_ =>
             {
                 if (Input.GetKeyDown(KeyCode.Escape))
                 {
-                    if (GameManager.Instance.CurrentGameStates != GameStates.Lobby_StageSelect || _isSwitchingPaneled)
+                    if (GameManager.Instance.CurrentGameStates != GameStates.Lobby_StageSelect || 
+                    　　_isSwitchingPaneled)
                     {
                         return;
                     }
@@ -78,7 +82,7 @@ public class LobbyManager : MonoBehaviour
         GameManager.Instance.SetCurrentGameStates(GameStates.Lobby_StageSelect);
         CameraManager.Instance.ChangeActiveCamera(CameraType.Lobby_StageSelect);
         _startPanel.SetActive(false);
-        StartCoroutine(ActivePanelCoroutine(_stageSelectPanel, _activePanelWaitTime, true));
+        StartCoroutine(ActivePanelCoroutine(PanelType.StageSelect, _activePanelWaitTime, true));
         _isSwitchingPaneled = true;
     }
 
@@ -89,7 +93,7 @@ public class LobbyManager : MonoBehaviour
     {
         GameManager.Instance.SetCurrentGameStates(GameStates.Lobby_Start);
         CameraManager.Instance.ChangeActiveCamera(CameraType.Lobby_Start);
-        StartCoroutine(ActivePanelCoroutine(_startPanel, _activePanelWaitTime, true));
+        StartCoroutine(ActivePanelCoroutine(PanelType.GameStart, _activePanelWaitTime, true));
         _stageSelectPanel.SetActive(false);
         _isSwitchingPaneled = true;
     }
@@ -113,7 +117,26 @@ public class LobbyManager : MonoBehaviour
         //※現在は仮の処理なため、システムができ次第修正予定
 
         GameManager.Instance.SetCurrentGameStates(stage);
-        SceneManager.LoadScene("InGame");
+        FadeManager.Fade(FadeType.Out, () =>
+        {
+            SceneManager.LoadScene("InGame");
+        });
+    }
+
+    /// <summary>
+    /// 選択音を再生する
+    /// </summary>
+    public void PlayButtonSelectSE()
+    {
+        SoundManager.Instance.PlaySE(SoundTag.SECursorMove);
+    }
+
+    /// <summary>
+    /// キャンセル音を再生
+    /// </summary>
+    public void PlayCancelSE()
+    {
+        SoundManager.Instance.PlaySE(SoundTag.SECancel);
     }
     #endregion
 
@@ -121,12 +144,40 @@ public class LobbyManager : MonoBehaviour
     #endregion
 
     #region coroutine method
-    private IEnumerator ActivePanelCoroutine(GameObject panel, float waitTime, bool isActived)
+    /// <summary>
+    /// パネルのアクティブ状態を切り替えるコルーチン
+    /// </summary>
+    /// <param name="panel">切り替えるPanel</param>
+    /// <param name="waitTime">待機時間</param>
+    /// <param name="isActived">アクティブにするかしないか</param>
+    /// <returns></returns>
+    private IEnumerator ActivePanelCoroutine(PanelType panel, float waitTime, bool isActived)
     {
         yield return new WaitForSeconds(waitTime);
 
-        panel.SetActive(isActived);
+        switch (panel)
+        {
+            case PanelType.GameStart:
+                _startPanel.SetActive(isActived);
+                SoundManager.Instance.PlaySE(SoundTag.SECursorMove);           
+                break;
+            case PanelType.StageSelect:
+                _stageSelectPanel.SetActive(isActived);
+                SoundManager.Instance.PlaySE(SoundTag.SEView);
+                break;
+            default:
+                break;
+        }
         _isSwitchingPaneled = false;
     }
     #endregion
+}
+
+/// <summary>
+/// パネルの種類
+/// </summary>
+public enum PanelType
+{
+    GameStart,
+    StageSelect
 }

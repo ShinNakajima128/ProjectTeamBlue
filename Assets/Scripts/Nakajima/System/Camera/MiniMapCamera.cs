@@ -4,6 +4,9 @@ using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
 
+/// <summary>
+/// ミニマップ用のカメラを制御するコンポーネント
+/// </summary>
 public class MiniMapCamera : MonoBehaviour
 {
     #region property

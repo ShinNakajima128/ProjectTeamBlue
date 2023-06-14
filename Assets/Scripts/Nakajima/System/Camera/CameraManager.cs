@@ -42,6 +42,10 @@ public class CameraManager : MonoBehaviour
     #endregion
 
     #region public method
+    /// <summary>
+    /// アクティブなカメラを変更する
+    /// </summary>
+    /// <param name="type">カメラの種類</param>
     public void ChangeActiveCamera(CameraType type)
     {
         foreach (var camera in _cameras)

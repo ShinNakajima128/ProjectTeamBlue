@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 
+/// <summary>
+/// インゲーム中のステージのHUDを管理するManagerクラス
+/// </summary>
 public class StageUIManager : MonoBehaviour
 {
     #region property

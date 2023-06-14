@@ -51,14 +51,6 @@ public class EffectManager : SingletonMonoBehaviour<EffectManager>
             _effects[i].Setup(transform);
         }
     }
-
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            PlayEffect(EffectType.Explosion, Vector3.zero);
-        }
-    }
     #endregion
 
     #region public method

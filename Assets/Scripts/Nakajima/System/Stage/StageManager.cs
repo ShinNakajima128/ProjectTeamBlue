@@ -79,6 +79,12 @@ public class StageManager : MonoBehaviour
     }
     private IEnumerator Start()
     {
+        //BGMを再生する
+        SoundManager.Instance.PlayBGM(SoundTag.BGMStage1);
+
+        //画面フェード
+        FadeManager.Fade(FadeType.In);
+
         SetStartPositionSubject
         .Subscribe(_playerCtrl.SetStartPosition)
         .AddTo(this);
@@ -107,7 +113,14 @@ public class StageManager : MonoBehaviour
                         _inGame = false;
                         OnGameEnd();
                     }
+
+                    if (Input.GetKeyDown(KeyCode.Escape))
+                    {
+                        OnGamePause();
+                    }
                 }
+
+                
             })
             .AddTo(this);
     }
@@ -218,7 +231,6 @@ public class StageManager : MonoBehaviour
     private IEnumerator GameEndCoroutine()
     {
         Debug.Log("ゲーム終了");
-        yield return new WaitForSeconds(2.0f);
 
         //ゲームオーバー状態ではない場合
         if (!IsGameover)
@@ -227,12 +239,17 @@ public class StageManager : MonoBehaviour
             _currrentScore = _scoreCalc.CalcurlationScore(_currentSubMissionCompleteNum.Value, (int)_currentLimitTime.Value); ;
 
             _currentStage.SetClearData(_currentSubMissionCompleteNum.Value, _currrentScore);
+            //データを保存
+            DataManager.Instance.SaveData();
         }
-        //データを保存
-        DataManager.Instance.SaveData();
+        else
+        {
+            yield return new WaitForSeconds(2.0f);
 
-        //Scene遷移機能をどのように作るか不明なため、仮のロード処理を行っている
-        SceneManager.LoadScene("Lobby");
+            //Scene遷移機能をどのように作るか不明なため、仮のロード処理を行っている
+            SceneManager.LoadScene("Lobby");
+        }
+        yield return null;
     }
     #endregion
 }
