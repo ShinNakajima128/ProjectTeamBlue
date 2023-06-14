@@ -801,7 +801,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 31a2e3956df75d24481d84dbf389dd44, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -850,6 +850,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxHP: 5
+  _debugMode: 0
 --- !u!114 &5528481159865946614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -862,7 +863,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 464de00b90c44734fa73c365054e7eb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 7
+  _moveSpeed: 10
   _turnSpeed: 8
 --- !u!114 &79588084407540103
 MonoBehaviour:
@@ -891,6 +892,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6657423afb340d34baa7cbc7c6a9b70c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _mainTargetActionTime: 4
+  _subTargetActionTime: 2
 --- !u!1 &3660513842010337838
 GameObject:
   m_ObjectHideFlags: 0
