@@ -123,10 +123,17 @@ public class LobbyManager : MonoBehaviour
         });
     }
 
+    /// <summary>
+    /// 選択音を再生する
+    /// </summary>
     public void PlayButtonSelectSE()
     {
         SoundManager.Instance.PlaySE(SoundTag.SECursorMove);
     }
+
+    /// <summary>
+    /// キャンセル音を再生
+    /// </summary>
     public void PlayCancelSE()
     {
         SoundManager.Instance.PlaySE(SoundTag.SECancel);
@@ -137,6 +144,13 @@ public class LobbyManager : MonoBehaviour
     #endregion
 
     #region coroutine method
+    /// <summary>
+    /// パネルのアクティブ状態を切り替えるコルーチン
+    /// </summary>
+    /// <param name="panel">切り替えるPanel</param>
+    /// <param name="waitTime">待機時間</param>
+    /// <param name="isActived">アクティブにするかしないか</param>
+    /// <returns></returns>
     private IEnumerator ActivePanelCoroutine(PanelType panel, float waitTime, bool isActived)
     {
         yield return new WaitForSeconds(waitTime);

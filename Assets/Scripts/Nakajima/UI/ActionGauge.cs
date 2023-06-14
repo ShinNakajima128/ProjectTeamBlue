@@ -41,6 +41,10 @@ public class ActionGauge : MonoBehaviour
     #endregion
 
     #region public method
+    /// <summary>
+    /// アクションを開始する
+    /// </summary>
+    /// <param name="time"></param>
     public static void StartAction(float time)
     {
         Instance._actionGauge.SetActive(true);

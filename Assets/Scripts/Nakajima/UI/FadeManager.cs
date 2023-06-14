@@ -54,6 +54,7 @@ public class FadeManager : SingletonMonoBehaviour<FadeManager>
     /// </summary>
     public static void Fade(FadeType type, Action callback = null)
     {
+        //フェード中の場合は何も行わない
         if (Instance._isFading)
         {
             return;
@@ -62,8 +63,10 @@ public class FadeManager : SingletonMonoBehaviour<FadeManager>
         Instance._isFading = true;
         float fadeTarget = default;
 
+        //フェードの種類によって処理を変更する
         switch (type)
         {
+            //徐々に明転する
             case FadeType.In:
                 fadeTarget = 0f;
                 if (Instance._fadeImage.color.a < 1.0f)
@@ -71,6 +74,7 @@ public class FadeManager : SingletonMonoBehaviour<FadeManager>
                     Instance._fadeImage.DOFade(1.0f, 0f);
                 }
                 break;
+            //徐々に暗転する
             case FadeType.Out:
                 fadeTarget = 1.0f;
                 if (Instance._fadeImage.color.a > 0f)
@@ -97,6 +101,9 @@ public class FadeManager : SingletonMonoBehaviour<FadeManager>
     #endregion
 }
 
+/// <summary>
+/// フェードの種類
+/// </summary>
 public enum FadeType
 {
     In,

@@ -58,6 +58,9 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
     #endregion
 
     #region public method
+    /// <summary>
+    /// データを読み込む
+    /// </summary>
     public void LoadData()
     {
         StageData data = default;
@@ -75,6 +78,9 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
         }
     }
 
+    /// <summary>
+    /// データを保存する
+    /// </summary>
     public void SaveData()
     {
         LocalData.Save("SaveData/GameData.json", _data);

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UniRx;
 
 /// <summary>
-/// 
+/// ミッションの状況を表記するコンポーネント
 /// </summary>
 public class MissionUI : MonoBehaviour
 {
@@ -61,11 +61,18 @@ public class MissionUI : MonoBehaviour
     #endregion
 
     #region private method
+    /// <summary>
+    /// メインミッションの完了表記を行う
+    /// </summary>
     private void CompleteMainMission()
     {
         _mainTargetNumText.text = "1 / 1";
     }
 
+    /// <summary>
+    /// サブミッションの完了表記を行う
+    /// </summary>
+    /// <param name="value">完了したミッション数</param>
     private void CompleteSubMission(int value)
     {
         _subTargetNumText.text = $"{value} / {_currentStageSubMissionNum}";
