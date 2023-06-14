@@ -82,6 +82,9 @@ public class StageManager : MonoBehaviour
         //BGMを再生する
         SoundManager.Instance.PlayBGM(SoundTag.BGMStage1);
 
+        //画面フェード
+        FadeManager.Fade(FadeType.In);
+
         SetStartPositionSubject
         .Subscribe(_playerCtrl.SetStartPosition)
         .AddTo(this);

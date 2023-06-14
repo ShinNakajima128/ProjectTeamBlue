@@ -51,7 +51,8 @@ public class LobbyManager : MonoBehaviour
     private void Start()
     {
         _stageSelectPanel.SetActive(false);
-        
+
+        FadeManager.Fade(FadeType.In);
         SoundManager.Instance.PlayBGM(SoundTag.BGMLobby);
 
         this.UpdateAsObservable()
@@ -116,7 +117,10 @@ public class LobbyManager : MonoBehaviour
         //※現在は仮の処理なため、システムができ次第修正予定
 
         GameManager.Instance.SetCurrentGameStates(stage);
-        SceneManager.LoadScene("InGame");
+        FadeManager.Fade(FadeType.Out, () =>
+        {
+            SceneManager.LoadScene("InGame");
+        });
     }
 
     public void PlayButtonSelectSE()
