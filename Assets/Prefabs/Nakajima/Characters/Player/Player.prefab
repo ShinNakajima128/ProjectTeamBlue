@@ -57,7 +57,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f063f96908b23947a2c91f919f92bdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemyTag: Respawn
+  _enemyTag: Enemy
 --- !u!1 &3660513842010337792
 GameObject:
   m_ObjectHideFlags: 0
@@ -877,7 +877,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbe8fdb28fc6fce42aba928cf9bc2f1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _attackPower: 1
+  _attackPower: 10
   _attackCollider: {fileID: 1050659110}
   _moveInterval: 1
 --- !u!114 &8624575044481680366
