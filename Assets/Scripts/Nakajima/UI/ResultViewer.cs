@@ -67,7 +67,8 @@ public class ResultViewer : MonoBehaviour
         _resultGroup = GetComponent<CanvasGroup>();
         _resultGroup.alpha = 0;
         StageManager.Instance.GameEndSubject
-                             .Subscribe(_ => ResultViewing());
+                             .Subscribe(_ => ResultViewing())
+                             .AddTo(this);
     }
     #endregion
 
@@ -80,6 +81,7 @@ public class ResultViewer : MonoBehaviour
     /// </summary>
     private void ResultViewing()
     {
+        SoundManager.Instance.PlayBGM(SoundTag.BGM_Result);
         StartCoroutine(ViewingCoroutine());
     }
     #endregion
@@ -112,66 +114,90 @@ public class ResultViewer : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
-        //メインターゲットのスコアを表示
-        int mainScore = 0;
-        yield return DOTween.To(() =>
-                            mainScore,
-                            (n) => mainScore = n,
-                            ScoreCalculation.Instance.MainTargetScore,
-                            _scoreViewingTime)
-                            .OnUpdate(() =>
-                            {
-                                _mainTargetScoreText.text = mainScore.ToString();
-                            })
-                            .WaitForCompletion();
+        if (!StageManager.Instance.IsGameover)
+        {
+            //メインターゲットのスコアを表示
+            int mainScore = 0;
+            SoundManager.Instance.PlaySE(SoundTag.SE_ScoreView);
+            yield return DOTween.To(() =>
+                                mainScore,
+                                (n) => mainScore = n,
+                                ScoreCalculation.Instance.MainTargetScore,
+                                _scoreViewingTime)
+                                .OnUpdate(() =>
+                                {
+                                    _mainTargetScoreText.text = mainScore.ToString();
+                                })
+                                .WaitForCompletion();
 
-        //サブターゲットのスコアを表示
-        int subScore = 0;
-        yield return DOTween.To(() =>
-                            subScore,
-                            (n) => subScore = n,
-                            ScoreCalculation.Instance.SubTargetScore,
-                            _scoreViewingTime)
-                            .OnUpdate(() =>
-                            {
-                                _subTargetScoreText.text = subScore.ToString();
-                            })
-                            .WaitForCompletion();
+            //サブターゲットのスコアを表示
+            if (ScoreCalculation.Instance.SubTargetScore > 0)
+            {
+                int subScore = 0;
+                SoundManager.Instance.PlaySE(SoundTag.SE_ScoreView);
+                yield return DOTween.To(() =>
+                                    subScore,
+                                    (n) => subScore = n,
+                                    ScoreCalculation.Instance.SubTargetScore,
+                                    _scoreViewingTime)
+                                    .OnUpdate(() =>
+                                    {
+                                        _subTargetScoreText.text = subScore.ToString();
+                                    })
+                                    .WaitForCompletion();
+            }
+            else
+            {
+                SoundManager.Instance.PlaySE(SoundTag.SE_CursorMove);
+                yield return new WaitForSeconds(1.0f);
+            }
+            //残り時間のスコアを表示
+            int remainingTimeScore = 0;
+            SoundManager.Instance.PlaySE(SoundTag.SE_ScoreView);
+            yield return DOTween.To(() =>
+                                remainingTimeScore,
+                                (n) => remainingTimeScore = n,
+                                ScoreCalculation.Instance.RemainingTimeScore,
+                                _scoreViewingTime)
+                                .OnUpdate(() =>
+                                {
+                                    _remainingTimeScoreText.text = remainingTimeScore.ToString();
+                                })
+                                .WaitForCompletion();
 
-        //残り時間のスコアを表示
-        int remainingTimeScore = 0;
-        yield return DOTween.To(() =>
-                            remainingTimeScore,
-                            (n) => remainingTimeScore = n,
-                            ScoreCalculation.Instance.RemainingTimeScore,
-                            _scoreViewingTime)
-                            .OnUpdate(() =>
-                            {
-                                _remainingTimeScoreText.text = remainingTimeScore.ToString();
-                            })
-                            .WaitForCompletion();
+            //合計のスコアを表示
+            int totalScore = 0;
+            SoundManager.Instance.PlaySE(SoundTag.SE_ScoreView);
+            yield return DOTween.To(() =>
+                                totalScore,
+                                (n) => totalScore = n,
+                                ScoreCalculation.Instance.ResultScore,
+                                _scoreViewingTime)
+                                .OnUpdate(() =>
+                                {
+                                    _totalScoreText.text = totalScore.ToString();
+                                })
+                                .WaitForCompletion();
 
-        //合計のスコアを表示
-        int totalScore = 0;
-        yield return DOTween.To(() =>
-                            totalScore,
-                            (n) => totalScore = n,
-                            ScoreCalculation.Instance.ResultScore,
-                            _scoreViewingTime)
-                            .OnUpdate(() =>
-                            {
-                                _totalScoreText.text = totalScore.ToString();
-                            })
-                            .WaitForCompletion();
+            yield return new WaitForSeconds(_scoreViewingTime);
 
-        yield return new WaitForSeconds(_scoreViewingTime);
 
-        _scoreRankText.text = StageRankCalculator.Instance.CurrentRank.ToString();
+            SoundManager.Instance.PlaySE(SoundTag.SE_CompleteMainMission);
+            _scoreRankText.text = StageRankCalculator.Instance.CurrentRank.ToString();
 
+        }
+        else
+        {
+            //ゲームオーバー用のTextを表示する処理を作成
+            yield return new WaitForSeconds(_scoreViewingTime);
+        }
         yield return new WaitUntil(() => Input.anyKeyDown);
 
         //Scene遷移機能をどのように作るか不明なため、仮のロード処理を行っている
-        SceneManager.LoadScene("Lobby");
+        FadeManager.Fade(FadeType.Out, () =>
+        {
+            SceneManager.LoadScene("Lobby");
+        });
     }
     #endregion
 }

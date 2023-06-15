@@ -214,10 +214,17 @@ public class Enemy : MonoBehaviour,IDamagable
                 GoingToNextPosintion();
                 break;
             case ENEMY_ACT.BACK_TO_STARTPOINT:
+                if (StageManager.Instance.IsFounded.Value)
+                {
+                    StageManager.Instance.IsFounded.Value = false;
+                }
                 BackToStartPosition();
                 break;
             case ENEMY_ACT.CHASE:
-                
+                if (!StageManager.Instance.IsFounded.Value)
+                {
+                    StageManager.Instance.IsFounded.Value = true;
+                }
                 backToStartPointCoroutine = StartCoroutine(ReturnToOtherAct(ENEMY_ACT.BACK_TO_STARTPOINT, followTime));
                 enemyAct = ENEMY_ACT.CHASEING;
                 break;
@@ -262,7 +269,7 @@ public class Enemy : MonoBehaviour,IDamagable
     {
         Debug.Log("敵攻撃アクション完了");
         PlayerController.Instance.Damage((int)atk);
-        SoundManager.Instance.PlaySE(SoundTag.SEAttack);
+        SoundManager.Instance.PlaySE(SoundTag.SE_Attack);
         //TODO:TimeLineの演出 プレイヤーはゴールまで着いたら、一定条件を立つ（コールバック？要確認）、カメラをメインターゲットへ瞬間移動して爆発エフェクト演出、ゲーム終了
     }
 

@@ -1241,6 +1241,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 855577410, guid: 3a76146cb60ac3042be56205a02adf8a, type: 3}
+      propertyPath: _scoreViewingTime
+      value: 1.8
+      objectReference: {fileID: 0}
     - target: {fileID: 1099265220, guid: 3a76146cb60ac3042be56205a02adf8a, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

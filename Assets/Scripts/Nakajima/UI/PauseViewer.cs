@@ -88,7 +88,7 @@ public class PauseViewer : MonoBehaviour
         _pauseGroup.alpha = 1;
         _buttonParent.SetActive(true);
         StartCoroutine(PauseCoroutine());
-        SoundManager.Instance.PlaySE(SoundTag.SECursorMove);
+        SoundManager.Instance.PlaySE(SoundTag.SE_CursorMove);
         Time.timeScale = 0;
     }
 
@@ -130,7 +130,7 @@ public class PauseViewer : MonoBehaviour
 
                 _pauseGroup.alpha = 0;
                 _buttonParent.SetActive(false);
-                SoundManager.Instance.PlaySE(SoundTag.SECursorMove);
+                SoundManager.Instance.PlaySE(SoundTag.SE_CursorMove);
                 Time.timeScale = 1;
                 _isViewed = false;
                 break;

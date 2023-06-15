@@ -114,7 +114,7 @@ public class PlayerAction : MonoBehaviour
                         return;
                     }
                  
-                    StageManager.Instance.OnGameEnd(); 
+                    StageManager.Instance.OnEscape(); 
                     return;
             }
 

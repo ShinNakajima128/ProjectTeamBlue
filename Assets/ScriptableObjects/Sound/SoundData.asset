@@ -15,29 +15,38 @@ MonoBehaviour:
   bgmList:
   - _key: "\u767A\u898B"
     _clip: {fileID: 8300000, guid: fb0087707bcb0cb4e80497b630de9ad5, type: 3}
-    _volume: 0
+    _volume: 1
   - _key: Stage1
     _clip: {fileID: 8300000, guid: 9b7633e4172507245b1e3588734b0491, type: 3}
-    _volume: 0
+    _volume: 1
   - _key: "\u30ED\u30D3\u30FC"
     _clip: {fileID: 8300000, guid: ccaab1623efc0644aa02a9da7eba2d7f, type: 3}
-    _volume: 0
+    _volume: 1
+  - _key: "\u30EA\u30B6\u30EB\u30C8"
+    _clip: {fileID: 8300000, guid: 4fd401425243e8044a36b1717288a8a4, type: 3}
+    _volume: 1
   seList:
   - _key: CursorMove
     _clip: {fileID: 8300000, guid: c030c78e6d5963f4d916df272c088570, type: 3}
-    _volume: 0
+    _volume: 1
   - _key: Cancel
     _clip: {fileID: 8300000, guid: b575f0beaa901914db892aac5a21e0f8, type: 3}
-    _volume: 0
+    _volume: 1
   - _key: View
     _clip: {fileID: 8300000, guid: 8e91348c68113c343b4e465465eaec6c, type: 3}
-    _volume: 0
-  - _key: CompleteMission
+    _volume: 1
+  - _key: CompleteMainMission
     _clip: {fileID: 8300000, guid: 2802fe07bea34c543990ed78c3504bb5, type: 3}
-    _volume: 0
+    _volume: 1
   - _key: Explosion
     _clip: {fileID: 8300000, guid: 2c1c519ff73362441ad4e12549166b38, type: 3}
-    _volume: 0
+    _volume: 1
   - _key: Attack
     _clip: {fileID: 8300000, guid: 024b5db6c0f2810449bd1065f9242ef9, type: 3}
-    _volume: 0
+    _volume: 1
+  - _key: ScoreView
+    _clip: {fileID: 8300000, guid: c82b40c3a42bda94fa29c6eb8ab03737, type: 3}
+    _volume: 1
+  - _key: CompleteSubMission
+    _clip: {fileID: 8300000, guid: 77cb935a06518eb45af66bd0c87e8d79, type: 3}
+    _volume: 1

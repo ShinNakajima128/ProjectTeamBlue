@@ -10,14 +10,14 @@ public class BGMTest : MonoBehaviour
     }
     public void BGMStage1()
     {
-        SoundManager.Instance.PlayBGM(SoundTag.BGMStage1);
+        SoundManager.Instance.PlayBGM(SoundTag.BGM_Stage1);
     }
     public void BGMLobby()
     {
-        SoundManager.Instance.PlayBGM(SoundTag.BGMLobby);
+        SoundManager.Instance.PlayBGM(SoundTag.BGM_Lobby);
     }
     public void BGMFound()
     {
-        SoundManager.Instance.PlayBGM(SoundTag.BGMFound);
+        SoundManager.Instance.PlayBGM(SoundTag.BGM_Found);
     }
 }

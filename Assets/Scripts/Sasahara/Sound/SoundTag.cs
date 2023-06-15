@@ -5,30 +5,35 @@ using UnityEngine;
 public static class SoundTag
 {
 	//BGM
-	private const string  _bgmFound = "発見";
-	private const string  _bgmStage1 = "Stage1";
-	private const string _bgmLobby = "ロビー";
+	private const string  _bgm_Found = "発見";
+	private const string  _bgm_Stage1 = "Stage1";
+	private const string _bgm_Lobby = "ロビー";
+	private const string _bgm_Result = "リザルト";
 
 	//SE
-	private const string _seCursorMove = "CursorMove";
-	private const string _seCancel = "Cancel";
-	private const string _seView = "View";
-	private const string _seCompleteMission = "CompleteMission";
-	private const string _seExplosion = "Explosion";
-	private const string _seAttack = "Attack";
-
+	private const string _se_CursorMove = "CursorMove";
+	private const string _se_Cancel = "Cancel";
+	private const string _se_View = "View";
+	private const string _se_CompleteMainMission = "CompleteMainMission";
+	private const string _se_CompleteSubMission = "CompleteSubMission";
+	private const string _se_Explosion = "Explosion";
+	private const string _se_Attack = "Attack";
+	private const string _se_ScoreView = "ScoreView";
 	
 
 	//BGM
-	public static string BGMFound => _bgmFound;
-    public static string BGMStage1 => _bgmStage1;
-    public static string BGMLobby => _bgmLobby;
+	public static string BGM_Found => _bgm_Found;
+    public static string BGM_Stage1 => _bgm_Stage1;
+    public static string BGM_Lobby => _bgm_Lobby;
+	public static string BGM_Result => _bgm_Result;
 
 	//SE
-	public static string SECursorMove => _seCursorMove;
-	public static string SECancel => _seCancel;
-	public static string SEView => _seView;
-	public static string SECompleteMission => _seCompleteMission;
-	public static string SEExplosion => _seExplosion;
-	public static string SEAttack => _seAttack;
+	public static string SE_CursorMove => _se_CursorMove;
+	public static string SE_Cancel => _se_Cancel;
+	public static string SE_View => _se_View;
+	public static string SE_CompleteMainMission => _se_CompleteMainMission;
+	public static string SE_CompleteSubMission => _se_CompleteSubMission;
+	public static string SE_Explosion => _se_Explosion;
+	public static string SE_Attack => _se_Attack;
+	public static string SE_ScoreView => _se_ScoreView;
 }

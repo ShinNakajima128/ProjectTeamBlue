@@ -41,6 +41,7 @@ public class PlayerAttackCollider : MonoBehaviour
             if (other.TryGetComponent(out IDamagable target))
             {
                 target.Damage(_playerAttack.AttackPower);
+                SoundManager.Instance.PlaySE(SoundTag.SE_Attack);
             }
         }
     }

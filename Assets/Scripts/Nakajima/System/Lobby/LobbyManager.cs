@@ -53,7 +53,7 @@ public class LobbyManager : MonoBehaviour
         _stageSelectPanel.SetActive(false);
 
         FadeManager.Fade(FadeType.In);
-        SoundManager.Instance.PlayBGM(SoundTag.BGMLobby);
+        SoundManager.Instance.PlayBGM(SoundTag.BGM_Lobby);
 
         this.UpdateAsObservable()
             .Subscribe(_ =>
@@ -128,7 +128,7 @@ public class LobbyManager : MonoBehaviour
     /// </summary>
     public void PlayButtonSelectSE()
     {
-        SoundManager.Instance.PlaySE(SoundTag.SECursorMove);
+        SoundManager.Instance.PlaySE(SoundTag.SE_CursorMove);
     }
 
     /// <summary>
@@ -136,7 +136,7 @@ public class LobbyManager : MonoBehaviour
     /// </summary>
     public void PlayCancelSE()
     {
-        SoundManager.Instance.PlaySE(SoundTag.SECancel);
+        SoundManager.Instance.PlaySE(SoundTag.SE_Cancel);
     }
     #endregion
 
@@ -159,11 +159,11 @@ public class LobbyManager : MonoBehaviour
         {
             case PanelType.GameStart:
                 _startPanel.SetActive(isActived);
-                SoundManager.Instance.PlaySE(SoundTag.SECursorMove);           
+                SoundManager.Instance.PlaySE(SoundTag.SE_CursorMove);           
                 break;
             case PanelType.StageSelect:
                 _stageSelectPanel.SetActive(isActived);
-                SoundManager.Instance.PlaySE(SoundTag.SEView);
+                SoundManager.Instance.PlaySE(SoundTag.SE_View);
                 break;
             default:
                 break;
