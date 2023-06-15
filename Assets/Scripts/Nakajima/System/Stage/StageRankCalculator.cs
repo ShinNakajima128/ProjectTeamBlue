@@ -57,7 +57,7 @@ public class StageRankCalculator :MonoBehaviour
         {
             rank = ScoreRank.A;
         }
-        else if (score <= rs.Time_Rank_B)
+        else if (score >= rs.Time_Rank_B)
         {
             rank = ScoreRank.B;
         }
@@ -65,6 +65,7 @@ public class StageRankCalculator :MonoBehaviour
         {
             rank = ScoreRank.C;
         }
+        Debug.Log(rank);
         Instance.CurrentRank = rank;
         return rank;
     }

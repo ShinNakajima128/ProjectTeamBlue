@@ -111,7 +111,7 @@ public class Stage
         //スコアを更新した場合はハイスコアを差し替える
         _highScore = score > _highScore ? score : _highScore;
 
-        _stageRank = StageRankCalculator.CalculateScoreRank(_stageType, _highScore);
+        _stageRank = StageRankCalculator.CalculateScoreRank(_stageType, score);
     }
     #endregion
 
