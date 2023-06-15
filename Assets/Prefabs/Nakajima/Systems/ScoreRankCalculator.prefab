@@ -52,13 +52,13 @@ MonoBehaviour:
     Time_Rank_C: 5000
   - StageName: Stage2
     StageType: 3
-    Time_Rank_S: 9000
-    Time_Rank_A: 8000
-    Time_Rank_B: 7000
-    Time_Rank_C: 6000
+    Time_Rank_S: 13100
+    Time_Rank_A: 10000
+    Time_Rank_B: 8000
+    Time_Rank_C: 5000
   - StageName: Stage3
     StageType: 4
-    Time_Rank_S: 10000
-    Time_Rank_A: 9000
-    Time_Rank_B: 8000
-    Time_Rank_C: 7000
+    Time_Rank_S: 15900
+    Time_Rank_A: 12900
+    Time_Rank_B: 9900
+    Time_Rank_C: 5000
