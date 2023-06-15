@@ -90,9 +90,9 @@ public class FadeManager : SingletonMonoBehaviour<FadeManager>
                            .SetEase(Ease.Linear)
                            .OnComplete(() =>
                            {
+                               Instance._isFading = false;
                                //完了後に引数に渡されている処理を実行
                                callback?.Invoke();
-                               Instance._isFading = false;
                            });
     }
     #endregion
