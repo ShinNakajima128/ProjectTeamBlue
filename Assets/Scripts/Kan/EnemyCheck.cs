@@ -29,6 +29,9 @@ public class EnemyCheck : MonoBehaviour
     bool isStartCheck = false;
     CapsuleCollider capsuleCollider;
 
+    Mesh mesh;
+    [SerializeField]
+    Material mat;
 
     //private GameObject hitGameObject
     #endregion
@@ -44,6 +47,9 @@ public class EnemyCheck : MonoBehaviour
     #region unity methods
     private void Awake()
     {
+        mesh = new Mesh(); 
+        GetComponent<MeshFilter>().mesh = mesh;
+        
         //hitGameObjectList = new List<GameObject>();
         //stayGameObjectList = new List<GameObject>();
     }
@@ -65,8 +71,14 @@ public class EnemyCheck : MonoBehaviour
 
     private void Update()
     {
-        
+        float radius = detectionRadius;//<0
+        float innerRadius = 0;//>=0
+        int segments = 50;
+        float angleDegree = detectionAngle;
+        Vector3 centerCircle = new Vector3(0, 0, 0);
+        DrawHalfCycle(radius, innerRadius, segments, angleDegree, centerCircle);
     }
+    
 
     private void OnTriggerEnter(Collider other)
     {
@@ -123,53 +135,6 @@ public class EnemyCheck : MonoBehaviour
     #endregion
 
     #region public method
-    //public bool HitingSomething()
-    //{
-    //    bool hitSomething = false;
-    //    foreach(var item in hitGameObjectList)
-    //    {
-    //        if (item.tag != "Ground")
-    //            hitSomething = true;
-    //    }
-    //    return hitSomething;
-    //}
-
-    //public GameObject GetHitGameObjectByTag(string tagStr)
-    //{
-    //    GameObject ret = null;
-
-    //    foreach (var item in hitGameObjectList)
-    //    {
-    //        if (item.CompareTag(tagStr))
-    //            ret = item;
-    //    }
-
-    //    return ret;
-    //}
-
-    //public bool StayingInSomething()
-    //{
-    //    bool ret = false;
-    //    foreach (var item in stayGameObjectList)
-    //    {
-    //        if (!item.CompareTag("Ground"))
-    //            ret = true;
-    //    }
-    //    return ret;
-    //}
-
-    //public GameObject GetStayInGameObjectByTag(string tagStr)
-    //{
-    //    GameObject ret = null;
-
-    //    foreach (var item in stayGameObjectList)
-    //    {
-    //        if (item.CompareTag(tagStr))
-    //            ret = item;
-    //    }
-
-    //    return ret;
-    //}
 
     #endregion
 
@@ -179,10 +144,50 @@ public class EnemyCheck : MonoBehaviour
         hitCollider.enabled = checkBool;
     }
 
+    void DrawHalfCycle(float radius, float innerRadius, int segments, float angleDegree, Vector3 centerCircle)
+    {
+        
+        gameObject.GetComponent<MeshRenderer>().material = mat;
+        
+
+
+
+        Vector3[] vertices = new Vector3[segments * 2 + 2];
+        vertices[0] = centerCircle;
+        float angleRad = Mathf.Deg2Rad * angleDegree;
+        float angleCur = angleRad+ Mathf.Deg2Rad* angleDegree/2;
+        float angledelta = angleRad / segments;
+
+        for (int i = 0; i < vertices.Length; i += 2)
+        {
+            float cosA = Mathf.Cos(angleCur);
+            float sinA = Mathf.Sin(angleCur);
+
+            vertices[i] = new Vector3(radius * cosA, innerRadius, radius * sinA);
+            angleCur -= angledelta;
+
+        }
+
+        int[] triangles = new int[segments * 6];
+        for (int i = 0, vi = 0; i < triangles.Length; i += 6, vi += 2)
+        {
+            triangles[i] = vi;
+            triangles[i + 1] = vi + 3;
+            triangles[i + 2] = vi + 1;
+            triangles[i + 3] = vi + 2;
+            triangles[i + 4] = vi + 3;
+            triangles[i + 5] = vi;
+        }
+
+        mesh.Clear();
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+    }
+
 #if UNITY_EDITOR
     void OnDrawGizmos()
     {
-        if(hitCollider == null)
+        if (hitCollider == null)
         {
             hitCollider = GetComponent<SphereCollider>();
         }
@@ -199,6 +204,7 @@ public class EnemyCheck : MonoBehaviour
         Handles.DrawSolidArc(center, normal, forward, -angle / 2f, radius);
     }
 #endif
-#endregion
+
+    #endregion
 
 }
