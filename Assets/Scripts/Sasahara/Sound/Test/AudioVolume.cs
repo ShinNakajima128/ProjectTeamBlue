@@ -10,10 +10,14 @@ public class AudioVolume : MonoBehaviour
 
     #region serialize
     // unity inpectorに表示したいものを記述。
-    [SerializeField] private AudioMixer _audioMixer;
-    [SerializeField] private Image _MasterSlider;
-    [SerializeField] private Image _bgmSlider;
-    [SerializeField] private Image _seSlider;
+    [SerializeField]
+    private AudioMixer _audioMixer;
+    [SerializeField]
+    private Image _MasterSlider;
+    [SerializeField]
+    private Image _bgmSlider;
+    [SerializeField]
+    private Image _seSlider;
     #endregion
 
     #region private
@@ -84,7 +88,6 @@ public class AudioVolume : MonoBehaviour
         _seSlider.fillAmount = _current_SE_Value / 10f;
         SetAudioMixerSE(_current_SE_Value);
     }
-
     //==========
     #endregion
 

@@ -80,16 +80,20 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
 		_SoundWindow.SetActive(false);
 
 		_attachBGMSource.volume = bgmDefaltVolume;
+
+		//SE用のAudioSouceの用意
 		for (int i = 0; i < _seAudioPrefabCount; i++)
 		{
 			GameObject obj = Instantiate(_seAudioObj);
 			obj.transform.parent = _seAudioPrefab.transform;
 			AudioSource source = obj.GetComponent<AudioSource>();
 			source.playOnAwake = false;
+			source.loop = false;
 			source.outputAudioMixerGroup = _seAudioGroup;
 		}
 		_seAudioSources = _seAudioPrefab.GetComponentsInChildren<AudioSource>();
 
+		//シングルトン化
         if (Instance != this)
         {
             Destroy(gameObject);
@@ -127,26 +131,27 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
 		}
 	}
 	#endregion
+
 	#region public method
 	//　自身で作成したPublicな関数を入れる。
 
 	//---------BGM---------
+	/// <summary>BGM用メソッド　フェードを設定できる</summary>
+	/// <param name="bgmName">Keyに設定した音源名</param>
+	/// <param name="fadeSpeedTime">フェードにかける時間</param>
+	/// <param name="volume">音量</param>
 	public void PlayBGM(string bgmName, float fadeSpeedTime = bgmDefaltFadeTime, float volume = bgmDefaltVolume)
 	{
-		AudioClip ac = null;
+		BGM bgm = null;
 		foreach (var item in scriptableObj.bgmList)
 		{
-            if (ac == item.Clip)
-            {
-				Debug.Log(item.Key + "という名前のBGMが重複しています");
-			}
 			if (bgmName == item.Key)
 			{
-				ac = item.Clip;
+				bgm = item;
 				break;
 			}
 		}
-		if (ac is null)
+		if (bgm is null)
 		{
 			Debug.Log(bgmName + "という名前のBGMがありません");
 			return;
@@ -156,11 +161,11 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
 		if (!_attachBGMSource.isPlaying)
 		{
 			_nextBGMName = "";
-			_attachBGMSource.clip = ac;
+			_attachBGMSource.clip = bgm.Clip;
 			_attachBGMSource.loop = true;
 			_attachBGMSource.Play();
 			Debug.Log(bgmName);
-			_attachBGMSource.volume = volume;
+			_attachBGMSource.volume = volume * bgm.Volume;
 		}
 		else if (_attachBGMSource.clip.name != bgmName)
 		{
@@ -172,7 +177,7 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
 
 	/// <summary>
 	/// 現在流れている曲をフェードアウトさせる
-	/// fadeSpeedに指定した割合でフェードアウトするスピードが変わる
+	/// fadeSpeedに指定した数値でフェードアウトするスピードが変わる
 	/// </summary>
 	public void FadeOutBGM(float fadeSpeed)
 	{
@@ -237,6 +242,7 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
 		_SoundWindow.SetActive(false);
 	}
 	#endregion
+
 	#region private method
 	// 自身で作成したPrivateな関数を入れる。
 	#endregion
