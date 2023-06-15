@@ -63,7 +63,7 @@ public class HPBar : MonoBehaviour
 
     private void LateUpdate()
     {
-        hpFillImage.fillAmount = Mathf.Clamp(hp * 1 / maxHP, 0, 1);
+        //hpFillImage.fillAmount = Mathf.Clamp(hp * 1 / maxHP, 0, 1);
 
         transform.forward = Camera.main.transform.forward;
     }

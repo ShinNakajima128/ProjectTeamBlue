@@ -33,7 +33,7 @@ public class Enemy : MonoBehaviour,IDamagable
 
 
     public List<Tuple<bool,Vector3>> checkPointPositionList;
-    public HPBar hpBar;
+    //public HPBar hpBar;
 
     public static Enemy Instance { get; private set; }
     #endregion
@@ -249,7 +249,7 @@ public class Enemy : MonoBehaviour,IDamagable
                 break;
         }
 
-        UpdateHPBar(maxHP, hp);
+        //UpdateHPBar(maxHP, hp);
 
         oldEnemyAct = enemyAct;
     }
@@ -535,11 +535,11 @@ public class Enemy : MonoBehaviour,IDamagable
         return retPosItem;
     }
 
-    void UpdateHPBar(float maxHP, float hp)
-    {
-        hpBar.MaxHP = maxHP;
-        hpBar.HP = hp;
-    }
+    //void UpdateHPBar(float maxHP, float hp)
+    //{
+    //    hpBar.MaxHP = maxHP;
+    //    hpBar.HP = hp;
+    //}
 
     void DoAttack()
     {
