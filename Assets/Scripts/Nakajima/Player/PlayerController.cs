@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     #region private
     private int _currentHP;
     private Subject<bool> _isOperable = new Subject<bool>();
+    private bool _isdead = false;
     #endregion
 
     #region Constant
@@ -72,7 +73,13 @@ public class PlayerController : MonoBehaviour, IDamagable
 
         if (_currentHP <= 0)
         {
-            Debug.Log("Gameover");
+            if (!_isdead)
+            {
+                Debug.Log("Gameover");
+                StageManager.Instance.IsGameover = true;
+                StageManager.Instance.OnGameEnd();
+                _isdead = true;
+            }
         }
     }
     /// <summary>

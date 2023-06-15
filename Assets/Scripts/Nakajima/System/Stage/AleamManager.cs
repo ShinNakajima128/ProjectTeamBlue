@@ -44,27 +44,35 @@ public class AleamManager : MonoBehaviour
     #endregion
 
     #region unity methods
-    //private IEnumerator Start()
-    //{
-    //    yield return new WaitForSeconds(0.5f);
-    //    OnAlerm();
-
-    //    while (true)
-    //    {
-    //        if (Input.GetKeyDown(KeyCode.Q))
-    //        {
-    //            OffAlerm();
-    //            break;
-    //        }
-    //        yield return null;
-    //    }
-    //}
+    private void Start()
+    {
+        StageManager.Instance.IsFounded
+                             .Skip(1)
+                             .Subscribe(value => SetAlerm(value))
+                             .AddTo(this);
+    }
     #endregion
 
     #region public method
     #endregion
 
     #region private method
+    /// <summary>
+    /// 警報をON/OFFにする
+    /// </summary>
+    private void SetAlerm(bool isFounded)
+    {
+        if (isFounded)
+        {
+            OnAlerm();
+            Debug.Log("Found");
+        }
+        else
+        {
+            OffAlerm();
+            Debug.Log("Lost");
+        }
+    }
     /// <summary>
     /// 警報を発令
     /// </summary>
@@ -75,7 +83,7 @@ public class AleamManager : MonoBehaviour
             return;
         }
 
-        SoundManager.Instance.PlayBGM(SoundTag.BGMFound);
+        SoundManager.Instance.PlayBGM(SoundTag.BGM_Found);
         _isOnAlerm = true;
 
         _currentTween = _alermLight.DOIntensity(_intensityValue, _flashingTime)
@@ -88,7 +96,7 @@ public class AleamManager : MonoBehaviour
     /// </summary>
     private void OffAlerm()
     {
-        SoundManager.Instance.PlayBGM(SoundTag.BGMStage1);
+        SoundManager.Instance.PlayBGM(SoundTag.BGM_Stage1);
         _isOnAlerm = false;
 
         if (_currentTween != null)

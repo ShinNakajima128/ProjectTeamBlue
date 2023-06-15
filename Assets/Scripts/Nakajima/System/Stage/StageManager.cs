@@ -15,6 +15,7 @@ public class StageManager : MonoBehaviour
     public Stage CurrentStage => _currentStage;
     public ReactiveProperty<float> CurrentLimitTime => _currentLimitTime;
     public bool IsCompletedMainMission { get; set; } = false;
+    public ReactiveProperty<bool> IsFounded => _isFounded;
     public ReactiveProperty<int> CompleteSubMissionNum => _currentSubMissionCompleteNum;
     public ReactiveProperty<int> StartCountDownNum => _startCountDownNum;
     public bool IsGameover { get; set; } = false;
@@ -24,7 +25,11 @@ public class StageManager : MonoBehaviour
     public Subject<Unit> GamePauseSubject => _gamePauseSubject;
     public Subject<Unit> MainTargetCompleteSubject => _mainTargetCompleteSubject;
     public Subject<Unit> SubMissionCompleteSubject => _subTargetCompleteSubject;
+    public Subject<Unit> EnemySpottedSubject => _enemySpottedSubject;
+    public Subject<Unit> EnemyLostPlayerSubject => _enemyLostPlayerSubject;
+    public Subject<Unit> EscapeSubject => _escapeSubject;
     public Subject<Unit> GameRestartSubject => _gameRestartSubject;
+    public Subject<Unit> GameoverSubject => _gameoverSubject;
     public Subject<Unit> GameEndSubject => _gameEndSubject;
     #endregion
 
@@ -47,6 +52,7 @@ public class StageManager : MonoBehaviour
     private ScoreCalculation _scoreCalc;
     private PlayerController _playerCtrl;
     private bool _inGame = false;
+    private ReactiveProperty<bool> _isFounded = new ReactiveProperty<bool>();
     private ReactiveProperty<int> _currentSubMissionCompleteNum = new ReactiveProperty<int>();
     private ReactiveProperty<int> _startCountDownNum = new ReactiveProperty<int>();
     private int _currrentScore = 0;
@@ -57,8 +63,11 @@ public class StageManager : MonoBehaviour
     private Subject<Unit> _gamePauseSubject = new Subject<Unit>();
     private Subject<Unit> _mainTargetCompleteSubject = new Subject<Unit>();
     private Subject<Unit> _subTargetCompleteSubject = new Subject<Unit>();
+    private Subject<Unit> _enemySpottedSubject = new Subject<Unit>();
+    private Subject<Unit> _enemyLostPlayerSubject = new Subject<Unit>();
     private Subject<Unit> _escapeSubject = new Subject<Unit>();
     private Subject<Unit> _gameRestartSubject = new Subject<Unit>();
+    private Subject<Unit> _gameoverSubject = new Subject<Unit>();
     private Subject<Unit> _gameEndSubject = new Subject<Unit>();
     #endregion
 
@@ -76,19 +85,22 @@ public class StageManager : MonoBehaviour
         TryGetComponent(out _scoreCalc);
         _playerCtrl = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
         _startCountDownNum.Value = _countDownTime;
+        _isFounded.Value = false;
     }
     private IEnumerator Start()
     {
         //BGMを再生する
-        SoundManager.Instance.PlayBGM(SoundTag.BGMStage1);
+        SoundManager.Instance.PlayBGM(SoundTag.BGM_Stage1);
 
         //画面フェード
         FadeManager.Fade(FadeType.In);
 
+        //ゲーム開始時に、生成されたステージのスタート位置にプレイヤーを移動する処理を登録
         SetStartPositionSubject
         .Subscribe(_playerCtrl.SetStartPosition)
         .AddTo(this);
 
+        //インゲーム中の操作可不可を切り替える処理を登録
         IsInGameSubject
         .Subscribe(_playerCtrl.ChangeIsOperatable)
         .AddTo(this);
@@ -118,9 +130,7 @@ public class StageManager : MonoBehaviour
                     {
                         OnGamePause();
                     }
-                }
-
-                
+                }                
             })
             .AddTo(this);
     }
@@ -145,15 +155,25 @@ public class StageManager : MonoBehaviour
         _gamePauseSubject.OnNext(Unit.Default);
     }
 
+    public void OnEscapeEvent()
+    {
+        _inGame = false;
+        _isInGameSubject.OnNext(false);
+        _escapeSubject.OnNext(Unit.Default);
+    }
     /// <summary>
     /// ゲームを終了する
     /// </summary>
     public void OnGameEnd()
     {
         _inGame = false;
-        _isInGameSubject.OnNext(false);
-        _gameEndSubject.OnNext(Unit.Default);
-        StartCoroutine(GameEndCoroutine());
+
+        FadeManager.Fade(FadeType.Out, () =>
+        {
+            FadeManager.Fade(FadeType.In);
+            _gameEndSubject.OnNext(Unit.Default);
+            StartCoroutine(GameEndCoroutine());
+        });
     }
     
     /// <summary>
@@ -162,6 +182,7 @@ public class StageManager : MonoBehaviour
     public void OnMainTargetComplete()
     {
         IsCompletedMainMission = true;
+        SoundManager.Instance.PlaySE(SoundTag.SE_CompleteMainMission);
         _mainTargetCompleteSubject.OnNext(Unit.Default);
     }
 
@@ -171,6 +192,7 @@ public class StageManager : MonoBehaviour
     public void OnSubTargetComplete()
     {
         _currentSubMissionCompleteNum.Value++;
+        SoundManager.Instance.PlaySE(SoundTag.SE_CompleteSubMission);
         _subTargetCompleteSubject.OnNext(Unit.Default);
         Debug.Log("サブターゲット達成");
     }
@@ -244,10 +266,10 @@ public class StageManager : MonoBehaviour
         }
         else
         {
-            yield return new WaitForSeconds(2.0f);
+            //yield return new WaitForSeconds(2.0f);
 
             //Scene遷移機能をどのように作るか不明なため、仮のロード処理を行っている
-            SceneManager.LoadScene("Lobby");
+            //SceneManager.LoadScene("Lobby");
         }
         yield return null;
     }
