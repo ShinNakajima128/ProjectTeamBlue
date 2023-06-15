@@ -204,7 +204,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyType: 1
   speed: 5
-  hp: 5
+  hp: 10
   atk: 1
   maxHP: 10
   attackFarWithPlayer: 1.3
