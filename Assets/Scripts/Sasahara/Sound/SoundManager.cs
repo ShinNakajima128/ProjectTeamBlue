@@ -195,7 +195,6 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
 	public void PlaySE(string seName, float delay = 0.0f, float volume = seDefaltVolume)
 	{
 		SE currentSE = null;
-		AudioClip ac = null;
 		AudioSource se = null;
 		foreach (var item in scriptableObj.seList)
 		{
@@ -205,7 +204,7 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
 				break;
 			}
 		}
-		if (ac is null)
+		if (currentSE is null)
 		{
 			Debug.Log(seName + "という名前のSEがありません");
 			return;

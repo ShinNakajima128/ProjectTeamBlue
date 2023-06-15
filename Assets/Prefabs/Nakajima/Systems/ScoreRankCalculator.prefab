@@ -46,7 +46,7 @@ MonoBehaviour:
   _rankedScores:
   - StageName: Stage1
     StageType: 2
-    Time_Rank_S: 8000
+    Time_Rank_S: 10000
     Time_Rank_A: 7000
     Time_Rank_B: 6000
     Time_Rank_C: 5000
