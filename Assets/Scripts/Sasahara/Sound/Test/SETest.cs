@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class SETest : MonoBehaviour
 {
-    public void SE(string seName)
+    public void SE()
     {
-        SoundManager.Instance.PlaySE(seName);
+        Debug.Log("AAAA");
     }
 }

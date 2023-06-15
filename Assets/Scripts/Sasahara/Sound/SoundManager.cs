@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.UI;
 
 public class SoundManager : SingletonMonoBehaviour<SoundManager>
 {
@@ -38,6 +39,8 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
 	private GameObject _seAudioObj = null;
 　　[SerializeField]
 	private AudioMixerGroup _seAudioGroup = null;
+	[SerializeField]
+	private GameObject _SoundWindow = null;
 	#endregion
 
 	#region private
@@ -74,6 +77,8 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
 	//  Start, UpdateなどのUnityのイベント関数。
 	private void Awake()
 	{
+		_SoundWindow.SetActive(false);
+
 		_attachBGMSource.volume = bgmDefaltVolume;
 		for (int i = 0; i < _seAudioPrefabCount; i++)
 		{
@@ -152,6 +157,7 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
 		{
 			_nextBGMName = "";
 			_attachBGMSource.clip = ac;
+			_attachBGMSource.loop = true;
 			_attachBGMSource.Play();
 			Debug.Log(bgmName);
 			_attachBGMSource.volume = volume;
@@ -188,13 +194,15 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
 	/// <param name="volume">音量</param>
 	public void PlaySE(string seName, float delay = 0.0f, float volume = seDefaltVolume)
 	{
+		SE currentSE = null;
 		AudioClip ac = null;
 		AudioSource se = null;
 		foreach (var item in scriptableObj.seList)
 		{
 			if (item.Key == seName)
 			{
-				ac = item.Clip;
+				currentSE = item;
+				break;
 			}
 		}
 		if (ac is null)
@@ -214,9 +222,20 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
 				break;
 			}
 		}
-		se.clip = ac;
-		se.volume = volume;
+		se.clip = currentSE.Clip;
+		se.volume = volume * currentSE.Volume;
 		se.Play();
+	}
+
+	//UIのウインドウのオン
+	public void SoundWindowOn()
+    {
+		_SoundWindow.SetActive(true);
+    }
+	//UIのウインドウのオフ
+	public void SoundWindowOff()
+    {
+		_SoundWindow.SetActive(false);
 	}
 	#endregion
 	#region private method

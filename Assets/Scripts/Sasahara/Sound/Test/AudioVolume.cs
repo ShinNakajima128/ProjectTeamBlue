@@ -11,14 +11,17 @@ public class AudioVolume : MonoBehaviour
     #region serialize
     // unity inpectorに表示したいものを記述。
     [SerializeField] private AudioMixer _audioMixer;
-    [SerializeField] private Slider _MasterSlider;
-    [SerializeField] private Slider _bgmSlider;
-    [SerializeField] private Slider _seSlider;
+    [SerializeField] private Image _MasterSlider;
+    [SerializeField] private Image _bgmSlider;
+    [SerializeField] private Image _seSlider;
     #endregion
 
     #region private
     // プライベートなメンバー変数。
-
+    private int _defaltValue = 5;
+    private int _current_Master_Value = 0;
+    private int _current_BGM_Value = 0;
+    private int _current_SE_Value = 0;
     #endregion
 
     #region Constant
@@ -33,17 +36,17 @@ public class AudioVolume : MonoBehaviour
     //  Start, UpdateなどのUnityのイベント関数。
     private void Awake()
     {
-        //スライダーを動かした時の処理を登録
-        _MasterSlider.onValueChanged.AddListener(SetAudioMixerMaster);
-        _bgmSlider.onValueChanged.AddListener(SetAudioMixerBGM);
-        _seSlider.onValueChanged.AddListener(SetAudioMixerSE);
+        //各ValueにDefalt値を設定（半分）
+        _current_Master_Value = _defaltValue;
+        _current_BGM_Value = _defaltValue;
+        _current_SE_Value = _defaltValue;    
     }
 
     private void Start()
     {
-        _MasterSlider.value = _MasterSlider.maxValue / 2;
-        _bgmSlider.value = _bgmSlider.maxValue / 2;
-        _seSlider.value = _seSlider.maxValue / 2;
+        _MasterSlider.fillAmount = _current_Master_Value / 10f;
+        _bgmSlider.fillAmount = _current_BGM_Value / 10f;
+        _seSlider.fillAmount = _current_SE_Value / 10f;
     }
 
     private void Update()
@@ -54,45 +57,75 @@ public class AudioVolume : MonoBehaviour
 
     #region public method
     //　自身で作成したPublicな関数を入れる。
-
+    //=====Slider=====
     //Master
-    public void SetAudioMixerMaster(float value)
+    public void AudioSliderMaster(int value)
     {
-        //5段階補正
-        value /= 10;
-        //-80~0に変換
-        var volume = Mathf.Clamp(Mathf.Log10(value) * 20f, -80f, 0f);
-        //audioMixerに代入
-        _audioMixer.SetFloat("Master", volume);
-        Debug.Log($"Master:{volume}");
+        _current_Master_Value += value;
+        _current_Master_Value = Mathf.Clamp(_current_Master_Value, 0, 10);
+        _MasterSlider.fillAmount = _current_Master_Value / 10f;
+        SetAudioMixerMaster(_current_Master_Value);
     }
 
     //BGM
-    public void SetAudioMixerBGM(float value)
+    public void AudioSliderBGM(int value)
     {
-        //5段階補正
+        _current_BGM_Value += value;
+        _current_BGM_Value = Mathf.Clamp(_current_BGM_Value, 0, 10);
+        _bgmSlider.fillAmount = _current_BGM_Value / 10f;
+        SetAudioMixerBGM(_current_BGM_Value);
+    }
+
+    //SE
+    public void AudioSliderSE(int value)
+    {
+        _current_SE_Value += value;
+        _current_SE_Value = Mathf.Clamp(_current_SE_Value, 0, 10);
+        _seSlider.fillAmount = _current_SE_Value / 10f;
+        SetAudioMixerSE(_current_SE_Value);
+    }
+
+    //==========
+    #endregion
+
+    #region private method
+    //自身で作成したprivateな関数を入れる。
+    //=====AudioMixer=====
+    //Master
+    private void SetAudioMixerMaster(float value)
+    {
+        //10段階補正
         value /= 10;
-        //-80~0に変換
+        //-80~0に変換(デシベル)
         var volume = Mathf.Clamp(Mathf.Log10(value) * 20f, -80f, 0f);
-        //audioMixerに代入
+        //AudioMixerに代入
+        _audioMixer.SetFloat("Master", volume);
+        Debug.Log($"master:{volume}");
+    }
+
+    //BGM
+    private void SetAudioMixerBGM(float value)
+    {
+        //10段階補正
+        value /= 10;
+        //-80~0に変換(デシベル)
+        var volume = Mathf.Clamp(Mathf.Log10(value) * 20f, -80f, 0f);
+        //AudioMixerに代入
         _audioMixer.SetFloat("BGM", volume);
         Debug.Log($"BGM:{volume}");
     }
 
     //SE
-    public void SetAudioMixerSE(float value)
+    private void SetAudioMixerSE(float value)
     {
-        //5段階補正
+        //10段階補正
         value /= 10;
-        //-80~0に変換
+        //-80~0に変換(デシベル)
         var volume = Mathf.Clamp(Mathf.Log10(value) * 20f, -80f, 0f);
-        //audioMixerに代入
+        //AudioMixerに代入
         _audioMixer.SetFloat("SE", volume);
         Debug.Log($"SE:{volume}");
     }
-    #endregion
-
-    #region private method
-    // 自身で作成したPrivateな関数を入れる。
+    //==========
     #endregion
 }
