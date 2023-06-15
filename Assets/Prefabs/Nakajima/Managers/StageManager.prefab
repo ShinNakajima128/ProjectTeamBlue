@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _limitTime: 300
+  _countDownTime: 3
   _stageModels:
   - StageName: "\u30B9\u30C6\u30FC\u30B81"
     StageType: 2
@@ -58,7 +59,6 @@ MonoBehaviour:
     StageType: 4
     StagePrefab: {fileID: 1236198115442529800, guid: d54406d71e232244ea8e5c50716c4bac,
       type: 3}
-  _countDownTime: 3
 --- !u!114 &3168524083495119407
 MonoBehaviour:
   m_ObjectHideFlags: 0
