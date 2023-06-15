@@ -8,7 +8,7 @@ public class BGM
 {
     [SerializeField] string _key;
     [SerializeField] AudioClip _clip;
-    [SerializeField] float _volume;
+    [SerializeField, Range(0f, 1f)] float _volume = 1;
     int id;
 
     public string Key => _key;

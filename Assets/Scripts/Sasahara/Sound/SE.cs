@@ -8,7 +8,7 @@ public class SE
 {
     [SerializeField] string _key;
     [SerializeField] AudioClip _clip;
-    [SerializeField] float _volume;
+    [SerializeField, Range(0f, 1f)] float _volume = 1;
 
     public string Key => _key;
     public AudioClip Clip => _clip;
