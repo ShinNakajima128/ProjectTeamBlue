@@ -68,7 +68,6 @@ public class ActionableObject : MonoBehaviour, IActionable
                 StageManager.Instance.OnSubTargetComplete();
                 break;
             case TargetType.EscapePoint:
-                StageManager.Instance.OnEscape();
                 break;
             default:
                 break;

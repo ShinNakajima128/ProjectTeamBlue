@@ -113,8 +113,8 @@ public class PlayerAction : MonoBehaviour
                         _isInAction = false;
                         return;
                     }
-                 
-                    StageManager.Instance.OnEscape(); 
+                    StageManager.Instance.OnEscapeEvent();
+                    //StageManager.Instance.OnEscape(); 
                     return;
             }
 

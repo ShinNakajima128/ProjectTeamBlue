@@ -91,7 +91,7 @@ public class StageManager : MonoBehaviour
         _playerCtrl = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
         _startCountDownNum.Value = _countDownTime;
         _isFounded.Value = false;
-    }
+        }
     private IEnumerator Start()
     {
         //BGMを再生する
@@ -160,11 +160,17 @@ public class StageManager : MonoBehaviour
         _gamePauseSubject.OnNext(Unit.Default);
     }
 
+    /// <summary>
+    /// 逃げ切り（ステージクリア）時に実行する
+    /// </summary>
     public void OnEscapeEvent()
     {
-        _inGame = false;
-        _isInGameSubject.OnNext(false);
-        _escapeSubject.OnNext(Unit.Default);
+        if (IsCompletedMainMission)
+        {
+            _inGame = false;
+            _isInGameSubject.OnNext(false);
+            _escapeSubject.OnNext(Unit.Default);
+        }
     }
     /// <summary>
     /// ゲームを終了する
@@ -197,9 +203,7 @@ public class StageManager : MonoBehaviour
         Debug.Log("サブターゲット達成");
     }
 
-    /// <summary>
-    /// 逃げ切り（ステージクリア）時に実行する
-    /// </summary>
+   
     public void OnEscape()
     {
         if (IsCompletedMainMission)
@@ -260,8 +264,6 @@ public class StageManager : MonoBehaviour
     private IEnumerator GameEndCoroutine()
     {
         Debug.Log("ゲーム終了");
-
-        yield return new WaitForSeconds(2.0f);
 
         FadeManager.Fade(FadeType.Out, () =>
         {
