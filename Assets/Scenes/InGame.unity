@@ -121,7 +121,7 @@ NavMeshSettings:
     accuratePlacement: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 23800000, guid: 57f4a39d1bbf0614bb183cab60c5a162, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 999728dfcb337ff4a9fa0d1d4ccb4541, type: 2}
 --- !u!1 &23522216
 GameObject:
   m_ObjectHideFlags: 0
@@ -1507,6 +1507,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: StageManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 592935310267724207, guid: 3aea8b66d4f873643b28df4c3cee50b5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 592935310267724209, guid: 3aea8b66d4f873643b28df4c3cee50b5,
         type: 3}
