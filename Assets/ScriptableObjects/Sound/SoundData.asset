@@ -29,7 +29,7 @@ MonoBehaviour:
   - _key: CursorMove
     _clip: {fileID: 8300000, guid: c030c78e6d5963f4d916df272c088570, type: 3}
     _volume: 1
-  - _key: Cancel
+  - _key: Submit
     _clip: {fileID: 8300000, guid: b575f0beaa901914db892aac5a21e0f8, type: 3}
     _volume: 1
   - _key: View
@@ -50,3 +50,6 @@ MonoBehaviour:
   - _key: CompleteSubMission
     _clip: {fileID: 8300000, guid: 77cb935a06518eb45af66bd0c87e8d79, type: 3}
     _volume: 1
+  - _key: StageSubmit
+    _clip: {fileID: 8300000, guid: 9ebdc16a19df9de40a7a3ad3b6934513, type: 3}
+    _volume: 0.7
