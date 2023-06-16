@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UniRx;
 
 public class Enemy : MonoBehaviour,IDamagable
 {
@@ -109,7 +110,14 @@ public class Enemy : MonoBehaviour,IDamagable
 
     private void Start()
     {
-        
+        StageManager.Instance.GameEndSubject
+                             .Subscribe(_ =>
+                             {
+                                 //自身を非アクティブにする処理
+                                 gameObject.SetActive(false);
+                             })
+                             .AddTo(this);
+
         enemyAct = ENEMY_ACT.IDOL;
         enemyAgent = GetComponent<NavMeshAgent>();
         checkPointPositionList = new List<Tuple<bool,Vector3>>();
@@ -132,6 +140,8 @@ public class Enemy : MonoBehaviour,IDamagable
     
     private void Update()
     {
+
+
         if (hp <= 0 && enemyAct != ENEMY_ACT.DESTORY)
         {
             StopAllCoroutines();
