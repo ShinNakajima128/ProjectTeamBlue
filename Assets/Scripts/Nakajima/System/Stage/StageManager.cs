@@ -173,12 +173,7 @@ public class StageManager : MonoBehaviour
     {
         _inGame = false;
 
-        FadeManager.Fade(FadeType.Out, () =>
-        {
-            FadeManager.Fade(FadeType.In);
-            _gameEndSubject.OnNext(Unit.Default);
-            StartCoroutine(GameEndCoroutine());
-        });
+        StartCoroutine(GameEndCoroutine());
     }
 
     /// <summary>
@@ -265,6 +260,14 @@ public class StageManager : MonoBehaviour
     private IEnumerator GameEndCoroutine()
     {
         Debug.Log("ゲーム終了");
+
+        yield return new WaitForSeconds(2.0f);
+
+        FadeManager.Fade(FadeType.Out, () =>
+        {
+            FadeManager.Fade(FadeType.In);
+            _gameEndSubject.OnNext(Unit.Default);
+        });
 
         //ゲームオーバー状態ではない場合
         if (!IsGameover)

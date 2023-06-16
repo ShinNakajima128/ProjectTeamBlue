@@ -132,11 +132,16 @@ public class LobbyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// キャンセル音を再生
+    /// 決定音を再生
     /// </summary>
-    public void PlayCancelSE()
+    public void PlaySubmitSE()
     {
-        SoundManager.Instance.PlaySE(SoundTag.SE_Cancel);
+        SoundManager.Instance.PlaySE(SoundTag.SE_Submit);
+    }
+
+    public void PlayStageSubmitSE()
+    {
+        SoundManager.Instance.PlaySE(SoundTag.SE_StageSubmit);
     }
     #endregion
 
