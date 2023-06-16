@@ -128,10 +128,10 @@ public class ResultViewer : MonoBehaviour
         //リザルト画面のパネルを表示
         _resultGroup.alpha = 1;
 
-        yield return new WaitForSeconds(0.5f);
-
         if (!StageManager.Instance.IsGameover)
         {
+            yield return new WaitForSeconds(0.5f);
+
             //メインターゲットのスコアを表示
             int mainScore = 0;
             SoundManager.Instance.PlaySE(SoundTag.SE_ScoreView);
@@ -195,7 +195,7 @@ public class ResultViewer : MonoBehaviour
                                 })
                                 .WaitForCompletion();
 
-            yield return new WaitForSeconds(_scoreViewingTime);
+            yield return new WaitForSeconds(1.0f);
 
             SoundManager.Instance.PlaySE(SoundTag.SE_CompleteMainMission);
             _scoreRankText.text = StageRankCalculator.Instance.CurrentRank.ToString();
@@ -206,8 +206,8 @@ public class ResultViewer : MonoBehaviour
         }
         else
         {
+            _selectPanelBackground.DOFade(1.0f, 0f);
             //ゲームオーバー用のTextを表示する処理を作成
-            _gameoverLogoImage.enabled = true;
         }
         yield return new WaitForSeconds(_scoreViewingTime);
 
@@ -215,15 +215,9 @@ public class ResultViewer : MonoBehaviour
                               .SetEase(Ease.Linear)
                               .OnComplete(() => 
                               {
+                                  _gameoverLogoImage.enabled = true;
                                   _selectPanel.SetActive(true);
                               });
-        //yield return new WaitUntil(() => Input.anyKeyDown);
-
-        ////Scene遷移機能をどのように作るか不明なため、仮のロード処理を行っている
-        //FadeManager.Fade(FadeType.Out, () =>
-        //{
-        //    SceneManager.LoadScene("Lobby");
-        //});
     }
     #endregion
 }
