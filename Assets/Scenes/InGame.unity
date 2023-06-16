@@ -121,7 +121,7 @@ NavMeshSettings:
     accuratePlacement: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 23800000, guid: 57f4a39d1bbf0614bb183cab60c5a162, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 999728dfcb337ff4a9fa0d1d4ccb4541, type: 2}
 --- !u!1 &23522216
 GameObject:
   m_ObjectHideFlags: 0
@@ -852,6 +852,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1079351183 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 592935310267724207, guid: 3aea8b66d4f873643b28df4c3cee50b5,
+    type: 3}
+  m_PrefabInstance: {fileID: 592935309303281473}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1079351184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1079351183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_BuildHeightMesh: 0
+  m_NavMeshData: {fileID: 0}
 --- !u!1001 &1698085897
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1507,6 +1542,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: StageManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 592935310267724207, guid: 3aea8b66d4f873643b28df4c3cee50b5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 592935310267724209, guid: 3aea8b66d4f873643b28df4c3cee50b5,
         type: 3}

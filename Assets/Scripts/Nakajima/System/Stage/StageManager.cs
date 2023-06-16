@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UniRx;
 using UniRx.Triggers;
+using UnityEngine.AI;
 
 /// <summary>各ステージのオブジェクトの配置、処理等を行うManagerクラス</summary>
 public class StageManager : MonoBehaviour
@@ -31,6 +32,7 @@ public class StageManager : MonoBehaviour
     public Subject<Unit> GameRestartSubject => _gameRestartSubject;
     public Subject<Unit> GameoverSubject => _gameoverSubject;
     public Subject<Unit> GameEndSubject => _gameEndSubject;
+
     #endregion
 
     #region serialize
@@ -69,6 +71,8 @@ public class StageManager : MonoBehaviour
     private Subject<Unit> _gameRestartSubject = new Subject<Unit>();
     private Subject<Unit> _gameoverSubject = new Subject<Unit>();
     private Subject<Unit> _gameEndSubject = new Subject<Unit>();
+
+    public NavMeshSurface _surface;
     #endregion
 
     #region Constant
@@ -83,6 +87,7 @@ public class StageManager : MonoBehaviour
     {
         Instance = this;
         TryGetComponent(out _scoreCalc);
+        TryGetComponent(out _surface);
         _playerCtrl = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
         _startCountDownNum.Value = _countDownTime;
         _isFounded.Value = false;
@@ -130,7 +135,7 @@ public class StageManager : MonoBehaviour
                     {
                         OnGamePause();
                     }
-                }                
+                }
             })
             .AddTo(this);
     }
@@ -175,7 +180,7 @@ public class StageManager : MonoBehaviour
             StartCoroutine(GameEndCoroutine());
         });
     }
-    
+
     /// <summary>
     /// メインターゲット達成時に実行する
     /// </summary>
@@ -221,12 +226,19 @@ public class StageManager : MonoBehaviour
         var stagePrefab = _stageModels.FirstOrDefault(x => x.StageType == currentStageType).StagePrefab;
         Instantiate(stagePrefab);
 
+        BuildNavMesh();
+
         //子オブジェクトにあるRoomコンポーネントを全て取得
         Room[] rooms = stagePrefab.GetComponentsInChildren<Room>();
 
         //スタート位置の座標を取得
         Vector3 startPos = rooms.FirstOrDefault(x => x.RoomType == RoomType.Start).transform.position;
         _setPlayerSubject.OnNext(startPos);
+    }
+
+    private void BuildNavMesh()
+    {
+        _surface.BuildNavMesh();
     }
     #endregion
 
