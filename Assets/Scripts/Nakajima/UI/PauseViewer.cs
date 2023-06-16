@@ -71,6 +71,42 @@ public class PauseViewer : MonoBehaviour
     #endregion
 
     #region public method
+    /// <summary>
+    /// ステージをやり直す
+    /// </summary>
+    public void Restart()
+    {
+        Time.timeScale = 1;
+        FadeManager.Fade(FadeType.Out, () =>
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        });   
+    }
+
+    /// <summary>
+    /// ロビーに戻る
+    /// </summary>
+    public void ReturnLobby()
+    {
+        Time.timeScale = 1;
+        FadeManager.Fade(FadeType.Out, () =>
+         {
+             SceneManager.LoadScene("Lobby");
+         });
+    }
+
+    public void PlayEnterSE()
+    {
+        SoundManager.Instance.PlaySE(SoundTag.SE_CursorMove);
+    }
+
+    /// <summary>
+    /// 決定音を再生
+    /// </summary>
+    public void PlaySubmitSE()
+    {
+        SoundManager.Instance.PlaySE(SoundTag.SE_Submit);
+    }
     #endregion
 
     #region private method
@@ -90,24 +126,6 @@ public class PauseViewer : MonoBehaviour
         StartCoroutine(PauseCoroutine());
         SoundManager.Instance.PlaySE(SoundTag.SE_CursorMove);
         Time.timeScale = 0;
-    }
-
-    /// <summary>
-    /// ステージをやり直す
-    /// </summary>
-    private void Restart()
-    {
-        Time.timeScale = 1;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    /// <summary>
-    /// ロビーに戻る
-    /// </summary>
-    private void ReturnLobby()
-    {
-        Time.timeScale = 1;
-        SceneManager.LoadScene("Lobby");
     }
     #endregion
 
