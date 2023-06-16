@@ -46,6 +46,22 @@ public class ResultViewer : MonoBehaviour
     [SerializeField]
     private Image _resultBackground = default;
 
+    [Tooltip("クリア時のロゴImage")]
+    [SerializeField]
+    private Image _clearLogoImage = default;
+
+    [Tooltip("ゲームオーバー時のロゴImage")]
+    [SerializeField]
+    private Image _gameoverLogoImage = default;
+
+    [Tooltip("ゲーム終了後の選択画面のPanel")]
+    [SerializeField]
+    private GameObject _selectPanel = default;
+
+    [Tooltip("選択画面の背景Image")]
+    [SerializeField]
+    private Image _selectPanelBackground = default;
+
     [Tooltip("各ステージのイメージSprite")]
     [SerializeField]
     private Sprite[] _stageSprites = default;
@@ -181,23 +197,33 @@ public class ResultViewer : MonoBehaviour
 
             yield return new WaitForSeconds(_scoreViewingTime);
 
-
             SoundManager.Instance.PlaySE(SoundTag.SE_CompleteMainMission);
             _scoreRankText.text = StageRankCalculator.Instance.CurrentRank.ToString();
+            
+            yield return new WaitForSeconds(_scoreViewingTime);
 
+            _clearLogoImage.enabled = true;
         }
         else
         {
             //ゲームオーバー用のTextを表示する処理を作成
-            yield return new WaitForSeconds(_scoreViewingTime);
+            _gameoverLogoImage.enabled = true;
         }
-        yield return new WaitUntil(() => Input.anyKeyDown);
+        yield return new WaitForSeconds(_scoreViewingTime);
 
-        //Scene遷移機能をどのように作るか不明なため、仮のロード処理を行っている
-        FadeManager.Fade(FadeType.Out, () =>
-        {
-            SceneManager.LoadScene("Lobby");
-        });
+        _selectPanelBackground.DOFade(1.0f, 1.0f)
+                              .SetEase(Ease.Linear)
+                              .OnComplete(() => 
+                              {
+                                  _selectPanel.SetActive(true);
+                              });
+        //yield return new WaitUntil(() => Input.anyKeyDown);
+
+        ////Scene遷移機能をどのように作るか不明なため、仮のロード処理を行っている
+        //FadeManager.Fade(FadeType.Out, () =>
+        //{
+        //    SceneManager.LoadScene("Lobby");
+        //});
     }
     #endregion
 }
