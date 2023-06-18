@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+//チェック範囲コントロール
 public class EnemyCheck : MonoBehaviour
 {
     //当たり判定について、https://tech.pjin.jp/blog/2020/10/30/unity-oncollision
