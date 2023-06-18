@@ -4,7 +4,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-public class EnemyCheckPoint : MonoBehaviour
+public class EnemyCheckPoint : MonoBehaviour//チェックポイントを作成
 {
     public GameObject gameStage;// ゲームステージを参照
     [HideInInspector]//Inspectorに隠し
