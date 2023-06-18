@@ -20,10 +20,8 @@ public class Enemy : MonoBehaviour,IDamagable
     public float stopFarWithPlayer = 1.5f;
     public float stopFarWithPoint = .3f;
     public float followTime = 1f;
-    public float attcckCoolTime = 1f;
-    public float rotSpeed = 1f;
+    public float rotSpeed = 1f;//巡回回転速度
     public float rotWaitTime = 2f;
-    public float patrolTurningSpeed = 1f;//巡回回転速度
     public float angleThreshold = 1.0f;//最小回転角度
     public GameObject enemyWaiter;//召喚された敵（雑魚）
     public int SummonNum = 1;//召喚可能敵数
@@ -45,22 +43,16 @@ public class Enemy : MonoBehaviour,IDamagable
     #region private
     [SerializeField]
     ENEMY_ACT enemyAct;
-    ENEMY_ACT oldEnemyAct;
     NavMeshAgent enemyAgent;
     Coroutine backToStartPointCoroutine;
-    Coroutine backToWaitAndSearchCoroutine;
-    Coroutine backToGoNextPointCorutine;
     Coroutine lookAroundCorutine;
 
     int currentTargetIndex = 0;//回転パターン
     bool isOverRound = false;
     Vector3[] targets = new Vector3[] { new Vector3(0, -90, 0),Vector3.zero, new Vector3(0, 90, 0), new Vector3(0, 180, 0), new Vector3(0, 270, 0) };//回転パターン
     bool isLookingAround = false;//巡回中
-    bool isFindPlayer = false;
-    float totalAngle = 0.0f;//全回転角度
     int SummonCnt = 0;//召喚された敵数
     GameObject taget;
-    Quaternion initialRotation;
 
     Vector3 nextPos = Vector3.zero;
     #endregion
@@ -77,7 +69,6 @@ public class Enemy : MonoBehaviour,IDamagable
         GO_TO_NEXT_POINT,
         GOING_TO_NEXT_POINT,
         BACK_TO_STARTPOINT,
-        //BACKED_STARTPOINT,
         CHASE,
         CHASEING,
         ATTACK,
@@ -95,11 +86,6 @@ public class Enemy : MonoBehaviour,IDamagable
         CAPTAIN//強敵
     }
 
-    //public struct checkPointInfo
-    //{
-    //    bool isLastPoint;
-    //    Vector3 Vec3Pos;
-    //}
     #endregion
 
     #region unity methods
@@ -124,9 +110,7 @@ public class Enemy : MonoBehaviour,IDamagable
         enemyAgent.updateRotation = false;
         enemyAgent.speed = speed;
         enemyAgent.velocity = Vector3.zero;//慣性処理禁止
-        initialRotation = transform.rotation;
         lookAroundCorutine = null;
-        //enemyAgent.isStopped = false;
         enemyCheck = GetEnemyCheck();
 
         if (enemyType == ENEMY_TYPE.WARDER)
@@ -166,11 +150,6 @@ public class Enemy : MonoBehaviour,IDamagable
                     else
                         transform.position = checkPointPositionList[0].Item2;
 
-
-
-
-                    //backToGoNextPointCorutine = StartCoroutine(ReturnToOtherAct(ENEMY_ACT.GO_TO_NEXT_POINT, waitTime));
-
                     if(enemyType == ENEMY_TYPE.WAITER)
                     {
                         enemyAct = ENEMY_ACT.CHASE;
@@ -178,51 +157,49 @@ public class Enemy : MonoBehaviour,IDamagable
                     }
                     enemyAct = ENEMY_ACT.WAIT_AND_SEARCH;
                 }
-                
                 break;
+
             case ENEMY_ACT.WAIT_AND_SEARCH:
-                //if (enemyType == ENEMY_TYPE.WARDER)
+                if (!isLookingAround)
                 {
-                    if (!isLookingAround)
-                    {
-                        lookAroundCorutine = StartCoroutine(LookAround());
-                    }
+                    lookAroundCorutine = StartCoroutine(LookAround());
+                }
 
-                    GameObject playerObject = enemyCheck.HitPlayer;
-                    if (playerObject == null)
-                    {
+                GameObject playerObject = enemyCheck.HitPlayer;
+                if (playerObject == null)
+                {
+                    break;
+                }
+
+                taget = playerObject;
+                StopCoroutine(lookAroundCorutine);
+                isLookingAround = false;
+
+                switch (enemyType)
+                {
+                    case ENEMY_TYPE.WARDER:
+                        enemyAct = ENEMY_ACT.SUMMON;
                         break;
-                    }
-
-                    taget = playerObject;
-                    StopCoroutine(lookAroundCorutine);
-                    isLookingAround = false;
-
-                    switch (enemyType)
-                    {
-                        case ENEMY_TYPE.WARDER:
-                            enemyAct = ENEMY_ACT.SUMMON;
-                            break;
-                        case ENEMY_TYPE.WANDERER:
-                        case ENEMY_TYPE.WAITER:
-                            enemyAct = ENEMY_ACT.CHASE;
-                            break;
-                        case ENEMY_TYPE.CAPTAIN:
-                            break;
-                        default:
-                            break;
-                    }
+                    case ENEMY_TYPE.WANDERER:
+                    case ENEMY_TYPE.WAITER:
+                        enemyAct = ENEMY_ACT.CHASE;
+                        break;
+                    case ENEMY_TYPE.CAPTAIN:
+                        break;
+                    default:
+                        break;
                 }
                 break;
+
             case ENEMY_ACT.GO_TO_NEXT_POINT:
-                //StopCoroutine(backToGoNextPointCorutine);
-                isFindPlayer = false;
                 GoToNextPosintion();
                 enemyAct = ENEMY_ACT.GOING_TO_NEXT_POINT;
                 break;
+
             case ENEMY_ACT.GOING_TO_NEXT_POINT:
                 GoingToNextPosintion();
                 break;
+
             case ENEMY_ACT.BACK_TO_STARTPOINT:
                 if (StageManager.Instance.IsFounded.Value)
                 {
@@ -230,6 +207,7 @@ public class Enemy : MonoBehaviour,IDamagable
                 }
                 BackToStartPosition();
                 break;
+
             case ENEMY_ACT.CHASE:
                 if (!StageManager.Instance.IsFounded.Value)
                 {
@@ -238,65 +216,56 @@ public class Enemy : MonoBehaviour,IDamagable
                 backToStartPointCoroutine = StartCoroutine(ReturnToOtherAct(ENEMY_ACT.BACK_TO_STARTPOINT, followTime));
                 enemyAct = ENEMY_ACT.CHASEING;
                 break;
+
             case ENEMY_ACT.CHASEING:
                 DoHunter();
                 break;
             case ENEMY_ACT.ATTACK:
-                //_anim.SetTrigger("IsAttack");
                 StopCoroutine(backToStartPointCoroutine);
                 enemyAct = ENEMY_ACT.ATTACKING;
                 break;
+
             case ENEMY_ACT.ATTACKING:
                 _anim.SetTrigger("IsAttack");
-                //if(enemyCheck.StayingInSomething() == true || enemyCheck.GetStayInGameObjectByTag("Player"))
-                //enemyAct = ENEMY_ACT.WAIT_AND_SEARCH;
                 DoAttack();
                 break;
+
             case ENEMY_ACT.SUMMON:
                 DoSummon();
                 break;
+
             case ENEMY_ACT.DEATH:
                 Death();
                 break;
             case ENEMY_ACT.DESTORY:
                 DoDestroy();
                 break;
+
             default:
                 Debug.LogError("ENEMYACT_ERROR:" + enemyAct);
                 break;
         }
-
-        //UpdateHPBar(maxHP, hp);
-
-        oldEnemyAct = enemyAct;
     }
     #endregion
 
-    //SoundManager.Instance.PlayBGM(SoundTag.SEAttack);
-    //PlayerController.Instace.Damage(1)//プレイヤーはダメージを受ける
     #region public method
     public void OnEnemyDisableAttack()
     {
-        Debug.Log("敵攻撃アクション完了");
+        //Debug.Log("敵攻撃アクション完了");
         PlayerController.Instance.Damage((int)atk);
         SoundManager.Instance.PlaySE(SoundTag.SE_Attack);
-        //TODO:TimeLineの演出 プレイヤーはゴールまで着いたら、一定条件を立つ（コールバック？要確認）、カメラをメインターゲットへ瞬間移動して爆発エフェクト演出、ゲーム終了
     }
-
     public void OnEnemyEnableAttack()
     {
-        Debug.Log("敵攻撃アクション開始");
-        //PlayerController.Instance.Damage((int)atk);
-        //SoundManager.Instance.PlaySE(SoundTag.SEAttack);
+        //Debug.Log("敵攻撃アクション開始");
     }
 
     public void Damage(int damageAmount)
     {
         hp -= damageAmount;
-        Debug.Log("ENEMY_HP:" + hp);
+        //Debug.Log("ENEMY_HP:" + hp);
         if (hp <= 0)
         {
-        //    enemyAct = ENEMY_ACT.DEATH;
             Debug.Log("ENEMY_DIE");
         }
     }
@@ -346,28 +315,6 @@ public class Enemy : MonoBehaviour,IDamagable
 
     void DoHunter()
     {
-        //GameObject playerObject = enemyCheck.HitPlayer;
-
-        //if (playerObject)
-        //{
-        //    if(NearByTarget(playerObject.transform.position, stopFarWithPlayer))
-        //    {
-        //        Debug.Log("DoHunter");
-        //        //StopCoroutine(backToStartpointCoroutine);
-        //        enemyAct = ENEMY_ACT.ATTACK;
-        //        enemyAgent.velocity = Vector3.zero;//慣性処理禁止;
-        //        //enemyCheck.IsStartCheck=false;
-        //        enemyAgent.isStopped = true;
-                
-        //        return;
-        //    }
-        //}
-        ////else
-        ////{
-        ////    enemyAct = ENEMY_ACT.BACK_TO_STARTPOINT;
-        ////    enemyAgent.isStopped = true;
-        ////    return;
-        ////}
 
         if(taget)
         {
@@ -396,9 +343,7 @@ public class Enemy : MonoBehaviour,IDamagable
             {
                 enemyAgent.isStopped = false;
                 enemyAgent.SetDestination(item.Item2);
-                
-                //var tuple = checkPointPositionList[cnt];
-                //checkPointPositionList[cnt] = new Tuple<bool, Vector3>(true, tuple.Item2);
+
                 return;
             }
             cnt++;
@@ -411,18 +356,6 @@ public class Enemy : MonoBehaviour,IDamagable
             enemyAgent.SetDestination(checkPointPositionList[0].Item2);//最初の座標へ戻る
             enemyAct = ENEMY_ACT.GO_TO_NEXT_POINT;
         }
-
-
-
-        //cnt = 0;
-        //foreach (Tuple<bool, Vector3> item in checkPointPositionList)
-        //{
-        //    if (cnt == 0)
-        //        enemyAgent.SetDestination(item.Item2);
-        //    var tuple = checkPointPositionList[cnt];
-        //    checkPointPositionList[cnt] = new Tuple<bool, Vector3>(false, tuple.Item2);
-        //    cnt++;
-        //}
     }
 
     void GoingToNextPosintion()
@@ -454,13 +387,8 @@ public class Enemy : MonoBehaviour,IDamagable
             {
                 if (NearByTarget(checkPointPositionList[cnt].Item2, stopFarWithPoint))
                 {
-                    //if(cnt >= checkPointPositionList.Count)
-                    //{
-                    //InitializeAllPoint();
-                    //}
                     var tuple = checkPointPositionList[cnt];
                     checkPointPositionList[cnt] = new Tuple<bool, Vector3>(true, tuple.Item2);
-                    //nextPos = tuple.Item2;
                     nextPos = GetNextPositon();
 
                     enemyAct = ENEMY_ACT.WAIT_AND_SEARCH;
@@ -500,10 +428,7 @@ public class Enemy : MonoBehaviour,IDamagable
         for (int cnt = 0; cnt < checkPointPositionList.Count; cnt++)
         {
             var tuple = checkPointPositionList[cnt];
-            //if (cnt == 0)
-                //checkPointPositionList[cnt] = new Tuple<bool, Vector3>(true, tuple.Item2);
-            //else
-                checkPointPositionList[cnt] = new Tuple<bool, Vector3>(false, tuple.Item2);
+            checkPointPositionList[cnt] = new Tuple<bool, Vector3>(false, tuple.Item2);
         }
     }
 
@@ -524,39 +449,11 @@ public class Enemy : MonoBehaviour,IDamagable
 
         if (NearByTarget(startPosition, stopFarWithPoint))
         {
-            //enemyCheck.HitingSomething() = null;
-            //enemyCheck.hitGameObjectList.Clear();
             enemyAgent.ResetPath();
             StopCoroutine(backToStartPointCoroutine);
             enemyAct = ENEMY_ACT.WAIT_AND_SEARCH;
         }
     }
-
-    Tuple<int,Vector3> GetStartPosition()
-    {
-        Tuple<int, Vector3> retPosItem = null;
-        //int cnt = 0;
-        //foreach (Tuple<bool, Vector3> posItem in  checkPointPositionList)
-        //{
-        //    if (posItem.Item1 == false)
-        //    {
-        //        retPosItem.
-        //        //retPosItem.Item2 = posItem  ;
-        //        break;
-        //    }
-        //    cnt++;
-        //}
-
-
-
-        return retPosItem;
-    }
-
-    //void UpdateHPBar(float maxHP, float hp)
-    //{
-    //    hpBar.MaxHP = maxHP;
-    //    hpBar.HP = hp;
-    //}
 
     void DoAttack()
     {
@@ -565,9 +462,6 @@ public class Enemy : MonoBehaviour,IDamagable
             transform.LookAt(taget.transform);
             if (!NearByTarget(taget.transform.position, attackFarWithPlayer))
             {
-                //enemyAgent.isStopped = true;
-                //enemyAgent.velocity = Vector3.zero;
-                
                 enemyAct = ENEMY_ACT.CHASE;
                 return;
             }
@@ -592,9 +486,6 @@ public class Enemy : MonoBehaviour,IDamagable
             return;
         }
 
-        //public GameObject enemyWaiter;//召喚された敵（雑魚）
-        //public float summonRadius;//召喚半径
-        //public float summonCheckRadius;//召喚出来ない円範囲の半径
         if (enemyWaiter == null) return;
 
         Vector3 position = UnityEngine.Random.insideUnitCircle * summonRadius;//insideUnitCircle円内乱数
@@ -674,11 +565,9 @@ public class Enemy : MonoBehaviour,IDamagable
                 float dotProduct = Vector3.Dot(transform.forward, toOther);
                 if (nextPos == Vector3.zero)
                     Debug.Log(checkPointPositionList.Count);
-                //Debug.Log(transform.position + "⇒"+ nextPos);
 
                 float threshold = .95f;
 
-                //Quaternion.Slerp(transform.rotation,)
                 if (dotProduct >= threshold)
                 {
                     transform.LookAt(nextPos);
