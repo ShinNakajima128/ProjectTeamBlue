@@ -286,12 +286,6 @@ public class Enemy : MonoBehaviour, IDamagable
     public void Damage(int damageAmount)
     {
         hp -= damageAmount;//体力を減らす
-                           //Debug.Log("ENEMY_HP:" + hp);
-                           //if (hp <= 0)
-                           //{
-                           //体力が0以下ならば、死亡状態に遷移
-                           //Debug.Log("ENEMY_DIE");
-                           //}
     }
     #endregion
 
@@ -667,6 +661,5 @@ public class Enemy : MonoBehaviour, IDamagable
 
         return ret;//判定結果を返す
     }
-
     #endregion
 }
