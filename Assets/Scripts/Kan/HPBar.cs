@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HPBar : MonoBehaviour
+public class HPBar : MonoBehaviour//HPバーを作成、アイコンに変更するためにHPバー関連処理を廃止
 {
     #region property
     // プロパティを入れる。
@@ -20,19 +20,10 @@ public class HPBar : MonoBehaviour
     }
     #endregion
 
-    #region serialize
-    // unity inpectorに表示したいものを記述。
-    #endregion
-
     #region private
     // プライベートなメンバー変数。
-    //Enemy enemy;
     float hp = 0;
     float maxHP = 0;
-    #endregion
-
-    #region Constant
-    // 定数をいれる。
     #endregion
 
     #region Event
@@ -41,46 +32,13 @@ public class HPBar : MonoBehaviour
 
     #region unity methods
     //  Start, UpdateなどのUnityのイベント関数。
-    private void Awake()
-    {
-
-    }
-
-    private void Start()
-    {
-        //enemy = GetComponentInParent<Enemy>();
-        //hp = enemy.hp;
-        //maxHP = enemy.maxHP;
-    }
-
-
-
-    private void Update()
-    {
-        
-        
-    }
-
-    private void LateUpdate()
+    
+    private void LateUpdate()//全ての処理が完了後実行
     {
         //hpFillImage.fillAmount = Mathf.Clamp(hp * 1 / maxHP, 0, 1);
 
-        transform.forward = Camera.main.transform.forward;
-    }
-
-    private void FixedUpdate()
-    {
-        
+        transform.forward = Camera.main.transform.forward;//向きはずっとカメラに
     }
 
     #endregion
-
-    #region public method
-    //　自身で作成したPublicな関数を入れる。
-    #endregion
-
-    #region private method
-    // 自身で作成したPrivateな関数を入れる。
-    #endregion
-    // Start is called before the first frame update
 }
