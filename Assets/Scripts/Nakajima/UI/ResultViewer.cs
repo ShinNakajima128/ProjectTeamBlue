@@ -202,22 +202,27 @@ public class ResultViewer : MonoBehaviour
             
             yield return new WaitForSeconds(_scoreViewingTime);
 
-            _clearLogoImage.enabled = true;
+            _selectPanelBackground.DOFade(1.0f, 1.0f)
+                                  .SetEase(Ease.Linear)
+                                  .OnComplete(() =>
+                                  {
+                                      _clearLogoImage.enabled = true;
+                                      _selectPanel.SetActive(true);
+                                  });
         }
         else
         {
             _selectPanelBackground.DOFade(1.0f, 0f);
             //ゲームオーバー用のTextを表示する処理を作成
+            _selectPanelBackground.DOFade(1.0f, 1.0f)
+                                  .SetEase(Ease.Linear)
+                                  .OnComplete(() =>
+                                  {
+                                      _gameoverLogoImage.enabled = true;
+                                      _selectPanel.SetActive(true);
+                                  });
         }
-        yield return new WaitForSeconds(_scoreViewingTime);
-
-        _selectPanelBackground.DOFade(1.0f, 1.0f)
-                              .SetEase(Ease.Linear)
-                              .OnComplete(() => 
-                              {
-                                  _gameoverLogoImage.enabled = true;
-                                  _selectPanel.SetActive(true);
-                              });
+        
     }
     #endregion
 }
