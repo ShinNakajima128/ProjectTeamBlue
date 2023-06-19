@@ -163,9 +163,9 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
 			_nextBGMName = "";
 			_attachBGMSource.clip = bgm.Clip;
 			_attachBGMSource.loop = true;
-			_attachBGMSource.Play();
 			Debug.Log(bgmName);
 			_attachBGMSource.volume = volume * bgm.Volume;
+			_attachBGMSource.Play();		
 		}
 		else if (_attachBGMSource.clip.name != bgmName)
 		{
